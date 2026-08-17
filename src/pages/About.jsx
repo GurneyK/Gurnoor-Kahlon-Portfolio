@@ -1,17 +1,17 @@
 import { Reveal } from "../components/CaseStudyLayout.jsx";
 import Footer from "../components/Footer.jsx";
 import { experience } from "../data/experience.js";
+import profilePhoto from "../assets/profile.jpg";
 
-const BASE = import.meta.env.BASE_URL;
-
-// TODO GURNEY: drop your photo in src/assets/profile.jpg, then swap this
-// placeholder for: <img src={profilePhoto} alt="Gurnoor Kahlon" className="h-full w-full object-cover" />
 function ProfilePhoto() {
   return (
-    <div className="flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] sm:h-40 sm:w-40">
-      <span className="font-[family-name:var(--font-display)] text-4xl text-[var(--color-sage-bright)]">
-        GK
-      </span>
+    <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] sm:h-24 sm:w-24">
+      <img
+        src={profilePhoto}
+        alt="Gurnoor Kahlon"
+        className="h-full w-full object-cover"
+        style={{ objectPosition: "50% 26%", transform: "scale(2.1)", transformOrigin: "50% 26%" }}
+      />
     </div>
   );
 }
@@ -57,14 +57,6 @@ export default function About() {
             the two are colliding right now. LinkedIn and email are both in
             the footer below.
           </p>
-          <a
-            href={`${BASE}resume/Gurnoor-Kahlon-Resume.pdf`}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-block text-base text-[var(--color-sage-bright)] underline decoration-[var(--color-sage-dim)] underline-offset-4"
-          >
-            Download resume (PDF) ↗
-          </a>
         </Reveal>
 
         <Reveal className="mt-20">
