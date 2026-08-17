@@ -10,7 +10,7 @@ function ProfilePhoto() {
         src={profilePhoto}
         alt="Gurnoor Kahlon"
         className="h-full w-full object-cover"
-        style={{ objectPosition: "50% 26%", transform: "scale(2.1)", transformOrigin: "50% 26%" }}
+        style={{ objectPosition: "50% 32%", transform: "scale(1.35)", transformOrigin: "50% 32%" }}
       />
     </div>
   );

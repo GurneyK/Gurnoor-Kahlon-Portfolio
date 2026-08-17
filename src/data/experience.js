@@ -1,7 +1,7 @@
 export const experience = [
   {
     year: "2025",
-    title: "Front-end UX/UI Designer, Horizon 3 Labs (Unilever)",
+    title: "Design Engineer, Horizon 3 Labs (Unilever)",
     duration: "9 months · Present",
     description:
       "Sole designer and design lead across multiple AI agent products, from discovery through production-ready UI. Built and now govern the full component library and design system all of it runs on, and author coded reference files directly in GitHub so engineering can implement from working code, not just a spec.",
