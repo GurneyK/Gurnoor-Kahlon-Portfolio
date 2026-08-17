@@ -1,4 +1,4 @@
-# Gurnoor Kahlon — Portfolio
+# Gurnoor Kahlon, Portfolio
 
 Personal portfolio site. React, Vite, Tailwind CSS v4, Framer Motion. Deployed via GitHub Pages.
 
