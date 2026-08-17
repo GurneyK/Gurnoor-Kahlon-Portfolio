@@ -1,4 +1,5 @@
-import CaseStudyLayout, { Section, Figure, FigureGrid } from "../components/CaseStudyLayout.jsx";
+import CaseStudyLayout, { Section, Figure, FigureGrid, Reveal } from "../components/CaseStudyLayout.jsx";
+import DesktopFrame from "../components/DesktopFrame.jsx";
 import { projects } from "../data/projects.js";
 
 import commandCenter from "../assets/ccgs/command-center.png";
@@ -179,17 +180,29 @@ export default function CCGSCopilot() {
           earlier pass, Analyst Workspace framing instead of Command
           Center, but the same underlying product: source readiness,
           growth opportunities ranked by confidence, and a drafted
-          narrative with citations. Worth clicking through directly rather
-          than embedding here, the sidebar navigation doesn't render
-          correctly inside an iframe on this particular build.
+          narrative with citations. One quirk worth flagging directly: this
+          particular build strips its own sidebar navigation when it
+          detects it's being loaded inside an iframe from another site, so
+          the embed below shows the main workspace but not the left nav.
+          The screenshot right above it, taken by navigating to the site
+          directly, shows the full layout including that sidebar.
         </p>
       </Section>
 
       <Figure
         src={liveAnalystWorkspace}
         size="wide"
-        caption="The live build at gurneyk.github.io/CCGS. Source readiness, ranked growth opportunities with confidence levels, and a drafted narrative with source attribution, all visible without navigating away."
+        caption="The live build at gurneyk.github.io/CCGS, navigated to directly. Source readiness, ranked growth opportunities with confidence levels, and a drafted narrative with source attribution, all visible without navigating away."
       />
+
+      <Reveal className="mt-10">
+        <DesktopFrame src={project.liveUrl} title="CCGS Copilot, live" label="gurneyk.github.io/CCGS" />
+      </Reveal>
+      <p className="mt-4 text-base text-[var(--color-paper-mute)]">
+        Live and clickable above, at full desktop width, scaled to fit.
+        Try it directly, the source list, the question box, and the
+        generated opportunities all work.
+      </p>
 
       <Section eyebrow="Research & Approach" title="What the agent actually does">
         <p>
@@ -259,13 +272,13 @@ export default function CCGSCopilot() {
 
       <Section eyebrow="Outcome" title="Where this landed">
         <p>
-          Both the screenshots above and the live embed show the real
-          product, running on fictional data. The real version reads
-          Unilever's licensed category data, which isn't something I can
-          put on a public site. What's demonstrated here is the actual
-          interaction model, information architecture, and governance
-          structure (approval gates, role matrix, export controls) from the
-          real product, just running on invented inputs.
+          Every screenshot and the live embed above show the real product,
+          running on fictional data. The real version reads Unilever's
+          licensed category data, which isn't something I can put on a
+          public site. What's demonstrated here is the actual interaction
+          model, information architecture, and governance structure
+          (approval gates, role matrix, export controls) from the real
+          product, just running on invented inputs.
         </p>
       </Section>
     </CaseStudyLayout>

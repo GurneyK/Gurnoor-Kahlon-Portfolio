@@ -64,7 +64,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-sm uppercase tracking-[0.2em] text-[var(--color-sage)]"
             >
-              UI/UX Designer &middot; Toronto
+              Design Engineer &middot; Toronto
             </motion.p>
             <motion.h1
               initial={{ opacity: 0, y: 16 }}
