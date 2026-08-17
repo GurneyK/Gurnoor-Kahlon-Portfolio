@@ -1,4 +1,5 @@
 import CaseStudyLayout, { Section, Reveal, Figure } from "../components/CaseStudyLayout.jsx";
+import DesktopFrame from "../components/DesktopFrame.jsx";
 import { projects } from "../data/projects.js";
 import buttonDetail from "../assets/h3l/button-detail.png";
 import colorTokens from "../assets/h3l/color-tokens.png";
@@ -77,25 +78,16 @@ export default function H3LDesignSystem() {
         </p>
       </Section>
 
-      <Reveal className="mt-10 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]">
-        <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-4 py-3">
-          <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-border)]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-border)]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-border)]" />
-          <span className="ml-3 text-xs text-[var(--color-paper-mute)]">
-            gurneyk.github.io/Design-library
-          </span>
-        </div>
-        <iframe
+      <Reveal className="mt-10">
+        <DesktopFrame
           src={project.liveUrl}
           title="Full design system, live"
-          className="h-[420px] w-full bg-white sm:h-[620px]"
-          loading="lazy"
+          label="gurneyk.github.io/Design-library"
         />
       </Reveal>
       <p className="mt-4 text-base text-[var(--color-paper-mute)]">
-        Live and interactive above, this is the real catalog, not a
-        screenshot. Browse it directly.
+        Live and interactive above, at full desktop width, scaled to fit.
+        This is the real catalog, not a screenshot. Browse it directly.
       </p>
 
       <Section eyebrow="By the numbers" title="Scope">

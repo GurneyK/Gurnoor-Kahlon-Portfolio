@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import ScrollRail from "../components/ScrollRail.jsx";
 import Footer from "../components/Footer.jsx";
+import KeywordMarquee from "../components/KeywordMarquee.jsx";
+import AskMeAnything from "../components/AskMeAnything.jsx";
 import { Reveal } from "../components/CaseStudyLayout.jsx";
 import { projects, sideProject } from "../data/projects.js";
 
@@ -111,6 +113,10 @@ export default function Home() {
             </motion.div>
           </div>
         </section>
+
+        <KeywordMarquee />
+
+        <AskMeAnything />
 
         <section id="work" className="px-6 py-32 md:px-10">
           <div className="mx-auto max-w-4xl">

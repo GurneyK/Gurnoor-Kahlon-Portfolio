@@ -1,4 +1,5 @@
 import CaseStudyLayout, { Section, Figure, FigureGrid, Reveal } from "../components/CaseStudyLayout.jsx";
+import DesktopFrame from "../components/DesktopFrame.jsx";
 import { projects } from "../data/projects.js";
 
 import commandCenter from "../assets/ccgs/command-center.png";
@@ -171,25 +172,13 @@ export default function CCGSCopilot() {
 
       <Figure src={mobileCommand} size="narrow" caption="Command Center on mobile." />
 
-      <Reveal className="mt-16 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]">
-        <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-4 py-3">
-          <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-border)]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-border)]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-border)]" />
-          <span className="ml-3 text-xs text-[var(--color-paper-mute)]">
-            gurneyk.github.io/CCGS
-          </span>
-        </div>
-        <iframe
-          src={project.liveUrl}
-          title="CCGS Copilot, live"
-          className="h-[420px] w-full bg-white sm:h-[620px]"
-          loading="lazy"
-        />
+      <Reveal className="mt-16">
+        <DesktopFrame src={project.liveUrl} title="CCGS Copilot, live" label="gurneyk.github.io/CCGS" />
       </Reveal>
       <p className="mt-4 text-base text-[var(--color-paper-mute)]">
-        A separate build of the same product is also live above, click
-        through it directly.
+        This is an earlier deployed build of the same concept, live and
+        clickable above at full desktop width, scaled to fit. The
+        screenshots above it are from a later iteration built on top of it.
       </p>
 
       <Section eyebrow="Research & Approach" title="What the agent actually does">

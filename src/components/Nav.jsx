@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import ThemeToggle from "./ThemeToggle.jsx";
 
 const BASE = import.meta.env.BASE_URL;
 
 const SECTION_LINKS = [
+  { id: "ask", label: "Ask Me" },
   { id: "work", label: "Work" },
   { id: "side-project", label: "Side Project" },
   { id: "about", label: "About" },
@@ -32,13 +34,16 @@ export default function Nav() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-[var(--color-border-soft)] bg-[var(--color-ink)]/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 md:px-10">
-        <Link
-          to="/"
-          onClick={() => setMenuOpen(false)}
-          className="font-[family-name:var(--font-display)] text-base tracking-tight text-[var(--color-paper)] sm:text-lg"
-        >
-          Gurnoor Kahlon
-        </Link>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <Link
+            to="/"
+            onClick={() => setMenuOpen(false)}
+            className="font-[family-name:var(--font-display)] text-base tracking-tight text-[var(--color-paper)] sm:text-lg"
+          >
+            Gurnoor Kahlon
+          </Link>
+          <ThemeToggle />
+        </div>
 
         <nav className="hidden items-center gap-8 text-base text-[var(--color-paper-dim)] md:flex">
           {SECTION_LINKS.map((link) => (

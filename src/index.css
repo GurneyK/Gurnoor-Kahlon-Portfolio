@@ -20,6 +20,23 @@
   --color-sage-deep: #263429;
 }
 
+:root[data-theme="light"] {
+  --color-ink: #f6f4ee;
+  --color-surface: #eeebe0;
+  --color-surface-raised: #e6e1d2;
+  --color-border: #d9d3c0;
+  --color-border-soft: #e3dccb;
+
+  --color-paper: #181b16;
+  --color-paper-dim: #454a40;
+  --color-paper-mute: #767b6d;
+
+  --color-sage: #3e6b47;
+  --color-sage-bright: #2c5233;
+  --color-sage-dim: #d9ead9;
+  --color-sage-deep: #1f3a25;
+}
+
 html {
   scroll-behavior: smooth;
   background: var(--color-ink);
@@ -61,4 +78,23 @@ a {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-sage-dim);
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee-scroll 38s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
 }
