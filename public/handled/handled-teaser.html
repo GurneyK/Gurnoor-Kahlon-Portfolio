@@ -1,0 +1,928 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Handled — launch teaser</title>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"
+        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
+        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+        crossorigin="anonymous"></script>
+
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #111; }
+  #app { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .stage { position: relative; transform-origin: center; will-change: transform; }
+  .controls { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+              display: flex; gap: 12px; align-items: center;
+              background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+              padding: 8px 12px; border-radius: 999px; color: #fff;
+              font-size: 12px; z-index: 100; }
+  .controls button { background: none; border: 1px solid #fff3; color: #fff;
+                     padding: 4px 10px; border-radius: 999px; cursor: pointer; font-size: 12px; }
+  .controls input[type=range] { width: 200px; accent-color: #fff; }
+  :fullscreen body, :-webkit-full-screen body { background: #000; cursor: none; }
+  :fullscreen .controls, :-webkit-full-screen .controls {
+    opacity: 0; pointer-events: none; transition: opacity 0.4s;
+  }
+  :fullscreen .controls:hover, :-webkit-full-screen .controls:hover {
+    opacity: 1; pointer-events: auto; cursor: default;
+  }
+  :fullscreen #app, :-webkit-full-screen #app { background: #000; }
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+  window.process = window.process || { env: { NODE_ENV: 'production' } };
+</script>
+
+<!-- 1) Primitives -->
+<script type="text/babel" data-presets="react">
+const { useState, useRef, useEffect, useContext, createContext } = React;
+
+const Easing = {
+  linear:    p => p,
+  in:        p => p * p,
+  out:       p => 1 - (1 - p) * (1 - p),
+  inOut:     p => p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2,
+  inCubic:   p => p ** 3,
+  outCubic:  p => 1 - Math.pow(1 - p, 3),
+  inOutCubic:p => p < 0.5 ? 4 * p ** 3 : 1 - Math.pow(-2 * p + 2, 3) / 2,
+  outBack:   p => { const c1 = 1.70158, c3 = c1 + 1;
+                    return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2); },
+  smooth:    p => p * p * p * (p * (6 * p - 15) + 10),
+};
+
+const clamp01 = p => Math.max(0, Math.min(1, p));
+
+function twLerp(a, b, p) {
+  if (Array.isArray(a)) return a.map((v, i) => v + (b[i] - v) * p);
+  return a + (b - a) * p;
+}
+function interpolate(t, [i0, i1], [o0, o1], easing = Easing.linear) {
+  const p = clamp01((t - i0) / (i1 - i0));
+  return twLerp(o0, o1, easing(p));
+}
+function envS(now, t0, t1, t2, t3) {
+  if (now <= t0) return 0;
+  if (now >= t3) return 0;
+  if (now < t1)  return Easing.smooth(clamp01((now - t0) / (t1 - t0)));
+  if (now < t2)  return 1;
+  return Easing.smooth(1 - clamp01((now - t2) / (t3 - t2)));
+}
+
+const StageCtx  = createContext({ t: 0, duration: 1 });
+const useTime   = () => useContext(StageCtx).t;
+
+function Stage({ duration, width = 1280, height = 720, children }) {
+  const [t, setT] = useState(0);
+  const tRef = useRef(0);
+  const lastRef = useRef(performance.now());
+  const playingRef = useRef(true);
+  const [scale, setScale] = useState(1);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    let raf;
+    const tick = (now) => {
+      const dt = Math.min((now - lastRef.current) / 1000, 0.05);
+      lastRef.current = now;
+      if (playingRef.current && !window.__manualControl) {
+        const next = tRef.current + dt;
+        if (next >= duration) {
+          tRef.current = duration; setT(duration);
+          window.parent?.postMessage({ type: 'finished' }, '*');
+          return;
+        }
+        tRef.current = next; setT(next);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [duration]);
+
+  useEffect(() => {
+    const onResize = () => setScale(Math.min(window.innerWidth / width, window.innerHeight / height));
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [width, height]);
+
+  const seek = (v) => { tRef.current = v; setT(v); };
+  const toggle = () => {
+    playingRef.current = !playingRef.current;
+    setPaused(!playingRef.current);
+    window.AUDIO && window.AUDIO.ensureAudio();
+  };
+  const restart = () => { tRef.current = 0; setT(0); lastRef.current = performance.now(); playingRef.current = true; setPaused(false); };
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    } else {
+      const el = document.documentElement;
+      (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+    }
+  };
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.code === 'Space') { e.preventDefault(); toggle(); }
+      else if (e.code === 'KeyR') { restart(); }
+      else if (e.code === 'KeyF') { toggleFullscreen(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  // Automation hook for headless verification + frame-accurate mp4 capture.
+  // Normal viewers are unaffected: __manualControl is unset, so the RAF loop
+  // free-runs exactly as before. A capture script sets __manualControl = true
+  // to stop real-time advancement, then drives time itself via seek(v).
+  useEffect(() => {
+    window.__player = { seek, duration, ready: true };
+    return () => { window.__player = null; };
+  }, [duration]);
+
+  const embed = new URLSearchParams(location.search).get('embed') === '1';
+
+  return (
+    <>
+      <div className="stage" style={{ width, height, transform: `scale(${scale})` }}>
+        <StageCtx.Provider value={{ t, duration }}>{children}</StageCtx.Provider>
+      </div>
+      {!embed && (
+        <div className="controls">
+          <button onClick={toggle} title="Play / Pause (Space)">{paused ? '▶' : '❙❙'}</button>
+          <button onClick={restart} title="Restart (R)">↺</button>
+          <input type="range" min="0" max={duration} step="0.01"
+                 value={t} onChange={e => seek(+e.target.value)} />
+          <span>{t.toFixed(1)}s / {duration.toFixed(1)}s</span>
+          <button onClick={toggleFullscreen} title="Fullscreen (F)">⛶</button>
+        </div>
+      )}
+    </>
+  );
+}
+
+function Layer({ x = 0, y = 0, w, h, opacity = 1, style, children }) {
+  return (
+    <div style={{
+      position: 'absolute', left: x, top: y, width: w, height: h, opacity, ...style,
+    }}>{children}</div>
+  );
+}
+
+Object.assign(window, { Stage, Layer, useTime, Easing, interpolate, envS, clamp01, twLerp });
+</script>
+
+<!-- 2) Theme tokens (Handled style pack v0.1) -->
+<script type="text/babel" data-presets="react">
+window.THEME = {
+  bg: '#FAF7F2',
+  ink: { primary: 'rgba(23,21,18,0.92)', secondary: 'rgba(23,21,18,0.62)', muted: 'rgba(23,21,18,0.42)' },
+  accent: '#2B3A67',
+  amber: '#C97A2B',
+  sage: '#4B8065',
+  font: { sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' },
+};
+</script>
+
+<!-- 3) Procedural audio (SFX shared between live playback and offline mp4 render) -->
+<script type="text/babel" data-presets="react">
+(function () {
+  let liveCtx = null;
+  function getLiveCtx() {
+    if (!liveCtx) liveCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return liveCtx;
+  }
+  function envelope(g, t0, attack, decay, peak) {
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(peak, t0 + attack);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + attack + decay);
+  }
+
+  // Every synth fn takes (ctx, t0, ...) and schedules against an ABSOLUTE
+  // context time — works identically for a live AudioContext (t0 = ctx.currentTime
+  // at fire-time) and an OfflineAudioContext (t0 = the event's schedule time).
+  const SFX = {
+    tick(ctx, t0) {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(1200, t0);
+      envelope(g, t0, 0.002, 0.09, 0.14);
+      o.connect(g).connect(ctx.destination); o.start(t0); o.stop(t0 + 0.12);
+    },
+    click(ctx, t0) {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'square'; o.frequency.setValueAtTime(2400, t0);
+      o.frequency.exponentialRampToValueAtTime(800, t0 + 0.04);
+      envelope(g, t0, 0.001, 0.05, 0.16);
+      o.connect(g).connect(ctx.destination); o.start(t0); o.stop(t0 + 0.06);
+    },
+    whoosh(ctx, t0) {
+      const noise = ctx.createBufferSource();
+      const buf = ctx.createBuffer(1, ctx.sampleRate * 0.5, ctx.sampleRate);
+      const ch = buf.getChannelData(0);
+      for (let i = 0; i < ch.length; i++) ch[i] = (Math.random() * 2 - 1) * (1 - i / ch.length);
+      noise.buffer = buf;
+      const filt = ctx.createBiquadFilter(); filt.type = 'bandpass';
+      filt.frequency.setValueAtTime(800, t0);
+      filt.frequency.exponentialRampToValueAtTime(2400, t0 + 0.4);
+      const g = ctx.createGain(); envelope(g, t0, 0.05, 0.4, 0.22);
+      noise.connect(filt).connect(g).connect(ctx.destination);
+      noise.start(t0); noise.stop(t0 + 0.5);
+    },
+    chime(ctx, t0, freq) {
+      freq = freq || 880;
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine'; o.frequency.value = freq;
+      envelope(g, t0, 0.005, 0.6, 0.28);
+      o.connect(g).connect(ctx.destination); o.start(t0); o.stop(t0 + 0.7);
+    },
+    alertTone(ctx, t0) {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'triangle'; o.frequency.setValueAtTime(660, t0);
+      o.frequency.linearRampToValueAtTime(420, t0 + 0.18);
+      envelope(g, t0, 0.005, 0.32, 0.2);
+      o.connect(g).connect(ctx.destination); o.start(t0); o.stop(t0 + 0.4);
+    },
+    thump(ctx, t0) {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(60, t0);
+      envelope(g, t0, 0.005, 0.35, 0.45);
+      o.connect(g).connect(ctx.destination); o.start(t0); o.stop(t0 + 0.4);
+    },
+    // A single plucked note — triangle pair, slight detune for a strummed
+    // "two strings" feel, fast attack / short decay like a finger-picked
+    // ukulele or acoustic guitar. Used only by musicSchedule below.
+    _pluck(ctx, bus, t0, freq, peak) {
+      const o1 = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain();
+      o1.type = 'triangle'; o1.frequency.value = freq;
+      o2.type = 'triangle'; o2.frequency.value = freq * 1.004;
+      g.gain.setValueAtTime(0, t0);
+      g.gain.linearRampToValueAtTime(peak, t0 + 0.006);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.32);
+      o1.connect(g); o2.connect(g); g.connect(bus);
+      o1.start(t0); o1.stop(t0 + 0.35);
+      o2.start(t0); o2.stop(t0 + 0.35);
+    },
+    // Original, un-sourced instrumental bed — upbeat plucked-arpeggio, four
+    // chord vlog-style loop (I-V-vi-IV), kept deliberately quiet so it sits
+    // under every SFX hit rather than over it. Used by the offline mp4 render.
+    musicSchedule(ctx, t0, totalDur, warmAt, swellAt) {
+      const bus = ctx.createGain();
+      bus.gain.setValueAtTime(0, t0);
+      bus.gain.linearRampToValueAtTime(0.045, t0 + 2.5);
+      bus.gain.linearRampToValueAtTime(0.06, t0 + warmAt + 0.5);
+      bus.gain.linearRampToValueAtTime(0.075, t0 + swellAt + 1.0);
+      bus.gain.linearRampToValueAtTime(0.0001, t0 + totalDur - 0.4);
+      bus.connect(ctx.destination);
+
+      const BPM = 132;
+      const eighth = (60 / BPM) / 2;
+      const barDur = eighth * 8;
+      // C – G – Am – F, each voiced root/3rd/5th/octave for the arpeggio.
+      const CHORDS = [
+        [261.63, 329.63, 392.00, 523.25],
+        [196.00, 246.94, 293.66, 392.00],
+        [220.00, 261.63, 329.63, 440.00],
+        [174.61, 220.00, 261.63, 349.23],
+      ];
+      const PATTERN = [0, 1, 2, 3, 2, 1, 0, 1]; // simple up-down arpeggio per bar
+      let time = 0, bar = 0;
+      while (time < totalDur - 0.4) {
+        const chord = CHORDS[bar % CHORDS.length];
+        for (let i = 0; i < 8 && time < totalDur - 0.4; i++) {
+          SFX._pluck(ctx, bus, t0 + time, chord[PATTERN[i]], i === 0 ? 0.9 : 0.55);
+          time += eighth;
+        }
+        bar++;
+      }
+    },
+  };
+
+  async function ensureAudio() {
+    const c = getLiveCtx();
+    if (c.state === 'suspended') { try { await c.resume(); } catch (e) {} }
+  }
+
+  // Live wrapper: fire "now" against the real-time AudioContext.
+  function fireLive(type, ...args) {
+    const c = getLiveCtx();
+    SFX[type](c, c.currentTime, ...args);
+  }
+
+  window.AUDIO = { ensureAudio, fireLive };
+  window.SFX = SFX; // exposed for the offline mp4 render pass
+})();
+</script>
+
+<!-- 4) Icons + faux UI -->
+<script type="text/babel" data-presets="react">
+(function () {
+  const T = window.THEME;
+
+  function Icon({ path, color, size = 22 }) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+           stroke={color || T.ink.primary} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        {path}
+      </svg>
+    );
+  }
+  const EnvelopeIcon = (p) => <Icon {...p} path={<><rect x="2" y="5" width="20" height="14" rx="2" /><path d="M3 6l9 7 9-7" /></>} />;
+  const BillIcon = (p) => <Icon {...p} path={<><rect x="5" y="3" width="14" height="18" rx="2" /><line x1="8" y1="8" x2="16" y2="8" /><line x1="8" y1="12" x2="13" y2="12" /><text x="14.5" y="17.5" fontSize="6" stroke="none" fill={p.color || T.ink.primary}>$</text></>} />;
+  const CalendarIcon = (p) => <Icon {...p} path={<><rect x="3" y="5" width="18" height="16" rx="2" /><line x1="3" y1="10" x2="21" y2="10" /><line x1="8" y1="3" x2="8" y2="7" /><line x1="16" y1="3" x2="16" y2="7" /></>} />;
+  const CheckIcon = (p) => <Icon {...p} path={<path d="M4 13l5 5L20 6" />} />;
+
+  function IconTile({ Cmp, color, x, y, opacity = 1, scale = 1 }) {
+    return (
+      <Layer x={x} y={y} w={64} h={64} opacity={opacity}
+             style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}>
+        <div style={{
+          width: 64, height: 64, borderRadius: 16, background: '#fff',
+          boxShadow: '0 10px 28px rgba(23,21,18,0.10)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Cmp color={color} size={26} />
+        </div>
+      </Layer>
+    );
+  }
+
+  function BigLine({ x, y, w = 1000, opacity, size = 72, color, align = 'left', style, children }) {
+    return (
+      <Layer x={x} y={y} w={w} opacity={opacity} style={style}>
+        <div style={{
+          fontFamily: T.font.sans, fontWeight: 600, fontSize: size,
+          color: color || T.ink.primary, letterSpacing: -1, textAlign: align, lineHeight: 1.05,
+        }}>{children}</div>
+      </Layer>
+    );
+  }
+  function SubLine({ x, y, w = 900, opacity, size = 24, color, align = 'left', style, children }) {
+    return (
+      <Layer x={x} y={y} w={w} opacity={opacity} style={style}>
+        <div style={{
+          fontFamily: T.font.sans, fontWeight: 400, fontSize: size,
+          color: color || T.ink.secondary, textAlign: align, lineHeight: 1.35,
+        }}>{children}</div>
+      </Layer>
+    );
+  }
+
+  // The logomark: a checkmark in a rounded square, two colors only (accent +
+  // bg) — the same check motif used for every "resolved" state in the UI
+  // scenes, so the brand mark reads as "this is the thing that does that."
+  // Certification-seal mark: an 8-point medallion burst with a checkmark —
+  // reads as "verified / taken care of" rather than a generic to-do checkbox.
+  function LogoMark({ size = 64 }) {
+    const angles = [0, 45, 90, 135, 180, 225, 270, 315];
+    return (
+      <svg width={size} height={size} viewBox="0 0 224 224">
+        <g fill={T.accent}>
+          {angles.map((a) => (
+            <rect key={a} x="99" y="2" width="26" height="70" rx="13" transform={`rotate(${a} 112 112)`} />
+          ))}
+          <circle cx="112" cy="112" r="72" />
+        </g>
+        <path d="M74 114 L100 142 L154 82" stroke={T.bg} strokeWidth="16"
+              strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      </svg>
+    );
+  }
+
+  function Logo({ y, opacity, scale = 1, size = 80 }) {
+    return (
+      <Layer x={0} y={y} w={1280} opacity={opacity}
+             style={{ display: 'flex', justifyContent: 'center', transform: `scale(${scale})`, transformOrigin: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: size * 0.22 }}>
+          <LogoMark size={size} />
+          <span style={{ fontFamily: T.font.sans, fontWeight: 600, fontSize: size, color: T.accent, letterSpacing: -1.5 }}>Handled</span>
+        </div>
+      </Layer>
+    );
+  }
+
+  function InboxRow({ sender, subject, x, y, opacity, scale = 1, bucketColor }) {
+    return (
+      <Layer x={x} y={y} w={380} h={64} opacity={opacity}
+             style={{ transform: `scale(${scale})`, transformOrigin: 'left top' }}>
+        <div style={{
+          width: 380, borderRadius: 12, background: '#fff', padding: '10px 16px',
+          boxShadow: '0 8px 22px rgba(23,21,18,0.08)', borderLeft: `4px solid ${bucketColor || T.ink.muted}`,
+        }}>
+          <div style={{ fontFamily: T.font.sans, fontWeight: 600, fontSize: 15, color: T.ink.primary }}>{sender}</div>
+          <div style={{ fontFamily: T.font.sans, fontWeight: 400, fontSize: 13, color: T.ink.secondary, marginTop: 2 }}>{subject}</div>
+        </div>
+      </Layer>
+    );
+  }
+
+  function BucketHeader({ x, y, opacity, label, color }) {
+    return (
+      <Layer x={x} y={y} w={200} opacity={opacity}>
+        <div style={{ fontFamily: T.font.sans, fontWeight: 600, fontSize: 14, color, letterSpacing: 1, textTransform: 'uppercase' }}>{label}</div>
+      </Layer>
+    );
+  }
+
+  function BillCard({ x, y, opacity, scale = 1, paidBlend }) {
+    // paidBlend 0 = "due" state, 1 = "paid" state — cross-faded, not swapped instantly.
+    return (
+      <Layer x={x} y={y} w={440} opacity={opacity}
+             style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}>
+        <div style={{
+          width: 440, borderRadius: 20, background: '#fff', padding: 28,
+          boxShadow: '0 18px 48px rgba(23,21,18,0.12)', fontFamily: T.font.sans,
+        }}>
+          <div style={{ fontSize: 14, color: T.ink.muted, fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase' }}>Riverside Utilities</div>
+          <div style={{ fontSize: 44, fontWeight: 600, color: T.ink.primary, marginTop: 6 }}>$47.82</div>
+          <div style={{ position: 'relative', height: 26, marginTop: 14 }}>
+            <div style={{ position: 'absolute', inset: 0, opacity: 1 - paidBlend, color: T.amber, fontWeight: 600, fontSize: 17 }}>Due in 3 days</div>
+            <div style={{ position: 'absolute', inset: 0, opacity: paidBlend, color: T.sage, fontWeight: 600, fontSize: 17, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <CheckIcon color={T.sage} size={18} /> Paid • on time
+            </div>
+          </div>
+        </div>
+      </Layer>
+    );
+  }
+
+  function EventChip({ x, y, opacity, label, color, rotate = 0, scale = 1 }) {
+    return (
+      <Layer x={x} y={y} w={220} opacity={opacity}
+             style={{ transform: `rotate(${rotate}deg) scale(${scale})`, transformOrigin: 'center' }}>
+        <div style={{
+          borderRadius: 10, background: '#fff', border: `2px solid ${color}`, padding: '10px 14px',
+          fontFamily: T.font.sans, fontWeight: 600, fontSize: 14, color: T.ink.primary,
+          boxShadow: '0 8px 20px rgba(23,21,18,0.08)',
+        }}>{label}</div>
+      </Layer>
+    );
+  }
+
+  function StatusChip({ x, y, opacity, label }) {
+    return (
+      <Layer x={x} y={y} w={320} opacity={opacity}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontFamily: T.font.sans, fontWeight: 600, fontSize: 18, color: T.ink.primary }}>
+          <CheckIcon color={T.sage} size={20} /> {label}
+        </div>
+      </Layer>
+    );
+  }
+
+  Object.assign(window, {
+    EnvelopeIcon, BillIcon, CalendarIcon, CheckIcon, IconTile,
+    BigLine, SubLine, LogoMark, Logo, InboxRow, BucketHeader, BillCard, EventChip, StatusChip,
+  });
+})();
+</script>
+
+<!-- 5) Scene 1 — Cold open -->
+<script type="text/babel" data-presets="react">
+(function () {
+  const { Layer, Easing, interpolate, envS, useTime } = window;
+  const { IconTile, EnvelopeIcon, BillIcon, CalendarIcon, BigLine, SubLine } = window;
+  const T = window.THEME;
+
+  function scene1(t, t0, sceneDur) {
+    const lt = t - t0;
+    const P = { iconsIn: 1.8, tickHold: 1.6, lineAIn: 0.6, lineAHold: 1.6, lineBIn: 0.7, lineBHold: 2.7, tail: 1.0 };
+    const tIconsEnd = P.iconsIn;
+    const tLineAStart = tIconsEnd + P.tickHold;
+    const tLineAEnd = tLineAStart + P.lineAIn;
+    const tLineAOutStart = tLineAEnd + P.lineAHold;
+    const tLineBStart = tLineAOutStart;
+    const tLineBEnd = tLineBStart + P.lineBIn;
+
+    const sceneOp = envS(lt, 0, 0.3, sceneDur - 0.3, sceneDur);
+
+    const i1 = envS(lt, 0.0, 0.5, tIconsEnd + 3, tIconsEnd + 3.4);
+    const i2 = envS(lt, 0.35, 0.85, tIconsEnd + 3, tIconsEnd + 3.4);
+    const i3 = envS(lt, 0.7, 1.2, tIconsEnd + 3, tIconsEnd + 3.4);
+
+    const count = Math.round(interpolate(lt, [0.2, tIconsEnd + 0.6], [0, 47], Easing.outCubic));
+
+    const aOp = envS(lt, tLineAStart, tLineAEnd, tLineAOutStart, tLineAOutStart + 0.4);
+    const aY = interpolate(lt, [tLineAStart, tLineAEnd], [20, 0], Easing.outCubic);
+    const bOp = envS(lt, tLineBStart, tLineBEnd, sceneDur - P.tail, sceneDur - P.tail + 0.4);
+    const bY = interpolate(lt, [tLineBStart, tLineBEnd], [16, 0], Easing.outCubic);
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720} opacity={sceneOp} style={{ background: T.bg }}>
+        <IconTile Cmp={EnvelopeIcon} color={T.ink.secondary} x={420} y={150} opacity={i1} scale={interpolate(i1, [0, 1], [0.7, 1], Easing.outBack)} />
+        <IconTile Cmp={BillIcon} color={T.amber} x={510} y={190} opacity={i2} scale={interpolate(i2, [0, 1], [0.7, 1], Easing.outBack)} />
+        <IconTile Cmp={CalendarIcon} color={T.ink.secondary} x={460} y={240} opacity={i3} scale={interpolate(i3, [0, 1], [0.7, 1], Easing.outBack)} />
+        <BigLine x={340} y={400} w={620} opacity={aOp} align="center" style={{ transform: `translateY(${aY}px)` }}>{count} unread.</BigLine>
+        <SubLine x={240} y={488} w={800} opacity={bOp} align="center" style={{ transform: `translateY(${bY}px)` }}>
+          Somewhere in there is a bill due Thursday.
+        </SubLine>
+      </Layer>
+    );
+  }
+  scene1.dur = 1.8 + 1.6 + 0.6 + 1.6 + 0.7 + 2.7 + 1.0;
+  scene1.sfx = [{ t: 1.6, type: 'tick' }, { t: 2.1, type: 'tick' }, { t: 2.6, type: 'tick' }];
+  window.scene1 = scene1;
+})();
+</script>
+
+<!-- 6) Scene 2 — The cost -->
+<script type="text/babel" data-presets="react">
+(function () {
+  const { Layer, Easing, interpolate, envS } = window;
+  const { IconTile, EnvelopeIcon, BillIcon, CalendarIcon, BigLine, SubLine } = window;
+  const T = window.THEME;
+
+  function scene2(t, t0, sceneDur) {
+    const lt = t - t0;
+    const P = { dimIn: 0.8, dimHold: 1.0, alertIn: 0.6, alertSettle: 0.3, alertHold: 2.0, lineIn: 0.6, lineHold: 2.7, tail: 1.0 };
+    const tDimEnd = P.dimIn;
+    const tAlertStart = tDimEnd + P.dimHold;
+    const tAlertEnd = tAlertStart + P.alertIn;
+    const tLineStart = tAlertEnd + P.alertSettle + P.alertHold;
+    const tLineEnd = tLineStart + P.lineIn;
+
+    const sceneOp = envS(lt, 0, 0.3, sceneDur - 0.3, sceneDur);
+    const dim = interpolate(lt, [0, tDimEnd], [0, 1], Easing.outCubic);
+    const alertOp = envS(lt, tAlertStart, tAlertEnd, sceneDur - P.tail, sceneDur - P.tail + 0.4);
+    const alertY = interpolate(lt, [tAlertStart, tAlertEnd], [-14, 0], Easing.outCubic);
+    const lineOp = envS(lt, tLineStart, tLineEnd, sceneDur - P.tail, sceneDur - P.tail + 0.4);
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720} style={{ background: T.bg }}>
+        <Layer x={0} y={0} w={1280} h={720} opacity={dim * 0.55} style={{ background: '#171512' }} />
+        <Layer x={0} y={0} w={1280} h={720} opacity={0.35}>
+          <IconTile Cmp={EnvelopeIcon} color={T.ink.muted} x={420} y={150} />
+          <IconTile Cmp={BillIcon} color={T.ink.muted} x={510} y={190} />
+          <IconTile Cmp={CalendarIcon} color={T.ink.muted} x={460} y={240} />
+        </Layer>
+        <Layer x={0} y={0} w={1280} h={720} opacity={sceneOp}>
+          <Layer x={390} y={330} w={500} opacity={alertOp} style={{ transform: `translateY(${alertY}px)` }}>
+            <div style={{
+              background: '#fff', borderRadius: 16, padding: '18px 26px', textAlign: 'center',
+              boxShadow: '0 18px 40px rgba(23,21,18,0.16)', border: `2px solid ${T.amber}`,
+              fontFamily: T.font.sans,
+            }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: T.amber, letterSpacing: 1, textTransform: 'uppercase' }}>Late fee</div>
+              <div style={{ fontSize: 40, fontWeight: 600, color: T.ink.primary, marginTop: 4 }}>$34.50</div>
+            </div>
+          </Layer>
+          <SubLine x={240} y={470} w={800} opacity={lineOp} align="center" size={24} color={T.ink.secondary}>
+            Not because you didn't care. Because no one was watching.
+          </SubLine>
+        </Layer>
+      </Layer>
+    );
+  }
+  scene2.dur = 0.8 + 1.0 + 0.6 + 0.3 + 2.0 + 0.6 + 2.7 + 1.0;
+  scene2.sfx = [{ t: 1.8, type: 'alertTone' }];
+  window.scene2 = scene2;
+})();
+</script>
+
+<!-- 7) Scene 3 — Brand turn -->
+<script type="text/babel" data-presets="react">
+(function () {
+  const { Layer, Easing, interpolate, envS } = window;
+  const { Logo } = window;
+  const T = window.THEME;
+
+  function scene3(t, t0, sceneDur) {
+    const lt = t - t0;
+    const P = { wordmarkIn: 0.9, hold: 2.6, tail: 0.5 };
+    const wOp = envS(lt, 0, P.wordmarkIn, sceneDur - P.tail, sceneDur);
+    const wScale = interpolate(lt, [0, P.wordmarkIn], [0.85, 1], Easing.outBack);
+    return (
+      <Layer x={0} y={0} w={1280} h={720} style={{ background: T.bg }}>
+        <Logo y={315} opacity={wOp} scale={wScale} size={72} />
+      </Layer>
+    );
+  }
+  scene3.dur = 0.9 + 2.6 + 0.5;
+  scene3.sfx = [{ t: -0.25, type: 'whoosh' }, { t: 0.9, type: 'thump' }];
+  window.scene3 = scene3;
+})();
+</script>
+
+<!-- 8) Scene 4 — Proof 1: inbox triage -->
+<script type="text/babel" data-presets="react">
+(function () {
+  const { Layer, Easing, interpolate, envS, twLerp } = window;
+  const { InboxRow, BucketHeader, SubLine } = window;
+  const T = window.THEME;
+
+  const ROWS = [
+    { sender: 'Aster Energy', subject: 'Your statement is ready', bucket: 0 },
+    { sender: 'Coach Priya', subject: 'Move our 4pm to Thursday?', bucket: 1 },
+    { sender: 'Northgate HOA', subject: 'Community newsletter', bucket: 2 },
+    { sender: 'Riverside Utilities', subject: 'Payment reminder', bucket: 0 },
+    { sender: 'Maple Dental', subject: 'Appointment confirmation', bucket: 1 },
+  ];
+  const BUCKETS = [
+    { label: 'Bills', color: T.amber, x: 120 },
+    { label: 'Meetings', color: T.accent, x: 480 },
+    { label: 'Ignore', color: T.ink.muted, x: 840 },
+  ];
+  const START = { x: 450, y: 90 };
+
+  function scene4(t, t0, sceneDur) {
+    const lt = t - t0;
+    const P = { rowsIn: 3.0, sortAction: 3.0, bucketsHold: 2.5, captionIn: 0.6, captionHold: 2.2, tail: 0.7 };
+    const tRowsEnd = P.rowsIn;
+    const tSortEnd = tRowsEnd + P.sortAction;
+    const tCaptionStart = tSortEnd + P.bucketsHold;
+    const tCaptionEnd = tCaptionStart + P.captionIn;
+
+    const sceneOp = envS(lt, 0, 0.3, sceneDur - 0.3, sceneDur);
+    const headerOp = envS(lt, 0.1, 0.5, sceneDur - P.tail, sceneDur - P.tail + 0.3);
+    const captionOp = envS(lt, tCaptionStart, tCaptionEnd, sceneDur - P.tail, sceneDur - P.tail + 0.3);
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720} opacity={sceneOp} style={{ background: T.bg }}>
+        {BUCKETS.map((b, i) => <BucketHeader key={i} x={b.x} y={60} opacity={headerOp} label={b.label} color={b.color} />)}
+        {ROWS.map((r, i) => {
+          const inStart = i * 0.5;
+          const inEnd = inStart + 0.7;
+          const sortStart = tRowsEnd + i * 0.5;
+          const sortEnd = Math.min(sortStart + 0.9, tSortEnd);
+          const inOp = envS(lt, inStart, inEnd, sceneDur - P.tail, sceneDur - P.tail + 0.3);
+          const sortP = Easing.outCubic(clampP((lt - sortStart) / (sortEnd - sortStart)));
+          const x = twLerp(START.x, BUCKETS[r.bucket].x, sortP);
+          const y = twLerp(START.y + i * 6, 140 + i * 84, sortP);
+          const scale = twLerp(1, 0.82, sortP);
+          return <InboxRow key={i} sender={r.sender} subject={r.subject} x={x} y={y} opacity={inOp} scale={scale} bucketColor={BUCKETS[r.bucket].color} />;
+        })}
+        <SubLine x={240} y={640} w={800} opacity={captionOp} align="center" size={24}>
+          It reads the inbox so you don't have to.
+        </SubLine>
+      </Layer>
+    );
+  }
+  function clampP(p) { return Math.max(0, Math.min(1, p)); }
+  scene4.dur = 3.0 + 3.0 + 2.5 + 0.6 + 2.2 + 0.7;
+  scene4.sfx = [
+    { t: 3.4, type: 'tick' }, { t: 3.9, type: 'tick' }, { t: 4.4, type: 'tick' },
+    { t: 4.9, type: 'tick' }, { t: 5.4, type: 'tick' },
+  ];
+  window.scene4 = scene4;
+})();
+</script>
+
+<!-- 9) Scene 5 — Proof 2: bill caught -->
+<script type="text/babel" data-presets="react">
+(function () {
+  const { Layer, Easing, interpolate, envS } = window;
+  const { BillCard, SubLine } = window;
+  const T = window.THEME;
+
+  function scene5(t, t0, sceneDur) {
+    const lt = t - t0;
+    const P = { cardIn: 0.8, dueHold: 2.2, flip: 0.6, paidHold: 2.8, captionIn: 0.6, captionHold: 3.0, tail: 2.0 };
+    const tCardEnd = P.cardIn;
+    const tFlipStart = tCardEnd + P.dueHold;
+    const tFlipEnd = tFlipStart + P.flip;
+    const tCaptionStart = tFlipEnd + P.paidHold;
+    const tCaptionEnd = tCaptionStart + P.captionIn;
+
+    const sceneOp = envS(lt, 0, 0.3, sceneDur - 0.3, sceneDur);
+    const cardOp = envS(lt, 0, tCardEnd, sceneDur - P.tail, sceneDur - P.tail + 0.4);
+    const cardScale = interpolate(lt, [0, tCardEnd], [0.9, 1], Easing.outCubic);
+    const paidBlend = interpolate(lt, [tFlipStart, tFlipEnd], [0, 1], Easing.smooth);
+    const captionOp = envS(lt, tCaptionStart, tCaptionEnd, sceneDur - P.tail, sceneDur - P.tail + 0.4);
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720} opacity={sceneOp} style={{ background: T.bg }}>
+        <BillCard x={420} y={190} opacity={cardOp} scale={cardScale} paidBlend={paidBlend} />
+        <SubLine x={240} y={560} w={800} opacity={captionOp} align="center" size={24}>
+          Every bill, tracked before it's a problem.
+        </SubLine>
+      </Layer>
+    );
+  }
+  scene5.dur = 0.8 + 2.2 + 0.6 + 2.8 + 0.6 + 3.0 + 2.0;
+  scene5.sfx = [{ t: 3.6, type: 'chime', args: [660] }];
+  window.scene5 = scene5;
+})();
+</script>
+
+<!-- 10) Scene 6 — Proof 3: calendar calm -->
+<script type="text/babel" data-presets="react">
+(function () {
+  const { Layer, Easing, interpolate, envS, twLerp } = window;
+  const { CalendarIcon, EventChip, SubLine } = window;
+  const T = window.THEME;
+
+  function scene6(t, t0, sceneDur) {
+    const lt = t - t0;
+    const P = { gridIn: 1.0, conflictHold: 1.4, untangle: 2.0, alignedHold: 2.6, captionIn: 0.6, captionHold: 2.4, tail: 2.0 };
+    const tGridEnd = P.gridIn;
+    const tUntangleStart = tGridEnd + P.conflictHold;
+    const tUntangleEnd = tUntangleStart + P.untangle;
+    const tCaptionStart = tUntangleEnd + P.alignedHold;
+    const tCaptionEnd = tCaptionStart + P.captionIn;
+
+    const sceneOp = envS(lt, 0, 0.3, sceneDur - 0.3, sceneDur);
+    const gridOp = envS(lt, 0, tGridEnd, sceneDur - P.tail, sceneDur - P.tail + 0.4);
+    const p = Easing.outBack(Math.max(0, Math.min(1, (lt - tUntangleStart) / (tUntangleEnd - tUntangleStart))));
+    const captionOp = envS(lt, tCaptionStart, tCaptionEnd, sceneDur - P.tail, sceneDur - P.tail + 0.4);
+
+    const jordanY = 260;
+    const dentistY = twLerp(266, 380, p);
+    const jordanRot = twLerp(-4, 0, p);
+    const dentistRot = twLerp(5, 0, p);
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720} opacity={sceneOp} style={{ background: T.bg }}>
+        <Layer x={0} y={0} w={1280} h={720} opacity={gridOp}>
+          <Layer x={200} y={140} w={880} opacity={1}>
+            <div style={{ fontFamily: T.font.sans, fontWeight: 600, fontSize: 15, color: T.ink.muted, letterSpacing: 1, textTransform: 'uppercase' }}>Wed</div>
+            <div style={{ marginTop: 18, borderTop: `1px solid rgba(23,21,18,0.12)`, paddingTop: 14, fontSize: 13, color: T.ink.muted }}>2:00</div>
+            <div style={{ marginTop: 100, borderTop: `1px solid rgba(23,21,18,0.12)`, paddingTop: 14, fontSize: 13, color: T.ink.muted }}>4:00</div>
+          </Layer>
+        </Layer>
+        <EventChip x={430} y={jordanY} opacity={gridOp} label="1:1 – Jordan" color={p < 0.98 ? T.amber : T.sage} rotate={jordanRot} />
+        <EventChip x={470} y={dentistY} opacity={gridOp} label="Dentist – Dr. Bell" color={p < 0.98 ? T.amber : T.sage} rotate={dentistRot} />
+        <SubLine x={240} y={600} w={800} opacity={captionOp} align="center" size={24}>
+          Nothing double-booked. Nothing missed.
+        </SubLine>
+      </Layer>
+    );
+  }
+  scene6.dur = 1.0 + 1.4 + 2.0 + 2.6 + 0.6 + 2.4 + 2.0;
+  scene6.sfx = [{ t: 2.4, type: 'whoosh' }, { t: 4.4, type: 'chime', args: [740] }];
+  window.scene6 = scene6;
+})();
+</script>
+
+<!-- 11) Scene 7 — Transformation -->
+<script type="text/babel" data-presets="react">
+(function () {
+  const { Layer, Easing, interpolate, envS } = window;
+  const { BigLine, SubLine, StatusChip } = window;
+  const T = window.THEME;
+
+  const CHIPS = ['Inbox clear', 'Bill paid', 'Nothing double-booked'];
+
+  function scene7(t, t0, sceneDur) {
+    const lt = t - t0;
+    const P = { settle: 1.2, cardIn: 1.0, hold: 5.3, tail: 1.5 };
+    const tSettleEnd = P.settle;
+    const tCardEnd = tSettleEnd + P.cardIn;
+
+    const sceneOp = envS(lt, 0, 0.4, sceneDur - 0.4, sceneDur);
+    const headOp = envS(lt, 0, tSettleEnd, sceneDur - P.tail, sceneDur - P.tail + 0.4);
+    const headY = interpolate(lt, [0, tSettleEnd], [16, 0], Easing.outCubic);
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720} opacity={sceneOp} style={{ background: T.bg }}>
+        <BigLine x={240} y={210} w={800} opacity={headOp} align="center" size={56} style={{ transform: `translateY(${headY}px)` }}>
+          You're set for today.
+        </BigLine>
+        {CHIPS.map((label, i) => {
+          const s = tSettleEnd + 0.3 + i * 0.3;
+          const e = s + 0.5;
+          const op = envS(lt, s, e, sceneDur - P.tail, sceneDur - P.tail + 0.4);
+          return <StatusChip key={i} x={490} y={330 + i * 46} opacity={op} label={label} />;
+        })}
+        <SubLine x={240} y={520} w={800} opacity={envS(lt, tCardEnd + 0.5, tCardEnd + 1.1, sceneDur - P.tail, sceneDur - P.tail + 0.4)} align="center" size={22}>
+          The small stuff, actually handled.
+        </SubLine>
+      </Layer>
+    );
+  }
+  scene7.dur = 1.2 + 1.0 + 5.3 + 1.5;
+  scene7.sfx = [{ t: 2.2, type: 'chime', args: [880] }];
+  window.scene7 = scene7;
+})();
+</script>
+
+<!-- 12) Scene 8 — CTA / outro -->
+<script type="text/babel" data-presets="react">
+(function () {
+  const { Layer, Easing, interpolate, envS } = window;
+  const { Logo, SubLine } = window;
+  const T = window.THEME;
+
+  function scene8(t, t0, sceneDur) {
+    const lt = t - t0;
+    const P = { wordmarkIn: 0.9, lineIn: 0.7, hold: 5.4, tail: 1.0 };
+    const tWordEnd = P.wordmarkIn;
+    const tLineStart = tWordEnd + 0.3;
+    const tLineEnd = tLineStart + P.lineIn;
+
+    // Final scene: hold forever, no exit fade. Push envS's exit window past
+    // sceneDur so `lt` (which maxes out exactly at sceneDur) never reaches it —
+    // envS(now>=t3) returns 0, so t2===t3===sceneDur would blank the last frame.
+    const HOLD_END = sceneDur + 2;
+    const sceneOp = envS(lt, 0, 0.4, HOLD_END, HOLD_END + 1);
+    const wOp = envS(lt, 0, tWordEnd, HOLD_END, HOLD_END + 1);
+    const wScale = interpolate(lt, [0, tWordEnd], [0.85, 1], Easing.outBack);
+    const lineOp = envS(lt, tLineStart, tLineEnd, HOLD_END, HOLD_END + 1);
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720} opacity={sceneOp} style={{ background: T.bg }}>
+        <Logo y={288} opacity={wOp} scale={wScale} size={72} />
+        <SubLine x={240} y={400} w={800} opacity={lineOp} align="center" size={24}>
+          The AI that runs your life admin so you don't have to.
+        </SubLine>
+      </Layer>
+    );
+  }
+  scene8.dur = 0.9 + 0.7 + 5.4 + 1.0;
+  scene8.sfx = [{ t: 0.9, type: 'chime', args: [990] }, { t: 6.5, type: 'chime', args: [660] }];
+  window.scene8 = scene8;
+})();
+</script>
+
+<!-- 13) App: cascade + audio director + mount -->
+<script type="text/babel" data-presets="react">
+(function () {
+  const { Stage, Layer, useTime } = window;
+  const SCENES = [window.scene1, window.scene2, window.scene3, window.scene4, window.scene5, window.scene6, window.scene7, window.scene8];
+  const T = window.THEME;
+
+  const durs = SCENES.map(s => s.dur);
+  const starts = durs.reduce((acc, d, i) => [...acc, (acc[i - 1] ?? 0) + (durs[i - 1] ?? 0)], []);
+  const total = starts.at(-1) + durs.at(-1);
+
+  // Flatten every scene's .sfx (times are scene-local; negative = leads into
+  // the scene boundary) into one absolute schedule — single source of truth
+  // for both live playback (below) and the offline mp4 audio render.
+  const SFX_SCHEDULE = [];
+  SCENES.forEach((s, i) => {
+    (s.sfx || []).forEach((ev, j) => {
+      SFX_SCHEDULE.push({ t: starts[i] + ev.t, key: `s${i}_${j}`, type: ev.type, args: ev.args || [] });
+    });
+  });
+  window.SFX_SCHEDULE = SFX_SCHEDULE;
+  window.TOTAL_DURATION = total;
+  window.SCENE_STARTS = starts;
+
+  function AudioDirector() {
+    const t = useTime();
+    const stateRef = React.useRef({ fired: new Set(), lastT: 0 });
+    React.useEffect(() => {
+      const st = stateRef.current;
+      if (t < st.lastT - 0.05) st.fired.clear();
+      for (const ev of SFX_SCHEDULE) {
+        if (st.lastT <= ev.t && t > ev.t && !st.fired.has(ev.key)) {
+          st.fired.add(ev.key);
+          try { window.AUDIO.fireLive(ev.type, ...ev.args); } catch (e) {}
+        }
+      }
+      st.lastT = t;
+    }, [t]);
+    return null;
+  }
+
+  function AudioHint() {
+    const t = useTime();
+    const embed = new URLSearchParams(location.search).get('embed') === '1';
+    if (embed) return null; // mp4 capture / iframe embeds carry audio separately
+    const op = window.envS(t, 0, 0.4, 3.5, 4.5);
+    if (op < 0.01) return null;
+    return (
+      <Layer x={1010} y={24} w={240} opacity={op}>
+        <div style={{ fontFamily: T.font.sans, fontSize: 12, color: T.ink.muted, textAlign: 'right' }}>
+          click to enable sound
+        </div>
+      </Layer>
+    );
+  }
+
+  function SceneRender({ s, start, dur }) {
+    const t = window.useTime();
+    const PAD = 0.45;
+    if (t < start - PAD || t > start + dur + PAD) return null;
+    return s(t, start, dur);
+  }
+
+  function App() {
+    return (
+      <Stage duration={total} width={1280} height={720}>
+        <Layer x={0} y={0} w={1280} h={720} style={{ background: T.bg, position: 'absolute', inset: 0, zIndex: 0 }} />
+        {SCENES.map((s, i) => (
+          <Layer key={i} x={0} y={0} w={1280} h={720} style={{ position: 'absolute', inset: 0 }}>
+            <SceneRender s={s} start={starts[i]} dur={durs[i]} />
+          </Layer>
+        ))}
+        <AudioHint />
+        <AudioDirector />
+      </Stage>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+})();
+</script>
+
+</body>
+</html>
