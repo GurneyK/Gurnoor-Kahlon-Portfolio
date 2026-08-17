@@ -1,5 +1,14 @@
-import CaseStudyLayout, { Section, Reveal } from "../components/CaseStudyLayout.jsx";
+import CaseStudyLayout, { Section, Figure, FigureGrid, Reveal } from "../components/CaseStudyLayout.jsx";
 import { projects } from "../data/projects.js";
+
+import commandCenter from "../assets/ccgs/command-center.png";
+import deckAgent from "../assets/ccgs/deck-agent.png";
+import resourceLibrary from "../assets/ccgs/resource-library.png";
+import deckBuilder from "../assets/ccgs/deck-builder.png";
+import notifications from "../assets/ccgs/notifications.png";
+import validationQueue from "../assets/ccgs/validation-queue.png";
+import settings from "../assets/ccgs/settings.png";
+import mobileCommand from "../assets/ccgs/mobile-command.png";
 
 const project = projects.find((p) => p.slug === "ccgs-copilot");
 
@@ -23,6 +32,16 @@ const outputParts = [
   ["Draft narrative", "Slide-ready framing for the analyst to edit"],
 ];
 
+const sidebarSections = [
+  ["Command Center", "The live workspace: run status, connected sources, signal synthesis, opportunity sizing, and the draft narrative in one screen."],
+  ["Deck Agent", "The conversational workspace where the agent explains what it found and what it recommends doing next."],
+  ["Resource Library", "Every text block, chart, image brief, and attachment the agent has produced, searchable and filterable."],
+  ["Deck Builder", "An eight-slide outline with resources mapped to each section and a live slide preview."],
+  ["Notifications", "Business, source, and approval events that affect the deck build, routed to the right owner."],
+  ["Validation Queue", "Open questions and approval gates that have to clear before a deck is business-ready."],
+  ["Settings", "Role matrix and export controls: who can approve what, and what's required before a deck can be exported."],
+];
+
 export default function CCGSCopilot() {
   return (
     <CaseStudyLayout project={project}>
@@ -39,9 +58,120 @@ export default function CCGSCopilot() {
           drafts the narrative for a human to review critically, not
           approve blindly.
         </p>
+        <p>
+          This is a full application, not a single screen. Seven sections
+          below cover the whole thing: a live command center, a
+          conversational agent workspace, a resource library, a deck
+          builder, notifications, a business validation queue, and access
+          settings. Every screenshot here is the real interface, screenshot
+          directly, running on a fictional UK Deodorants scenario.
+        </p>
       </Section>
 
-      <Reveal className="mt-10 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]">
+      <Section eyebrow="Reference" title="What's in the sidebar">
+        <div className="grid gap-3 sm:grid-cols-2">
+          {sidebarSections.map(([title, desc]) => (
+            <div
+              key={title}
+              className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
+            >
+              <p className="text-base font-semibold text-[var(--color-paper)]">{title}</p>
+              <p className="mt-1 text-sm text-[var(--color-paper-mute)]">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Figure
+        src={commandCenter}
+        size="wide"
+        caption="Command Center, the default landing screen. Run status, connected source readiness, the agent brief, signal synthesis, opportunity sizing, the recommended category value driver, and the draft narrative, all visible without navigating away."
+      />
+
+      <Section eyebrow="Key Decision" title="The agent explains itself in its own workspace">
+        <p>
+          Deck Agent is a separate conversational surface from Command
+          Center on purpose. Command Center is a status board, built for
+          scanning. Deck Agent is where an analyst actually works with the
+          agent: asking for a sharper retailer implication, requesting
+          another chart option, watching the agent report what it found and
+          why. Collapsing these into one screen would have forced a choice
+          between a clean status view and a workable conversation, so I
+          kept them separate and let each one do its job well.
+        </p>
+      </Section>
+
+      <Figure
+        src={deckAgent}
+        size="wide"
+        caption="Deck Agent: the working conversation, a resource tray showing what the agent has drafted so far, an agent checklist of remaining build steps, and the four-stage pipeline (gather, synthesize, package, review) the agent moves through."
+      />
+
+      <Section eyebrow="Key Decision" title="Every asset the agent produces lives in one searchable library">
+        <p>
+          An agent drafting a deck produces a lot of intermediate output:
+          text blocks, chart specs, image briefs, source extracts,
+          attachments. Without a central library, that output would be
+          scattered across whatever screen happened to generate it, and an
+          analyst would lose track of what was ready to use versus what
+          still needed validation. Resource Library gives every asset a
+          status, Ready, Needs validation, Queued, Attached, Mapped, and Review, so an
+          analyst can filter straight to what's usable right now.
+        </p>
+      </Section>
+
+      <Figure
+        src={resourceLibrary}
+        size="wide"
+        caption="Resource Library: 24 resources across text blocks, charts, image briefs, and attachments, each carrying its own readiness status and a full attachment inventory below."
+      />
+
+      <Section eyebrow="Key Decision" title="A deck outline that shows resource coverage per slide">
+        <p>
+          Deck Builder answers a specific question an analyst kept asking
+          during early testing: which slides are actually ready to send,
+          and which ones are still blocked on something. Each of the eight
+          slides shows its resource count, its owner, and a status,
+          Draft ready, Evidence linked, Needs validation, or In progress,
+          so a partial deck is never presented as more finished than it
+          actually is.
+        </p>
+      </Section>
+
+      <Figure
+        src={deckBuilder}
+        size="wide"
+        caption="Deck Builder: eight-slide outline with resource counts and status per slide, plus a live preview of the selected slide showing the actual chart and headline that will ship."
+      />
+
+      <FigureGrid>
+        <Figure
+          src={notifications}
+          caption="Notifications, prioritized by who owns the next action: Finance, Creative, Legal, CMI, each with their own open item and timestamp."
+        />
+        <Figure
+          src={validationQueue}
+          caption="Validation Queue: open business questions captured from the working session, plus the approval gates that must clear before a deck is considered business-ready."
+        />
+      </FigureGrid>
+
+      <Figure
+        src={settings}
+        caption="Settings: a role matrix defining who can approve narrative content, data interpretation, sizing models, and third-party data use, plus export controls that can block a deck from exporting until legal review clears."
+      />
+
+      <Section eyebrow="Reference" title="Responsive, not just desktop">
+        <p>
+          The full application collapses to a single-column mobile layout
+          rather than a stripped-down companion view, the same status
+          cards, the same signal synthesis, the same narrative draft, just
+          restacked for a narrow screen.
+        </p>
+      </Section>
+
+      <Figure src={mobileCommand} size="narrow" caption="Command Center on mobile." />
+
+      <Reveal className="mt-16 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-4 py-3">
           <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-border)]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-border)]" />
@@ -58,8 +188,8 @@ export default function CCGSCopilot() {
         />
       </Reveal>
       <p className="mt-4 text-base text-[var(--color-paper-mute)]">
-        Live and interactive above. Try it directly, every category and
-        every data point in it is fictional.
+        A separate build of the same product is also live above, click
+        through it directly.
       </p>
 
       <Section eyebrow="Research & Approach" title="What the agent actually does">
@@ -112,8 +242,6 @@ export default function CCGSCopilot() {
           interrogate the agent's reasoning as fast as they read the
           headline, or the tool quietly becomes something people
           rubber-stamp instead of something they actually use critically.
-          That distinction matters enormously in a strategy function where
-          the output informs real spending decisions.
         </p>
       </Section>
 
@@ -124,23 +252,21 @@ export default function CCGSCopilot() {
           methodology from another category team, rather than a rough
           estimate. That meant the interface needed a visual way to
           distinguish a number the agent is confident citing from a number
-          still pending validation against that methodology. Most dashboard
-          patterns don't bother making this distinction, they present every
-          number with equal visual confidence. For a tool feeding strategic
-          decisions, that equivalence is actually misleading, so I built
-          status indicators that separate validated figures from
-          provisional ones at a glance.
+          still pending validation against that methodology, which is why
+          the sizing model on Command Center is explicitly labeled "HC
+          model to validate" rather than presented as final.
         </p>
       </Section>
 
       <Section eyebrow="Outcome" title="Where this landed">
         <p>
-          Live as a proof of concept above, try it, the data in it is
-          entirely fictional. The real version reads Unilever's licensed
-          category data, which isn't something I can put on a public site.
-          What's demonstrated here is the actual interaction model and
-          information architecture from the real product, just running on
-          invented inputs.
+          Both the screenshots above and the live embed show the real
+          product, running on fictional data. The real version reads
+          Unilever's licensed category data, which isn't something I can
+          put on a public site. What's demonstrated here is the actual
+          interaction model, information architecture, and governance
+          structure (approval gates, role matrix, export controls) from the
+          real product, just running on invented inputs.
         </p>
       </Section>
     </CaseStudyLayout>

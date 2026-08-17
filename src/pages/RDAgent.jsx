@@ -1,11 +1,10 @@
-import CaseStudyLayout, { Section, Figure, FigureGrid } from "../components/CaseStudyLayout.jsx";
+import CaseStudyLayout, { Section, Figure } from "../components/CaseStudyLayout.jsx";
 import { projects } from "../data/projects.js";
 import RDAgentDemo from "../components/rd-agent/RDAgentDemo.jsx";
 
-import scoringGuideTop from "../assets/rd-agent/scoring-guide-top.png";
-import scoringComponents from "../assets/rd-agent/scoring-components.png";
-import disqualifiers from "../assets/rd-agent/disqualifiers.png";
-import tierOutcomes from "../assets/rd-agent/tier-outcomes.png";
+import submissionsList from "../assets/rd-agent/submissions-list.png";
+import scoringGuideFull from "../assets/rd-agent/scoring-guide-full.png";
+import submissionDetail from "../assets/rd-agent/submission-detail.png";
 
 const project = projects.find((p) => p.slug === "rd-agent");
 
@@ -25,36 +24,55 @@ export default function RDAgent() {
           fit scoring, and routes the result to a tier with a defined
           service level agreement.
         </p>
-      </Section>
-
-      <Section eyebrow="Reference" title="The real interface">
         <p>
-          These four screens are the actual product I designed, screenshot
-          directly, not a recreation. The scoring criteria and disqualifier
-          logic shown here are the real methodology, this is evaluation
-          framework design, not confidential submission data, so I'm able
-          to show it as built.
+          I designed and built this as a full four section product:
+          Submissions, Insights, Scoring Guide, and Users, with a detail
+          view for every submission that shows a reviewer exactly why the
+          agent scored what it scored. The three screens below are the
+          actual product, screenshot directly, not a recreation. The
+          company names showing in these screens are fictional seed data
+          used for demos, no real submitter data is shown anywhere on this
+          page.
         </p>
       </Section>
 
-      <FigureGrid>
-        <Figure
-          src={scoringGuideTop}
-          caption="Scoring Guide overview: framework version, maximum score, component count, and disqualifier count, surfaced as stat cards before any detail."
-        />
-        <Figure
-          src={scoringComponents}
-          caption="The six weighted scoring components, each with its description and the specific verification signals a reviewer checks."
-        />
-        <Figure
-          src={disqualifiers}
-          caption="Eight hard disqualifiers, each with a verification method and the concrete signals that trigger it, checked before any component scoring happens."
-        />
-        <Figure
-          src={tierOutcomes}
-          caption="Tier outcomes table: score range mapped directly to label, required action, and SLA, so a score always resolves to a concrete next step."
-        />
-      </FigureGrid>
+      <Figure
+        src={submissionsList}
+        caption="Submissions, the default view. Every open and closed submission with company, score, tier, category tags, and region, grouped so the open queue is always the first thing a reviewer sees. Ten submissions are seeded here for demo purposes."
+      />
+
+      <Section eyebrow="Reference" title="The scoring guide, in full">
+        <p>
+          This is the actual Scoring Guide screen from the shipped product,
+          not a partial mockup. Framework stats, the six weighted
+          components with their point allocation, all eight hard
+          disqualifiers, and the tier outcomes table that maps a final score
+          to a concrete required action and SLA.
+        </p>
+      </Section>
+
+      <Figure
+        src={scoringGuideFull}
+        caption="Scoring Guide: framework stats, weighted score allocation across six components, all eight disqualifiers with their verification criteria, and the tier outcomes table mapping score to action and SLA."
+      />
+
+      <Section eyebrow="Key Decision" title="A detail view that shows its work">
+        <p>
+          Clicking into any submission opens a review panel built around one
+          question: can a reviewer trust this score fast enough to act on
+          it. The score sits in a large circular gauge at the top, followed
+          by a plain-language reviewer summary, a single recommended next
+          step, and an evidence readiness checklist showing exactly which
+          verification steps have actually been completed. Nothing here
+          asks a reviewer to take the score on faith. Everything that fed
+          into it is visible in the same panel.
+        </p>
+      </Section>
+
+      <Figure
+        src={submissionDetail}
+        caption="Submission detail panel: score gauge, reviewer summary, recommended next step, and an evidence readiness checklist, all in one view so a reviewer never has to hunt for the reasoning behind a score."
+      />
 
       <Section eyebrow="Key Decision" title="Disqualifiers run before scoring, and stay visible as a separate step">
         <p>
@@ -70,53 +88,39 @@ export default function RDAgent() {
         </p>
       </Section>
 
-      <Section eyebrow="Key Decision" title="The rubric lives in the product, not a wiki somewhere">
+      <Section eyebrow="Key Decision" title="An Insights view for the person managing the whole pipeline, not just one submission">
         <p>
-          The Scoring Guide is read-only by design and sits one click from
-          the submissions list. Reviewers kept asking "why did this score
-          what it scored" often enough in early feedback that burying the
-          rubric in a separate document wasn't good enough. It needed to be
-          in the product, next to the thing it explains, so a reviewer can
-          check their own judgment against the documented criteria in the
-          same session, not go looking for a reference doc afterward.
+          Submissions and Scoring Guide serve a reviewer working one
+          decision at a time. Insights serves a different job entirely:
+          someone who needs to know how the whole pipeline is trending,
+          whether review velocity is improving, and where submissions are
+          piling up by tier. I built this as its own section rather than
+          bolting summary numbers onto the Submissions screen, because the
+          two audiences look at this tool at completely different
+          altitudes and conflating them would have served neither one well.
         </p>
       </Section>
 
-      <Section eyebrow="Key Decision" title="Tier and score are shown together, never one without the other">
-        <p>
-          A tier alone hides the margin, was this a clean Tier 1 or a
-          borderline one sitting right at the cutoff, and a score alone
-          forces a reviewer to do the tier lookup math in their head on
-          every single row of a long list. Pairing them removes that mental
-          overhead entirely and makes the list scannable at the speed
-          reviewers actually work at, which in practice meant triaging
-          dozens of submissions in a single sitting.
-        </p>
-      </Section>
-
-      <Section eyebrow="Try it" title="Interactive rebuild">
+      <Section eyebrow="Try it" title="Interactive rebuild, all four sections">
         <p>
           Switch tabs below, this is real React state, not an image or a
-          video. It reproduces the Submissions list, the Scoring Guide, and
-          the Users table from the actual product, running on entirely
-          fictional companies and people.
+          video. Submissions, Insights, Scoring Guide, and Users, plus the
+          full submission detail panel on click, all rebuilt as working
+          components with entirely fictional data.
         </p>
       </Section>
       <RDAgentDemo />
 
-      <Section eyebrow="On the rebuild" title="Why I rebuilt this instead of just screenshotting it">
+      <Section eyebrow="On the rebuild" title="Why the Users tab is rebuilt instead of screenshotted">
         <p>
           The real product isn't public, it runs inside Unilever's admin
-          tooling on real submission data, and some of the screens I have
-          access to show real colleagues' names and email addresses, which
-          I won't publish under any circumstances. Rather than crop around
-          that problem, I rebuilt the Submissions and Users screens from
-          scratch as working React components, matched to the real layout
-          and interaction model, and populated them with data I invented
-          for this purpose. I chose to rebuild rather than stop at a
-          screenshot because a working rebuild proves I can ship the front
-          end myself, not just hand off a design file and hope it survives
-          implementation.
+          tooling on real submission data, and the real Users screen shows
+          actual colleagues' names and email addresses, which I won't
+          publish under any circumstances. Submissions, Insights, and the
+          Scoring Guide were safe to screenshot directly because they don't
+          expose anyone's personal information. Users required a full
+          rebuild instead, matched to the real layout and interaction
+          model, populated with data I invented for this purpose.
         </p>
       </Section>
 

@@ -1,5 +1,7 @@
-import CaseStudyLayout, { Section, Reveal } from "../components/CaseStudyLayout.jsx";
+import CaseStudyLayout, { Section, Reveal, Figure } from "../components/CaseStudyLayout.jsx";
 import { projects } from "../data/projects.js";
+import buttonDetail from "../assets/h3l/button-detail.png";
+import colorTokens from "../assets/h3l/color-tokens.png";
 
 const project = projects.find((p) => p.slug === "h3l-design-system");
 
@@ -133,6 +135,31 @@ export default function H3LDesignSystem() {
           anywhere else I've worked.
         </p>
       </Section>
+
+      <Figure
+        src={buttonDetail}
+        size="wide"
+        caption="The real Button entry, full page. Live preview rendered with actual Habibi tokens, every variant and size, a typed props table, the token list it consumes, use when and do not use when guidance, accessibility notes, a copyable code snippet, and a full developer handoff panel with install commands and copy scripts for both PowerShell and bash."
+      />
+
+      <Section eyebrow="Key Decision" title="A handoff format built for engineers who aren't me">
+        <p>
+          Scroll to the bottom of any entry and there's a developer handoff
+          panel: which files to copy, the install command, import alias
+          conventions, and platform-specific copy scripts for PowerShell and
+          bash that pull the component straight from the repository. I
+          built this after watching a design handoff stall because an
+          engineer had to guess which files a component actually depended
+          on. Now that question has one answer, generated the same way
+          every time, instead of a Slack thread.
+        </p>
+      </Section>
+
+      <Figure
+        src={colorTokens}
+        size="wide"
+        caption="Color foundation entry: brand and semantic token swatches with real hex values, paired with the same use when, accessibility, and code sections every component entry carries. Foundations and components share one schema, so a color token and a button component read identically."
+      />
 
       <Reveal className="mt-10 rounded-xl border border-[var(--color-border)] bg-white p-8">
         <p className="mb-6 text-sm uppercase tracking-wide text-[#667085]">

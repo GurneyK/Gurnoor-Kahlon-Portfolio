@@ -13,6 +13,10 @@ export const submissions = {
       tags: ["Home Care", "Personal Care"],
       region: "Europe",
       date: "4/7/2026",
+      reviewerSummary:
+        "Bio-based surfactant chemistry with strong category relevance, defensible process IP, and a near-term pathway for Home Care formulation testing.",
+      nextStep: "Escalate to category leadership and open technical diligence within 48 hours.",
+      evidence: ["Hard filters checked", "Category fit reviewed", "Commercial proof attached"],
     },
     {
       id: "2",
@@ -24,6 +28,10 @@ export const submissions = {
       tags: ["Foods"],
       region: "Europe",
       date: "4/9/2026",
+      reviewerSummary:
+        "Fermentation platform with credible foods applications, pending clarity on scale-up cost and regulatory timeline in the EU.",
+      nextStep: "Hold for category owner assignment, request scale-up cost model.",
+      evidence: ["Hard filters checked", "Category fit reviewed", "Commercial proof pending"],
     },
     {
       id: "3",
@@ -35,6 +43,10 @@ export const submissions = {
       tags: ["Beauty & Wellbeing", "Digital R&D"],
       region: "North America",
       date: "3/28/2026",
+      reviewerSummary:
+        "Diagnostic imaging concept with an unclear consumer product pathway, promising underlying computer vision technology.",
+      nextStep: "Add to quarterly watch list, revisit if a consumer application is defined.",
+      evidence: ["Hard filters checked", "Category fit unclear", "Commercial proof pending"],
     },
   ],
   closed: [
@@ -48,9 +60,47 @@ export const submissions = {
       tags: ["Beauty & Wellbeing"],
       region: "Middle East & Africa",
       date: "4/3/2026",
+      reviewerSummary:
+        "Core platform is a pharmaceutical drug delivery system with no identifiable consumer product pathway within seven years.",
+      nextStep: "Polite decline with brief rationale, do not add to active tracking.",
+      evidence: ["Hard filter triggered: DQ-4", "Scoring not applicable"],
     },
   ],
 };
+
+export const recentActivity = [
+  { title: "NutriBoost Probiotic Blend", detail: "Shortlisted by Priya Nandan", time: "2h ago" },
+  { title: "GreenShield Surfactant Platform", detail: "Moved to Admin Review by Jordan Reyes", time: "5h ago" },
+  { title: "SkinAI Diagnostic Platform", detail: "Placed On Hold by Marcus Cole", time: "1d ago" },
+  { title: "SmartClean IoT Platform", detail: "Handed off by Elena Fischer", time: "2d ago" },
+];
+
+export const insightStats = [
+  { label: "Total Submissions", value: "61", delta: "+12% vs prev" },
+  { label: "Active Reviews", value: "18", delta: "+3 vs prev" },
+  { label: "Avg. Score", value: "6.8", delta: "+0.4 vs prev" },
+  { label: "Shortlist Rate", value: "29%", delta: "-2% vs prev" },
+  { label: "Days to Decision", value: "24d", delta: "-3d vs prev" },
+  { label: "Closed (DQ)", value: "3", delta: "+1 vs prev" },
+];
+
+export const tierBreakdown = [
+  { tier: "Tier 1", count: 12, pct: 20 },
+  { tier: "Tier 2", count: 18, pct: 30 },
+  { tier: "Tier 3", count: 16, pct: 26 },
+  { tier: "Tier 4", count: 9, pct: 15 },
+  { tier: "Tier 5", count: 6, pct: 10 },
+];
+
+export const scoreDistribution = [
+  { band: "0-2", count: 6 },
+  { band: "2-4", count: 10 },
+  { band: "4-6", count: 15 },
+  { band: "6-7", count: 18 },
+  { band: "7-8", count: 14 },
+  { band: "8-9", count: 8 },
+  { band: "9-10", count: 3 },
+];
 
 export const scoringComponents = [
   {
