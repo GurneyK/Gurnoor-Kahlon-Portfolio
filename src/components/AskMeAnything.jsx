@@ -3,6 +3,7 @@ import { qaPairs, fallbackAnswer } from "../data/qa.js";
 
 const KEYWORD_MAP = [
   ["apart", "different", "stand out", "unique"],
+  ["proud", "proudest", "best work", "favorite project", "favourite project"],
   ["pushback", "disagree", "conflict", "criticism", "feedback"],
   ["process", "workflow", "approach", "how do you design"],
   ["marketing", "why did you", "background", "brock"],
@@ -76,7 +77,7 @@ export default function AskMeAnything() {
           Skip the small talk
         </h2>
         <p className="mt-4 max-w-lg text-lg leading-relaxed text-[var(--color-paper-dim)]">
-          Five questions I get asked in most interviews, answered directly.
+          Questions I get asked in most interviews, answered directly.
           No live AI behind this, just my actual answers, so they're
           consistent every time.
         </p>
@@ -124,7 +125,7 @@ export default function AskMeAnything() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask one of the five, or type your own..."
+              placeholder="Ask one of the questions above, or type your own..."
               className="flex-1 rounded-full border border-[var(--color-border)] bg-[var(--color-ink)] px-4 py-2.5 text-base text-[var(--color-paper)] placeholder:text-[var(--color-paper-mute)] focus:border-[var(--color-sage)] focus:outline-none"
             />
             <button
