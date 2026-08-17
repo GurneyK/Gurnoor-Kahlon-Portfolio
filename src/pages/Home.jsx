@@ -102,14 +102,12 @@ export default function Home() {
               >
                 See the work
               </a>
-              <a
-                href={`${BASE}resume/Gurnoor-Kahlon-Resume.pdf`}
-                target="_blank"
-                rel="noreferrer"
+              <Link
+                to="/about"
                 className="rounded-full border border-[var(--color-border)] px-6 py-3 text-base text-[var(--color-paper-dim)] transition-colors hover:border-[var(--color-sage-bright)] hover:text-[var(--color-sage-bright)]"
               >
-                Resume ↗
-              </a>
+                About
+              </Link>
             </motion.div>
           </div>
         </section>

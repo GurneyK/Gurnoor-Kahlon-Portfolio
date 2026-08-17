@@ -1,15 +1,19 @@
+import { Children, isValidElement } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import Footer from "./Footer.jsx";
+import ScrollRail from "./ScrollRail.jsx";
+import { slugify } from "../lib/slugify.js";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
 };
 
-export function Reveal({ children, className = "" }) {
+export function Reveal({ children, className = "", id }) {
   return (
     <motion.div
+      id={id}
       className={className}
       initial="hidden"
       whileInView="visible"
@@ -22,8 +26,9 @@ export function Reveal({ children, className = "" }) {
 }
 
 export function Section({ eyebrow, title, children, className = "" }) {
+  const id = title ? slugify(title) : undefined;
   return (
-    <Reveal className={`mt-24 first:mt-0 ${className}`}>
+    <Reveal id={id} className={`mt-24 scroll-mt-32 first:mt-0 ${className}`}>
       {eyebrow && (
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-sage)]">
           {eyebrow}
@@ -65,9 +70,22 @@ export function FigureGrid({ children }) {
   return <div className="mt-10 grid gap-8 sm:grid-cols-2">{children}</div>;
 }
 
+function collectSections(children) {
+  const sections = [];
+  Children.forEach(children, (child) => {
+    if (isValidElement(child) && child.type === Section && child.props.title) {
+      sections.push({ id: slugify(child.props.title), label: child.props.title });
+    }
+  });
+  return sections;
+}
+
 export default function CaseStudyLayout({ project, children }) {
+  const sections = collectSections(children);
+
   return (
     <main className="pt-32 pb-24">
+      <ScrollRail sections={sections} />
       <div className="mx-auto max-w-4xl px-6 md:px-10">
         <Link
           to="/#work"
