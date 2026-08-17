@@ -1,22 +1,27 @@
+import { Link } from "react-router-dom";
+
 const BASE = import.meta.env.BASE_URL;
 
 export default function Footer() {
   return (
-    <footer id="about" className="border-t border-[var(--color-border-soft)] px-6 py-24 md:px-10">
+    <footer id="contact" className="border-t border-[var(--color-border-soft)] px-6 py-24 md:px-10">
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-12 md:grid-cols-2">
           <div>
             <h2 className="font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-4xl">
-              About
+              Contact
             </h2>
             <p className="mt-6 max-w-md text-lg text-[var(--color-paper-dim)] leading-relaxed">
-              I'm based in Toronto. I studied marketing before moving into UX,
-              which is probably why I care more about whether a flow converts
-              than whether it wins an award. Right now I split my time between
-              product design and enough front-end work to ship what I design
-              myself.
+              Based in Toronto. For more on who I am and the work I've done,
+              see the{" "}
+              <Link
+                to="/about"
+                className="text-[var(--color-sage-bright)] underline decoration-[var(--color-sage-dim)] underline-offset-4"
+              >
+                About page
+              </Link>
+              .
             </p>
-            {/* TODO GURNEY: confirm this personal note still reads true, adjust freely */}
           </div>
 
           <div className="flex flex-col justify-between">

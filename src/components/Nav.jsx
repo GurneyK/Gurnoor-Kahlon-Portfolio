@@ -2,13 +2,11 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle.jsx";
 
-const BASE = import.meta.env.BASE_URL;
-
 const SECTION_LINKS = [
   { id: "ask", label: "Ask Me" },
   { id: "work", label: "Work" },
   { id: "side-project", label: "Side Project" },
-  { id: "about", label: "About" },
+  { id: "contact", label: "Contact" },
 ];
 
 export default function Nav() {
@@ -67,14 +65,13 @@ export default function Nav() {
           >
             LinkedIn
           </a>
-          <a
-            href={`${BASE}resume/Gurnoor-Kahlon-Resume.pdf`}
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            to="/about"
+            onClick={() => setMenuOpen(false)}
             className="rounded-full border border-[var(--color-sage-dim)] px-3 py-1.5 text-[var(--color-sage-bright)] transition-colors hover:border-[var(--color-sage-bright)] hover:bg-[var(--color-sage-dim)]/30 sm:px-4"
           >
-            Resume
-          </a>
+            About
+          </Link>
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}

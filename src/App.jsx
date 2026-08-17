@@ -3,6 +3,7 @@ import { AnimatePresence } from "framer-motion";
 import Nav from "./components/Nav.jsx";
 import PageTransition from "./components/PageTransition.jsx";
 import Home from "./pages/Home.jsx";
+import About from "./pages/About.jsx";
 import Remitian from "./pages/Remitian.jsx";
 import CustomsCity from "./pages/CustomsCity.jsx";
 import H3LDesignSystem from "./pages/H3LDesignSystem.jsx";
@@ -18,6 +19,7 @@ function App() {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+          <Route path="/about" element={<PageTransition><About /></PageTransition>} />
           <Route path="/work/remitian" element={<PageTransition><Remitian /></PageTransition>} />
           <Route path="/work/customscity" element={<PageTransition><CustomsCity /></PageTransition>} />
           <Route path="/work/h3l-design-system" element={<PageTransition><H3LDesignSystem /></PageTransition>} />
