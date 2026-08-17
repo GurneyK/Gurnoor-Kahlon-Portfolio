@@ -10,7 +10,6 @@ import notifications from "../assets/ccgs/notifications.png";
 import validationQueue from "../assets/ccgs/validation-queue.png";
 import settings from "../assets/ccgs/settings.png";
 import mobileCommand from "../assets/ccgs/mobile-command.png";
-import liveAnalystWorkspace from "../assets/ccgs/live-analyst-workspace.png";
 
 const project = projects.find((p) => p.slug === "ccgs-copilot");
 
@@ -173,35 +172,23 @@ export default function CCGSCopilot() {
 
       <Figure src={mobileCommand} size="narrow" caption="Command Center on mobile." />
 
-      <Section eyebrow="Reference" title="An earlier deployed build, still live">
+      <Section eyebrow="Reference" title="Live and clickable, not just screenshots">
         <p>
-          Everything above is from a further iteration built on top of
-          this. The version actually live at the link in the header is an
-          earlier pass, Analyst Workspace framing instead of Command
-          Center, but the same underlying product: source readiness,
-          growth opportunities ranked by confidence, and a drafted
-          narrative with citations. One quirk worth flagging directly: this
-          particular build strips its own sidebar navigation when it
-          detects it's being loaded inside an iframe from another site, so
-          the embed below shows the main workspace but not the left nav.
-          The screenshot right above it, taken by navigating to the site
-          directly, shows the full layout including that sidebar.
+          Every screenshot above is this same build, screenshot directly.
+          The embed below is the actual deployed application, full sidebar
+          navigation included, running live at the link in the header.
         </p>
       </Section>
 
-      <Figure
-        src={liveAnalystWorkspace}
-        size="wide"
-        caption="The live build at gurneyk.github.io/CCGS, navigated to directly. Source readiness, ranked growth opportunities with confidence levels, and a drafted narrative with source attribution, all visible without navigating away."
-      />
-
       <Reveal className="mt-10">
-        <DesktopFrame src={project.liveUrl} title="CCGS Copilot, live" label="gurneyk.github.io/CCGS" />
+        <DesktopFrame src={project.liveUrl} title="CCGS Copilot, live" label="gurneyk.github.io/CCGS-Dashboard" />
       </Reveal>
       <p className="mt-4 text-base text-[var(--color-paper-mute)]">
         Live and clickable above, at full desktop width, scaled to fit.
-        Try it directly, the source list, the question box, and the
-        generated opportunities all work.
+        Try it directly, navigate the sidebar between Command Center, Deck
+        Agent, Resource Library, Deck Builder, Historical CCGS,
+        Notifications, Validation Queue, and Settings, everything shown
+        in the screenshots above is reachable here.
       </p>
 
       <Section eyebrow="Research & Approach" title="What the agent actually does">

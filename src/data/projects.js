@@ -19,8 +19,8 @@ export const projects = [
     tags: ["AI Agent", "Category Strategy", "Dashboard"],
     summary:
       "An agent that reads eight data sources and drafts the category growth narrative an analyst used to write by hand.",
-    liveUrl: "https://gurneyk.github.io/CCGS/",
-    repoUrl: "https://github.com/GurneyK/CCGS-test-one",
+    liveUrl: "https://gurneyk.github.io/CCGS-Dashboard/",
+    repoUrl: "https://github.com/GurneyK/CCGS-Dashboard",
     mockDataNote: true,
   },
   {
