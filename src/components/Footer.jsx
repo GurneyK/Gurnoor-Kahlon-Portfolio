@@ -9,7 +9,7 @@ export default function Footer() {
             <h2 className="font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-4xl">
               About
             </h2>
-            <p className="mt-6 max-w-md text-[var(--color-paper-dim)] leading-relaxed">
+            <p className="mt-6 max-w-md text-lg text-[var(--color-paper-dim)] leading-relaxed">
               I'm based in Toronto. I studied marketing before moving into UX,
               which is probably why I care more about whether a flow converts
               than whether it wins an award. Right now I split my time between

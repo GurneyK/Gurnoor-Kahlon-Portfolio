@@ -16,28 +16,28 @@ function ProjectRow({ project, index }) {
       >
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="flex items-baseline gap-6">
-            <span className="font-[family-name:var(--font-display)] text-sm text-[var(--color-paper-mute)]">
+            <span className="font-[family-name:var(--font-display)] text-base text-[var(--color-paper-mute)]">
               {String(index + 1).padStart(2, "0")}
             </span>
             <div>
-              <h3 className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-paper)] transition-colors group-hover:text-[var(--color-sage-bright)] md:text-3xl">
+              <h3 className="font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] transition-colors group-hover:text-[var(--color-sage-bright)] md:text-4xl">
                 {project.name}
               </h3>
-              <p className="mt-2 max-w-md text-sm text-[var(--color-paper-dim)]">
+              <p className="mt-3 max-w-lg text-lg leading-relaxed text-[var(--color-paper-dim)]">
                 {project.summary}
               </p>
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-x-2 gap-y-1">
                 {project.tags.map((tag) => (
-                  <span key={tag} className="text-xs text-[var(--color-paper-mute)]">
+                  <span key={tag} className="text-sm text-[var(--color-paper-mute)]">
                     {tag}
                     {" · "}
                   </span>
                 ))}
-                <span className="text-xs text-[var(--color-paper-mute)]">{project.role}</span>
+                <span className="text-sm text-[var(--color-paper-mute)]">{project.role}</span>
               </div>
             </div>
           </div>
-          <span className="shrink-0 self-start text-[var(--color-sage)] transition-transform group-hover:translate-x-1 md:self-center">
+          <span className="shrink-0 self-start text-xl text-[var(--color-sage)] transition-transform group-hover:translate-x-1 md:self-center">
             →
           </span>
         </div>
@@ -77,7 +77,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.35 }}
-              className="mt-8 max-w-xl text-lg text-[var(--color-paper-dim)]"
+              className="mt-8 max-w-xl text-xl leading-relaxed text-[var(--color-paper-dim)]"
             >
               Currently the design lead for Horizon 3 Labs, Unilever's AI
               innovation lab. Before that, fintech and logistics products
@@ -88,7 +88,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.5 }}
-              className="mt-10 flex gap-4"
+              className="mt-10 flex flex-wrap gap-4"
             >
               <a
                 href="#work"
@@ -96,7 +96,7 @@ export default function Home() {
                   e.preventDefault();
                   document.getElementById("work")?.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="rounded-full bg-[var(--color-sage-dim)] px-6 py-3 text-sm text-[var(--color-paper)] transition-colors hover:bg-[var(--color-sage)]"
+                className="rounded-full bg-[var(--color-sage-dim)] px-6 py-3 text-base text-[var(--color-paper)] transition-colors hover:bg-[var(--color-sage)]"
               >
                 See the work
               </a>
@@ -104,7 +104,7 @@ export default function Home() {
                 href={`${BASE}resume/Gurnoor-Kahlon-Resume.pdf`}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-full border border-[var(--color-border)] px-6 py-3 text-sm text-[var(--color-paper-dim)] transition-colors hover:border-[var(--color-sage-bright)] hover:text-[var(--color-sage-bright)]"
+                className="rounded-full border border-[var(--color-border)] px-6 py-3 text-base text-[var(--color-paper-dim)] transition-colors hover:border-[var(--color-sage-bright)] hover:text-[var(--color-sage-bright)]"
               >
                 Resume ↗
               </a>
@@ -118,10 +118,10 @@ export default function Home() {
               <h2 className="font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-4xl">
                 Work
               </h2>
-              <p className="mt-4 max-w-lg text-[var(--color-paper-dim)]">
-                Five products, three still live. The screenshots and the
-                repos carry most of this — the writing is just for the parts
-                you can't see in a screenshot.
+              <p className="mt-4 max-w-lg text-lg leading-relaxed text-[var(--color-paper-dim)]">
+                Five products. The screenshots and the repos carry most of
+                this. The writing is for the parts you can't see in a
+                screenshot: why I made the calls I made.
               </p>
             </Reveal>
             <div className="mt-14">
@@ -141,7 +141,7 @@ export default function Home() {
               <h2 className="mt-4 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-4xl">
                 {sideProject.name}
               </h2>
-              <p className="mt-4 max-w-lg text-[var(--color-paper-dim)]">
+              <p className="mt-4 max-w-lg text-lg leading-relaxed text-[var(--color-paper-dim)]">
                 {sideProject.summary} No editor, no timeline, no render farm.
                 I built it because I got tired of the gap between having an
                 idea for a teaser or a deck and having the two hours it
@@ -151,14 +151,14 @@ export default function Home() {
                 href={sideProject.repoUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-6 inline-block text-sm text-[var(--color-sage-bright)] underline decoration-[var(--color-sage-dim)] underline-offset-4"
+                className="mt-6 inline-block text-base text-[var(--color-sage-bright)] underline decoration-[var(--color-sage-dim)] underline-offset-4"
               >
                 View the repo ↗
               </a>
             </Reveal>
 
             <Reveal className="mt-14">
-              <p className="text-sm text-[var(--color-paper-mute)]">
+              <p className="text-base text-[var(--color-paper-mute)]">
                 Below: three assets generated for a fictional company,
                 "Handled," an AI life-admin assistant concept. Same toolkit,
                 same session, no manual editing after the fact.
@@ -175,12 +175,12 @@ export default function Home() {
                 <iframe
                   src={`${BASE}handled/handled-website.html`}
                   title="Handled website demo"
-                  className="h-[520px] w-full bg-white"
+                  className="h-[380px] w-full bg-white sm:h-[520px]"
                   loading="lazy"
                 />
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-4 text-sm">
+              <div className="mt-4 flex flex-wrap gap-4 text-base">
                 <a
                   href={`${BASE}handled/handled-teaser.html`}
                   target="_blank"

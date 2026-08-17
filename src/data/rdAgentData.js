@@ -112,11 +112,11 @@ export const disqualifiers = [
 ];
 
 export const tierOutcomes = [
-  { tier: "Tier 1", range: "8–10", label: "Strategic Priority", action: "Immediate outreach, escalate to category leadership", sla: "48 hours" },
-  { tier: "Tier 2", range: "6.5–7.9", label: "High Potential", action: "Proactive outreach within 2 weeks, assign category owner", sla: "2 weeks" },
-  { tier: "Tier 3", range: "5–6.4", label: "Monitor & Develop", action: "Add to watch list, quarterly review", sla: "1 week ack." },
-  { tier: "Tier 4", range: "3–4.9", label: "Low Priority", action: "Archive for future reference", sla: "1 week" },
-  { tier: "Tier 5", range: "0–2.9", label: "Not Aligned", action: "Polite decline, do not add to active tracking", sla: "1 week" },
+  { tier: "Tier 1", range: "8 to 10", label: "Strategic Priority", action: "Immediate outreach, escalate to category leadership", sla: "48 hours" },
+  { tier: "Tier 2", range: "6.5 to 7.9", label: "High Potential", action: "Proactive outreach within 2 weeks, assign category owner", sla: "2 weeks" },
+  { tier: "Tier 3", range: "5 to 6.4", label: "Monitor & Develop", action: "Add to watch list, quarterly review", sla: "1 week ack." },
+  { tier: "Tier 4", range: "3 to 4.9", label: "Low Priority", action: "Archive for future reference", sla: "1 week" },
+  { tier: "Tier 5", range: "0 to 2.9", label: "Not Aligned", action: "Polite decline, do not add to active tracking", sla: "1 week" },
 ];
 
 export const users = [

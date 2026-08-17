@@ -1,4 +1,4 @@
-import CaseStudyLayout, { Reveal } from "../components/CaseStudyLayout.jsx";
+import CaseStudyLayout, { Section, Reveal } from "../components/CaseStudyLayout.jsx";
 import { projects } from "../data/projects.js";
 
 const project = projects.find((p) => p.slug === "ccgs-copilot");
@@ -14,24 +14,32 @@ const sources = [
   "Historical CCGS docs",
 ];
 
+const outputParts = [
+  ["Insight", "The opportunity, stated plainly"],
+  ["Supporting data points", "The specific numbers behind it"],
+  ["Recommended CVD", "Which category value driver it maps to"],
+  ["Source attribution", "Where every claim came from"],
+  ["Opportunity sizing", "Quantified, not just described"],
+  ["Draft narrative", "Slide-ready framing for the analyst to edit"],
+];
+
 export default function CCGSCopilot() {
   return (
     <CaseStudyLayout project={project}>
-      <Reveal>
-        <h2 className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-paper)]">
-          The problem
-        </h2>
-        <p className="mt-4 leading-relaxed text-[var(--color-paper-dim)]">
-          Category Growth Strategy work means synthesizing eight-plus data
-          sources — category sizing, shopper panels, social listening, trend
-          forecasting, past strategy docs — into a growth narrative an
-          analyst can hand to leadership. Doing that by hand doesn't scale
-          past one or two categories a quarter, and quality varies with
-          whoever happened to write it. CCGS Copilot is an agent that acts as
-          a digital analyst: reads the sources, connects the signals, and
-          drafts the narrative for a human to review, not approve blind.
+      <Section eyebrow="Overview" title="The problem">
+        <p>
+          Category Growth Strategy work means synthesizing eight or more
+          data sources, category sizing, shopper panels, social listening,
+          trend forecasting, past strategy documents, into a growth
+          narrative an analyst can hand to leadership. Doing that by hand
+          doesn't scale past one or two categories a quarter, and the
+          quality of the output depends heavily on whoever happened to
+          write it that cycle. CCGS Copilot is an agent that acts as a
+          digital analyst. It reads the sources, connects the signals, and
+          drafts the narrative for a human to review critically, not
+          approve blindly.
         </p>
-      </Reveal>
+      </Section>
 
       <Reveal className="mt-10 overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-4 py-3">
@@ -45,78 +53,96 @@ export default function CCGSCopilot() {
         <iframe
           src={project.liveUrl}
           title="CCGS Copilot, live"
-          className="h-[560px] w-full bg-white"
+          className="h-[420px] w-full bg-white sm:h-[620px]"
           loading="lazy"
         />
       </Reveal>
+      <p className="mt-4 text-base text-[var(--color-paper-mute)]">
+        Live and interactive above. Try it directly, every category and
+        every data point in it is fictional.
+      </p>
 
-      <Reveal className="mt-16">
-        <h2 className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-paper)]">
-          What the agent actually does
-        </h2>
-        <p className="mt-4 leading-relaxed text-[var(--color-paper-dim)]">
+      <Section eyebrow="Research & Approach" title="What the agent actually does">
+        <p>
           For a question like "what are the biggest growth opportunities in
-          this category," the agent reads across sources, connects related
-          signals — a category growing faster than its peers, rising social
-          conversation around a specific attribute, penetration data, a
-          named market gap — and turns disconnected data points into one
-          structured output: an opportunity statement, the evidence behind
-          it, a recommended value driver, sourced citations, sizing, and a
-          draft narrative. The proof of concept scope covers UK Deodorants,
-          Skin Cleansing, and Oral Care.
+          this category," the agent reads across sources and connects
+          related signals: a category growing faster than its peers, rising
+          social conversation around a specific attribute, penetration data
+          among a target consumer group, a named gap in the competitive
+          landscape. Instead of surfacing those as disconnected data points,
+          it turns them into one structured output. The proof of concept
+          scope covers three categories in the UK market: deodorants, skin
+          cleansing, and oral care.
         </p>
-      </Reveal>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          {outputParts.map(([title, desc]) => (
+            <div
+              key={title}
+              className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
+            >
+              <p className="text-base font-semibold text-[var(--color-paper)]">{title}</p>
+              <p className="mt-1 text-sm text-[var(--color-paper-mute)]">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
 
-      <Reveal className="mt-10">
-        <p className="text-sm uppercase tracking-wide text-[var(--color-paper-mute)]">
-          Sources the agent reads
-        </p>
-        <div className="mt-4 flex flex-wrap gap-2">
+      <Section eyebrow="Reference" title="Sources the agent reads">
+        <div className="flex flex-wrap gap-2">
           {sources.map((s) => (
             <span
               key={s}
-              className="rounded-full border border-[var(--color-border)] px-3 py-1.5 text-xs text-[var(--color-paper-dim)]"
+              className="rounded-full border border-[var(--color-border)] px-3 py-1.5 text-sm text-[var(--color-paper-dim)]"
             >
               {s}
             </span>
           ))}
         </div>
-      </Reveal>
+      </Section>
 
-      <Reveal className="mt-16">
-        <h2 className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-paper)]">
-          Designing for a "draft, not decision" agent
-        </h2>
-        <p className="mt-4 leading-relaxed text-[var(--color-paper-dim)]">
-          The stakeholder definition of "done" was specific: slide-ready
-          headlines and bullet points that form a narrative framework, not a
-          finished recommendation. That constraint drove the UI. Every
-          insight the agent surfaces has to show its supporting evidence and
-          source attribution next to it, in the same view, not behind a
-          click. An analyst reviewing this needs to interrogate the agent's
-          reasoning as fast as they read the headline, or the tool becomes
-          something people rubber-stamp instead of use.
+      <Section eyebrow="Key Decision" title="Evidence next to the claim, always">
+        <p>
+          The stakeholder definition of "done" for this tool was specific:
+          slide-ready headlines and bullet points that form a narrative
+          framework, not a finished recommendation an analyst just forwards
+          along. That constraint drove the interface directly. Every
+          insight the agent surfaces shows its supporting evidence and
+          source attribution in the same view, not behind a click or a
+          separate tab. An analyst reviewing this output needs to
+          interrogate the agent's reasoning as fast as they read the
+          headline, or the tool quietly becomes something people
+          rubber-stamp instead of something they actually use critically.
+          That distinction matters enormously in a strategy function where
+          the output informs real spending decisions.
         </p>
-        <p className="mt-4 leading-relaxed text-[var(--color-paper-dim)]">
+      </Section>
+
+      <Section eyebrow="Key Decision" title="Distinguishing confidence, not just showing numbers">
+        <p>
           I also had to design for opportunity sizing being a real
-          calculation, not an illustrative estimate, tied to an existing
-          validated methodology from another category team. That meant the
-          UI needed to distinguish, visually, between a number the agent is
-          confident citing and a number still pending validation — a
-          distinction most dashboard patterns don't bother making.
+          calculation in most cases, tied to an existing validated
+          methodology from another category team, rather than a rough
+          estimate. That meant the interface needed a visual way to
+          distinguish a number the agent is confident citing from a number
+          still pending validation against that methodology. Most dashboard
+          patterns don't bother making this distinction, they present every
+          number with equal visual confidence. For a tool feeding strategic
+          decisions, that equivalence is actually misleading, so I built
+          status indicators that separate validated figures from
+          provisional ones at a glance.
         </p>
-      </Reveal>
+      </Section>
 
-      <Reveal className="mt-16">
-        <h2 className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-paper)]">
-          Outcome
-        </h2>
-        <p className="mt-4 leading-relaxed text-[var(--color-paper-dim)]">
-          Live as a proof of concept above — try it, the data in it is
+      <Section eyebrow="Outcome" title="Where this landed">
+        <p>
+          Live as a proof of concept above, try it, the data in it is
           entirely fictional. The real version reads Unilever's licensed
           category data, which isn't something I can put on a public site.
+          What's demonstrated here is the actual interaction model and
+          information architecture from the real product, just running on
+          invented inputs.
         </p>
-      </Reveal>
+      </Section>
     </CaseStudyLayout>
   );
 }

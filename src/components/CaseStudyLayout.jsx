@@ -21,10 +21,54 @@ export function Reveal({ children, className = "" }) {
   );
 }
 
+export function Section({ eyebrow, title, children, className = "" }) {
+  return (
+    <Reveal className={`mt-24 first:mt-0 ${className}`}>
+      {eyebrow && (
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-sage)]">
+          {eyebrow}
+        </p>
+      )}
+      {title && (
+        <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-4xl">
+          {title}
+        </h2>
+      )}
+      <div className="mt-6 space-y-5 text-lg leading-relaxed text-[var(--color-paper-dim)]">
+        {children}
+      </div>
+    </Reveal>
+  );
+}
+
+export function Figure({ src, caption, size = "default" }) {
+  const widths = {
+    default: "",
+    narrow: "mx-auto max-w-md",
+    wide: "",
+  };
+  return (
+    <Reveal className="mt-10">
+      <div
+        className={`overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] ${widths[size]}`}
+      >
+        <img src={src} alt={caption || ""} className="w-full" loading="lazy" />
+      </div>
+      {caption && (
+        <p className="mt-4 text-base leading-relaxed text-[var(--color-paper-mute)]">{caption}</p>
+      )}
+    </Reveal>
+  );
+}
+
+export function FigureGrid({ children }) {
+  return <div className="mt-10 grid gap-8 sm:grid-cols-2">{children}</div>;
+}
+
 export default function CaseStudyLayout({ project, children }) {
   return (
     <main className="pt-32 pb-24">
-      <div className="mx-auto max-w-3xl px-6 md:px-10">
+      <div className="mx-auto max-w-4xl px-6 md:px-10">
         <Link
           to="/#work"
           className="text-sm text-[var(--color-paper-mute)] transition-colors hover:text-[var(--color-sage-bright)]"
@@ -37,25 +81,25 @@ export default function CaseStudyLayout({ project, children }) {
             {project.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-[var(--color-border)] px-3 py-1 text-xs text-[var(--color-paper-dim)]"
+                className="rounded-full border border-[var(--color-border)] px-3 py-1 text-sm text-[var(--color-paper-dim)]"
               >
                 {tag}
               </span>
             ))}
           </div>
-          <h1 className="mt-5 font-[family-name:var(--font-display)] text-4xl text-[var(--color-paper)] md:text-5xl">
+          <h1 className="mt-6 font-[family-name:var(--font-display)] text-5xl leading-[1.05] text-[var(--color-paper)] md:text-6xl">
             {project.name}
           </h1>
-          <p className="mt-3 text-[var(--color-sage-bright)]">{project.role}</p>
-          <p className="mt-1 text-sm text-[var(--color-paper-mute)]">{project.dates}</p>
+          <p className="mt-4 text-xl text-[var(--color-sage-bright)]">{project.role}</p>
+          <p className="mt-1 text-base text-[var(--color-paper-mute)]">{project.dates}</p>
 
-          <div className="mt-6 flex flex-wrap gap-4 text-sm">
+          <div className="mt-8 flex flex-wrap gap-4 text-base">
             {project.liveUrl && (
               <a
                 href={project.liveUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-full border border-[var(--color-sage-dim)] px-4 py-1.5 text-[var(--color-sage-bright)] transition-colors hover:border-[var(--color-sage-bright)] hover:bg-[var(--color-sage-dim)]/30"
+                className="rounded-full border border-[var(--color-sage-dim)] px-5 py-2 text-[var(--color-sage-bright)] transition-colors hover:border-[var(--color-sage-bright)] hover:bg-[var(--color-sage-dim)]/30"
               >
                 View live ↗
               </a>
@@ -65,7 +109,7 @@ export default function CaseStudyLayout({ project, children }) {
                 href={project.repoUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-full border border-[var(--color-border)] px-4 py-1.5 text-[var(--color-paper-dim)] transition-colors hover:border-[var(--color-sage-bright)] hover:text-[var(--color-sage-bright)]"
+                className="rounded-full border border-[var(--color-border)] px-5 py-2 text-[var(--color-paper-dim)] transition-colors hover:border-[var(--color-sage-bright)] hover:text-[var(--color-sage-bright)]"
               >
                 View repo ↗
               </a>
@@ -73,16 +117,16 @@ export default function CaseStudyLayout({ project, children }) {
           </div>
 
           {project.mockDataNote && (
-            <p className="mt-6 border-l-2 border-[var(--color-sage-dim)] pl-4 text-sm text-[var(--color-paper-mute)]">
-              This is Unilever internal product work. Everything shown here — company
-              names, submissions, scores, data — is fictional. The real product
-              runs on Unilever's internal data, which I can't show.
+            <p className="mt-8 border-l-2 border-[var(--color-sage-dim)] pl-5 text-base leading-relaxed text-[var(--color-paper-mute)]">
+              This is Unilever internal product work. Every company name, submission,
+              score, and data point shown here is fictional. The real product runs on
+              Unilever's internal and licensed data, which I can't publish.
             </p>
           )}
         </Reveal>
       </div>
 
-      <div className="mx-auto mt-16 max-w-3xl px-6 md:px-10">{children}</div>
+      <div className="mx-auto mt-20 max-w-4xl px-6 md:px-10">{children}</div>
 
       <div className="mt-32">
         <Footer />

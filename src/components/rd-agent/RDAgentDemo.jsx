@@ -200,7 +200,7 @@ export default function RDAgentDemo() {
   const [active, setActive] = useState("Submissions");
 
   return (
-    <div className="flex h-[600px] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[#0B1220] text-sm">
+    <div className="flex h-[70vh] max-h-[640px] min-h-[420px] flex-col overflow-hidden rounded-xl border border-[var(--color-border)] bg-[#0B1220] text-sm sm:flex-row">
       <aside className="hidden w-56 shrink-0 flex-col border-r border-[#1E2A3D] bg-[#0B1220] py-5 sm:flex">
         <p className="px-5 font-[family-name:var(--font-display)] text-base text-white">R&amp;D Fit Agent</p>
         <p className="px-5 mt-0.5 text-[10px] uppercase tracking-wide text-[#8B98AC]">Admin</p>
@@ -218,8 +218,26 @@ export default function RDAgentDemo() {
           ))}
         </nav>
       </aside>
+
+      <div className="flex shrink-0 items-center justify-between gap-2 border-b border-[#1E2A3D] px-4 py-3 sm:hidden">
+        <p className="font-[family-name:var(--font-display)] text-sm text-white">R&amp;D Fit Agent</p>
+        <div className="flex gap-1 overflow-x-auto">
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item}
+              onClick={() => setActive(item)}
+              className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                active === item ? "bg-[#155EEF] text-white" : "bg-[#152238] text-[#8B98AC]"
+              }`}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="flex-1 overflow-y-auto">
-        <div className="flex items-center justify-end gap-3 border-b border-[#1E2A3D] px-6 py-3 text-xs text-[#8B98AC]">
+        <div className="hidden items-center justify-end gap-3 border-b border-[#1E2A3D] px-6 py-3 text-xs text-[#8B98AC] sm:flex">
           <span>Jordan Reyes</span>
         </div>
         {active === "Submissions" && <SubmissionsView />}
