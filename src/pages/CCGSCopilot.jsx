@@ -1,5 +1,4 @@
-import CaseStudyLayout, { Section, Figure, FigureGrid, Reveal } from "../components/CaseStudyLayout.jsx";
-import DesktopFrame from "../components/DesktopFrame.jsx";
+import CaseStudyLayout, { Section, Figure, FigureGrid } from "../components/CaseStudyLayout.jsx";
 import { projects } from "../data/projects.js";
 
 import commandCenter from "../assets/ccgs/command-center.png";
@@ -10,6 +9,7 @@ import notifications from "../assets/ccgs/notifications.png";
 import validationQueue from "../assets/ccgs/validation-queue.png";
 import settings from "../assets/ccgs/settings.png";
 import mobileCommand from "../assets/ccgs/mobile-command.png";
+import liveAnalystWorkspace from "../assets/ccgs/live-analyst-workspace.png";
 
 const project = projects.find((p) => p.slug === "ccgs-copilot");
 
@@ -172,14 +172,24 @@ export default function CCGSCopilot() {
 
       <Figure src={mobileCommand} size="narrow" caption="Command Center on mobile." />
 
-      <Reveal className="mt-16">
-        <DesktopFrame src={project.liveUrl} title="CCGS Copilot, live" label="gurneyk.github.io/CCGS" />
-      </Reveal>
-      <p className="mt-4 text-base text-[var(--color-paper-mute)]">
-        This is an earlier deployed build of the same concept, live and
-        clickable above at full desktop width, scaled to fit. The
-        screenshots above it are from a later iteration built on top of it.
-      </p>
+      <Section eyebrow="Reference" title="An earlier deployed build, still live">
+        <p>
+          Everything above is from a further iteration built on top of
+          this. The version actually live at the link in the header is an
+          earlier pass, Analyst Workspace framing instead of Command
+          Center, but the same underlying product: source readiness,
+          growth opportunities ranked by confidence, and a drafted
+          narrative with citations. Worth clicking through directly rather
+          than embedding here, the sidebar navigation doesn't render
+          correctly inside an iframe on this particular build.
+        </p>
+      </Section>
+
+      <Figure
+        src={liveAnalystWorkspace}
+        size="wide"
+        caption="The live build at gurneyk.github.io/CCGS. Source readiness, ranked growth opportunities with confidence levels, and a drafted narrative with source attribution, all visible without navigating away."
+      />
 
       <Section eyebrow="Research & Approach" title="What the agent actually does">
         <p>
