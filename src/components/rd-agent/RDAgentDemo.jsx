@@ -211,14 +211,14 @@ function SubmissionsView({ onOpen }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search by name or company…"
-          className="w-full max-w-[220px] rounded-md border border-[#1E2A3D] bg-[#0B1220] px-3 py-1.5 text-sm text-white placeholder:text-[#5B6B85] focus:border-[#155EEF] focus:outline-none"
+          className="w-full rounded-md border border-[#1E2A3D] bg-[#0B1220] px-3 py-1.5 text-sm text-white placeholder:text-[#5B6B85] focus:border-[#155EEF] focus:outline-none sm:max-w-[220px]"
         />
-        <div className="flex items-center gap-2 text-sm text-[#8B98AC]">
+        <div className="flex items-center gap-2 overflow-x-auto text-sm text-[#8B98AC]">
           {RANGES.map((r) => (
             <button
               key={r}
               onClick={() => setRange(r)}
-              className={`rounded-md px-3 py-1.5 transition-colors ${
+              className={`shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 transition-colors ${
                 range === r ? "bg-[#155EEF] text-white" : "hover:bg-[#152238]"
               }`}
             >
@@ -226,11 +226,11 @@ function SubmissionsView({ onOpen }) {
             </button>
           ))}
         </div>
-        <div className="ml-auto flex items-center gap-2 text-sm text-[#8B98AC]">
-          <span className="text-xs uppercase tracking-wide">Sort</span>
+        <div className="flex items-center gap-2 text-sm text-[#8B98AC] sm:ml-auto">
+          <span className="shrink-0 whitespace-nowrap text-xs uppercase tracking-wide">Sort</span>
           <button
             onClick={() => setSortBy("date")}
-            className={`rounded-md px-3 py-1.5 transition-colors ${
+            className={`shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 transition-colors ${
               sortBy === "date" ? "bg-[#152238] text-white" : "hover:bg-[#152238]"
             }`}
           >
@@ -238,7 +238,7 @@ function SubmissionsView({ onOpen }) {
           </button>
           <button
             onClick={() => setSortBy("score")}
-            className={`rounded-md px-3 py-1.5 transition-colors ${
+            className={`shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 transition-colors ${
               sortBy === "score" ? "bg-[#152238] text-white" : "hover:bg-[#152238]"
             }`}
           >
@@ -718,9 +718,11 @@ export default function RDAgentDemo() {
         </nav>
       </aside>
 
-      <div className="flex shrink-0 items-center justify-between gap-2 border-b border-[#1E2A3D] px-4 py-3 sm:hidden">
-        <p className="font-[family-name:var(--font-display)] text-sm text-white">R&amp;D Fit Agent</p>
-        <div className="flex gap-1 overflow-x-auto">
+      <div className="flex shrink-0 flex-col gap-2.5 border-b border-[#1E2A3D] px-4 py-3 sm:hidden">
+        <p className="whitespace-nowrap font-[family-name:var(--font-display)] text-sm text-white">
+          R&amp;D Fit Agent
+        </p>
+        <div className="flex gap-1.5 overflow-x-auto">
           {NAV_ITEMS.map((item) => (
             <button
               key={item}

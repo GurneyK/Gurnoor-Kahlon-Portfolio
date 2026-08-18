@@ -5,6 +5,7 @@ import RDAgentDemo from "../components/rd-agent/RDAgentDemo.jsx";
 import submissionsList from "../assets/rd-agent/submissions-list.png";
 import scoringGuideFull from "../assets/rd-agent/scoring-guide-full.png";
 import submissionDetail from "../assets/rd-agent/submission-detail.png";
+import insightsOverview from "../assets/rd-agent/insights-overview.png";
 
 const project = projects.find((p) => p.slug === "rd-agent");
 
@@ -100,6 +101,12 @@ export default function RDAgent() {
           altitudes and conflating them would have served neither one well.
         </p>
       </Section>
+
+      <Figure
+        src={insightsOverview}
+        size="wide"
+        caption="Insights, the pipeline-level view. Six KPI cards (total submissions, active reviews, average score, shortlist rate, days to decision, closed/DQ) each with a delta against the prior period, a 12-month submission trend line against shortlist rate, a decision-pipeline donut by status, a score-distribution bar chart, a tier-breakdown bar list, and a recent-activity feed, all on one screen."
+      />
 
       <Section eyebrow="Try it" title="Interactive rebuild, all four sections">
         <p>
