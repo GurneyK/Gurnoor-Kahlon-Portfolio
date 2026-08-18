@@ -427,9 +427,11 @@ function TrendChart({ data }) {
         <polyline points={pointsFor("shortlisted")} fill="none" stroke="#3DD68C" strokeWidth="2.5" />
       </svg>
       <div className="mt-2 flex justify-between text-[10px] text-[#8B98AC]">
-        {data.map((d) => (
-          <span key={d.month}>{d.month}</span>
-        ))}
+        {data
+          .filter((_, i) => i % 2 === 0)
+          .map((d) => (
+            <span key={d.month}>{d.month}</span>
+          ))}
       </div>
     </div>
   );
@@ -442,7 +444,7 @@ function DonutChart({ segments }) {
   let offset = 0;
 
   return (
-    <div className="flex items-center gap-6">
+    <div className="mx-auto flex min-w-0 max-w-[220px] flex-col items-center gap-5">
       <svg viewBox="0 0 100 100" className="h-28 w-28 shrink-0 -rotate-90">
         {segments.map((s) => {
           const dash = (s.count / total) * circumference;
@@ -463,12 +465,14 @@ function DonutChart({ segments }) {
           return el;
         })}
       </svg>
-      <div className="flex flex-col gap-2.5 text-xs text-[#A6B4C9]">
+      <div className="flex w-full min-w-0 flex-col gap-2.5 text-xs text-[#A6B4C9]">
         {segments.map((s) => (
-          <span key={s.label} className="flex items-center gap-2">
-            <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: s.color }} />
-            {s.label}
-            <span className="text-[#8B98AC]">{s.count}</span>
+          <span key={s.label} className="flex items-center justify-between gap-2">
+            <span className="flex min-w-0 items-center gap-2">
+              <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: s.color }} />
+              <span className="truncate">{s.label}</span>
+            </span>
+            <span className="shrink-0 text-[#8B98AC]">{s.count}</span>
           </span>
         ))}
       </div>
