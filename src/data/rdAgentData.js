@@ -84,6 +84,28 @@ export const insightStats = [
   { label: "Closed (DQ)", value: "3", delta: "+1 vs prev" },
 ];
 
+export const submissionTrend = [
+  { month: "Aug", submissions: 3, shortlisted: 1 },
+  { month: "Sep", submissions: 4, shortlisted: 2 },
+  { month: "Oct", submissions: 6, shortlisted: 2 },
+  { month: "Nov", submissions: 5, shortlisted: 3 },
+  { month: "Dec", submissions: 7, shortlisted: 4 },
+  { month: "Jan", submissions: 8, shortlisted: 4 },
+  { month: "Feb", submissions: 9, shortlisted: 5 },
+  { month: "Mar", submissions: 11, shortlisted: 6 },
+  { month: "Apr", submissions: 10, shortlisted: 7 },
+  { month: "May", submissions: 12, shortlisted: 8 },
+  { month: "Jun", submissions: 9, shortlisted: 6 },
+  { month: "Jul", submissions: 8, shortlisted: 5 },
+];
+
+export const decisionPipeline = [
+  { label: "Active", count: 18, color: "#7B9EFF" },
+  { label: "Shortlisted", count: 18, color: "#3DD68C" },
+  { label: "On Hold", count: 8, color: "#F7B955" },
+  { label: "Closed", count: 17, color: "#F97066" },
+];
+
 export const tierBreakdown = [
   { tier: "Tier 1", count: 12, pct: 20 },
   { tier: "Tier 2", count: 18, pct: 30 },

@@ -9,6 +9,8 @@ import {
   insightStats,
   tierBreakdown,
   scoreDistribution,
+  submissionTrend,
+  decisionPipeline,
 } from "../../data/rdAgentData.js";
 
 const NAV_ITEMS = ["Submissions", "Insights", "Scoring Guide", "Users"];
@@ -393,6 +395,87 @@ function SubmissionDrawer({ item, onClose }) {
   );
 }
 
+function TrendChart({ data }) {
+  const width = 600;
+  const height = 140;
+  const padding = 6;
+  const maxVal = Math.max(...data.map((d) => Math.max(d.submissions, d.shortlisted)));
+  const stepX = (width - padding * 2) / (data.length - 1);
+  const scaleY = (v) => height - padding - (v / maxVal) * (height - padding * 2);
+  const pointsFor = (key) =>
+    data.map((d, i) => `${padding + i * stepX},${scaleY(d[key])}`).join(" ");
+
+  return (
+    <div>
+      <div className="flex items-center gap-4 text-xs text-[#8B98AC]">
+        <span className="flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-[#7B9EFF]" />
+          Submissions
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-[#3DD68C]" />
+          Shortlisted
+        </span>
+      </div>
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="none"
+        className="mt-4 h-32 w-full"
+        aria-hidden="true"
+      >
+        <polyline points={pointsFor("submissions")} fill="none" stroke="#7B9EFF" strokeWidth="2.5" />
+        <polyline points={pointsFor("shortlisted")} fill="none" stroke="#3DD68C" strokeWidth="2.5" />
+      </svg>
+      <div className="mt-2 flex justify-between text-[10px] text-[#8B98AC]">
+        {data.map((d) => (
+          <span key={d.month}>{d.month}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DonutChart({ segments }) {
+  const total = segments.reduce((sum, s) => sum + s.count, 0);
+  const radius = 40;
+  const circumference = 2 * Math.PI * radius;
+  let offset = 0;
+
+  return (
+    <div className="flex items-center gap-6">
+      <svg viewBox="0 0 100 100" className="h-28 w-28 shrink-0 -rotate-90">
+        {segments.map((s) => {
+          const dash = (s.count / total) * circumference;
+          const el = (
+            <circle
+              key={s.label}
+              cx="50"
+              cy="50"
+              r={radius}
+              fill="none"
+              stroke={s.color}
+              strokeWidth="14"
+              strokeDasharray={`${dash} ${circumference - dash}`}
+              strokeDashoffset={-offset}
+            />
+          );
+          offset += dash;
+          return el;
+        })}
+      </svg>
+      <div className="flex flex-col gap-2.5 text-xs text-[#A6B4C9]">
+        {segments.map((s) => (
+          <span key={s.label} className="flex items-center gap-2">
+            <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: s.color }} />
+            {s.label}
+            <span className="text-[#8B98AC]">{s.count}</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function InsightsView() {
   const maxCount = Math.max(...scoreDistribution.map((s) => s.count));
   return (
@@ -413,6 +496,24 @@ function InsightsView() {
       </div>
 
       <div className="mt-7 grid gap-5 lg:grid-cols-2">
+        <div className="rounded-xl border border-[#1E2A3D] bg-[#0F1A2B] p-6">
+          <p className="text-sm font-semibold text-white">Submission Trend</p>
+          <p className="text-xs text-[#8B98AC]">Monthly volume, last 12 months</p>
+          <div className="mt-4">
+            <TrendChart data={submissionTrend} />
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-[#1E2A3D] bg-[#0F1A2B] p-6">
+          <p className="text-sm font-semibold text-white">Decision Pipeline</p>
+          <p className="text-xs text-[#8B98AC]">Current status distribution</p>
+          <div className="mt-6">
+            <DonutChart segments={decisionPipeline} />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-5 lg:grid-cols-2">
         <div className="rounded-xl border border-[#1E2A3D] bg-[#0F1A2B] p-6">
           <p className="text-sm font-semibold text-white">Score Distribution</p>
           <p className="text-xs text-[#8B98AC]">Submissions grouped by score band</p>
