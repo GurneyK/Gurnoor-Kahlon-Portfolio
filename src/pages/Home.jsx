@@ -14,7 +14,9 @@ function ProjectRow({ project, index }) {
     <Reveal>
       <Link
         to={`/work/${project.slug}`}
-        className="group block border-b border-[var(--color-border-soft)] py-14 transition-colors first:pt-0"
+        className={`group block border-b border-[var(--color-border-soft)] py-14 transition-colors ${
+          index === 0 ? "pt-0" : ""
+        }`}
       >
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div className="flex items-baseline gap-6">
