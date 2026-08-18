@@ -48,10 +48,8 @@ export default function ScrollRail({ sections }) {
             aria-label={`Jump to ${label}`}
           >
             <span
-              className={`truncate text-right text-xs tracking-wide transition-all duration-300 ${
-                isActive
-                  ? "translate-x-0 text-[var(--color-sage-bright)] opacity-100"
-                  : "translate-x-2 text-[var(--color-paper-mute)] opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+              className={`max-w-0 overflow-hidden whitespace-nowrap text-right text-xs tracking-wide opacity-0 transition-all duration-300 group-hover:max-w-[160px] group-hover:opacity-100 ${
+                isActive ? "text-[var(--color-sage-bright)]" : "text-[var(--color-paper-mute)]"
               }`}
             >
               {label}
