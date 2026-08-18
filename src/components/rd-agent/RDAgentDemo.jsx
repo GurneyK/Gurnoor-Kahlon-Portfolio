@@ -400,12 +400,12 @@ function InsightsView() {
       <h2 className="text-xl font-semibold text-white">Insights</h2>
       <p className="mt-1.5 text-sm text-[#8B98AC]">Portfolio-level view across all submissions.</p>
 
-      <div className="mt-7 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="mt-7 grid grid-cols-2 gap-4 sm:grid-cols-3">
         {insightStats.map((s) => (
           <div key={s.label} className="rounded-xl border border-[#1E2A3D] bg-[#0F1A2B] p-5">
-            <p className="text-xs text-[#8B98AC]">{s.label}</p>
-            <p className="mt-1.5 text-lg font-semibold text-white">{s.value}</p>
-            <p className={`mt-1 text-xs ${s.delta.startsWith("-") ? "text-[#F97066]" : "text-[#3DD68C]"}`}>
+            <p className="whitespace-nowrap text-xs text-[#8B98AC]">{s.label}</p>
+            <p className="mt-2 text-2xl font-semibold text-white">{s.value}</p>
+            <p className={`mt-1.5 whitespace-nowrap text-xs ${s.delta.startsWith("-") ? "text-[#F97066]" : "text-[#3DD68C]"}`}>
               {s.delta}
             </p>
           </div>
@@ -416,14 +416,16 @@ function InsightsView() {
         <div className="rounded-xl border border-[#1E2A3D] bg-[#0F1A2B] p-6">
           <p className="text-sm font-semibold text-white">Score Distribution</p>
           <p className="text-xs text-[#8B98AC]">Submissions grouped by score band</p>
-          <div className="mt-6 flex h-32 items-end gap-2">
+          <div className="mt-6 flex h-32 items-stretch gap-2">
             {scoreDistribution.map((s) => (
-              <div key={s.band} className="group flex flex-1 flex-col items-center gap-1.5">
-                <div
-                  title={`${s.count} submissions`}
-                  className="w-full rounded-t bg-[#155EEF] transition-colors group-hover:bg-[#7B9EFF]"
-                  style={{ height: `${(s.count / maxCount) * 100}%` }}
-                />
+              <div key={s.band} className="flex flex-1 flex-col items-center gap-1.5">
+                <div className="flex w-full flex-1 items-end">
+                  <div
+                    title={`${s.count} submissions`}
+                    className="w-full rounded-t bg-[#155EEF] transition-colors hover:bg-[#7B9EFF]"
+                    style={{ height: `${Math.max((s.count / maxCount) * 100, 4)}%` }}
+                  />
+                </div>
                 <span className="text-[10px] text-[#8B98AC]">{s.band}</span>
               </div>
             ))}
@@ -515,7 +517,7 @@ function ScoringGuideView() {
       <h2 className="text-xl font-semibold text-white">Scoring Guide</h2>
       <p className="mt-1.5 text-sm text-[#8B98AC]">Read-only guide to the active UFS scoring framework</p>
 
-      <div className="mt-7 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="mt-7 grid grid-cols-2 gap-4">
         {[
           ["Framework", "v1 active"],
           ["Maximum UFS", "10 points"],
@@ -524,7 +526,7 @@ function ScoringGuideView() {
         ].map(([label, val]) => (
           <div key={label} className="rounded-xl border border-[#1E2A3D] bg-[#0F1A2B] p-5">
             <p className="text-xs text-[#8B98AC]">{label}</p>
-            <p className="mt-1.5 text-lg font-semibold text-white">{val}</p>
+            <p className="mt-2 text-lg font-semibold text-white">{val}</p>
           </div>
         ))}
       </div>
@@ -554,21 +556,21 @@ function ScoringGuideView() {
         <table className="w-full text-left text-sm">
           <thead className="bg-[#0F1A2B] text-xs uppercase text-[#8B98AC]">
             <tr>
-              <th className="px-4 py-3">Tier</th>
-              <th className="px-4 py-3">Score</th>
-              <th className="px-4 py-3">Label</th>
+              <th className="whitespace-nowrap px-4 py-3">Tier</th>
+              <th className="whitespace-nowrap px-4 py-3">Score</th>
+              <th className="whitespace-nowrap px-4 py-3">Label</th>
               <th className="px-4 py-3">Action</th>
-              <th className="px-4 py-3">SLA</th>
+              <th className="whitespace-nowrap px-4 py-3">SLA</th>
             </tr>
           </thead>
           <tbody>
             {tierOutcomes.map((t) => (
               <tr key={t.tier} className="border-t border-[#1E2A3D] text-[#D0D5DD]">
-                <td className="px-4 py-4 font-medium text-white">{t.tier}</td>
-                <td className="px-4 py-4">{t.range}</td>
-                <td className="px-4 py-4">{t.label}</td>
+                <td className="whitespace-nowrap px-4 py-4 font-medium text-white">{t.tier}</td>
+                <td className="whitespace-nowrap px-4 py-4">{t.range}</td>
+                <td className="whitespace-nowrap px-4 py-4">{t.label}</td>
                 <td className="px-4 py-4">{t.action}</td>
-                <td className="px-4 py-4">{t.sla}</td>
+                <td className="whitespace-nowrap px-4 py-4">{t.sla}</td>
               </tr>
             ))}
           </tbody>
