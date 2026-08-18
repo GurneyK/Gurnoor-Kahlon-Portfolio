@@ -2,11 +2,29 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle.jsx";
 
-const SECTION_LINKS = [
-  { id: "ask", label: "Ask Me" },
-  { id: "work", label: "Work" },
-  { id: "side-project", label: "Independent Work" },
+const NAV_LINKS = [
+  { id: "ask", label: "Ask Me", type: "anchor" },
+  { id: "work", label: "Work", type: "anchor" },
+  { id: "side-project", label: "Independent Work", type: "anchor" },
+  { to: "/about", label: "About", type: "route" },
+  { id: "contact", label: "Contact", type: "anchor" },
 ];
+
+function LinkedInIcon({ className = "" }) {
+  return (
+    <a
+      href="https://www.linkedin.com/in/gurnoor-kahlon/"
+      target="_blank"
+      rel="noreferrer"
+      aria-label="LinkedIn profile (opens in new tab)"
+      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--color-sage-dim)] text-[var(--color-paper-dim)] transition-colors hover:border-[var(--color-sage-bright)] hover:bg-[var(--color-sage-dim)]/30 hover:text-[var(--color-sage-bright)] ${className}`}
+    >
+      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
+        <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.15 1.45-2.15 2.94v5.67H9.33V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z" />
+      </svg>
+    </a>
+  );
+}
 
 export default function Nav() {
   const navigate = useNavigate();
@@ -16,6 +34,11 @@ export default function Nav() {
   const goToSection = (id) => (e) => {
     e.preventDefault();
     setMenuOpen(false);
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
     if (location.pathname !== "/") {
       navigate("/");
       requestAnimationFrame(() => {
@@ -23,10 +46,19 @@ export default function Nav() {
           document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
         }, 60);
       });
-      return;
     }
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const renderLink = (link, className) =>
+    link.type === "route" ? (
+      <Link key={link.label} to={link.to} onClick={() => setMenuOpen(false)} className={className}>
+        {link.label}
+      </Link>
+    ) : (
+      <a key={link.label} href={`#${link.id}`} onClick={goToSection(link.id)} className={className}>
+        {link.label}
+      </a>
+    );
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-[var(--color-border-soft)] bg-[var(--color-ink)]/90 backdrop-blur-md">
@@ -43,34 +75,13 @@ export default function Nav() {
         </div>
 
         <nav className="hidden items-center gap-8 text-base text-[var(--color-paper-dim)] md:flex">
-          {SECTION_LINKS.map((link) => (
-            <a
-              key={link.id}
-              href={`#${link.id}`}
-              onClick={goToSection(link.id)}
-              className="transition-colors hover:text-[var(--color-sage-bright)]"
-            >
-              {link.label}
-            </a>
-          ))}
+          {NAV_LINKS.map((link) =>
+            renderLink(link, "transition-colors hover:text-[var(--color-sage-bright)]")
+          )}
         </nav>
 
-        <div className="flex items-center gap-3 text-sm sm:gap-5 sm:text-base">
-          <a
-            href="https://www.linkedin.com/in/gurnoor-kahlon/"
-            target="_blank"
-            rel="noreferrer"
-            className="hidden text-[var(--color-paper-dim)] transition-colors hover:text-[var(--color-sage-bright)] sm:inline"
-          >
-            LinkedIn
-          </a>
-          <Link
-            to="/about"
-            onClick={() => setMenuOpen(false)}
-            className="rounded-full border border-[var(--color-sage-dim)] px-3 py-1.5 text-[var(--color-sage-bright)] transition-colors hover:border-[var(--color-sage-bright)] hover:bg-[var(--color-sage-dim)]/30 sm:px-4"
-          >
-            About
-          </Link>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <LinkedInIcon />
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
@@ -94,24 +105,12 @@ export default function Nav() {
 
       {menuOpen && (
         <nav className="flex flex-col gap-1 border-t border-[var(--color-border-soft)] px-4 py-4 text-base text-[var(--color-paper-dim)] md:hidden">
-          {SECTION_LINKS.map((link) => (
-            <a
-              key={link.id}
-              href={`#${link.id}`}
-              onClick={goToSection(link.id)}
-              className="rounded-lg px-2 py-2.5 transition-colors hover:bg-[var(--color-surface)] hover:text-[var(--color-sage-bright)]"
-            >
-              {link.label}
-            </a>
-          ))}
-          <a
-            href="https://www.linkedin.com/in/gurnoor-kahlon/"
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-lg px-2 py-2.5 transition-colors hover:bg-[var(--color-surface)] hover:text-[var(--color-sage-bright)] sm:hidden"
-          >
-            LinkedIn
-          </a>
+          {NAV_LINKS.map((link) =>
+            renderLink(
+              link,
+              "rounded-lg px-2 py-2.5 transition-colors hover:bg-[var(--color-surface)] hover:text-[var(--color-sage-bright)]"
+            )
+          )}
         </nav>
       )}
     </header>
