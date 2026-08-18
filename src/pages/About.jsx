@@ -32,8 +32,8 @@ export default function About() {
 
         <Reveal className="mt-10 space-y-5 text-lg leading-relaxed text-[var(--color-paper-dim)]">
           <p>
-            Hi, I'm Gurnoor. I design and build interfaces for AI products,
-            currently as the design lead for{" "}
+            I design and build interfaces for AI products, currently as
+            the design lead for{" "}
             <span className="text-[var(--color-paper)]">Horizon 3 Labs</span>,
             Unilever's AI innovation lab, where I own UX and UI across
             several agent products and built the design system all of them
@@ -48,14 +48,13 @@ export default function About() {
           <p>
             I studied marketing at Brock University before training in UX
             at SpringBoard, and I still think like a marketer as much as a
-            designer, positioning and audience shape almost every decision
+            designer: positioning and audience shape almost every decision
             I make. These days I split my time between product design and
             writing enough front-end code to ship what I design myself.
           </p>
           <p>
-            Always up for a conversation about design, AI products, or how
-            the two are colliding right now. LinkedIn and email are both in
-            the footer below.
+            I'm glad to connect about design, AI products, or where the two
+            intersect. LinkedIn and email are both in the footer below.
           </p>
         </Reveal>
 

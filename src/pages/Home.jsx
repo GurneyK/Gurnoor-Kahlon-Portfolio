@@ -140,7 +140,7 @@ export default function Home() {
           <div className="mx-auto max-w-4xl">
             <Reveal>
               <p className="text-sm uppercase tracking-[0.2em] text-[var(--color-sage)]">
-                Side Project
+                Independent Work
               </p>
               <h2 className="mt-4 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-4xl">
                 {sideProject.name}

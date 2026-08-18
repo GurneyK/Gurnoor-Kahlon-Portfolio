@@ -5,8 +5,7 @@ import ThemeToggle from "./ThemeToggle.jsx";
 const SECTION_LINKS = [
   { id: "ask", label: "Ask Me" },
   { id: "work", label: "Work" },
-  { id: "side-project", label: "Side Project" },
-  { id: "contact", label: "Contact" },
+  { id: "side-project", label: "Independent Work" },
 ];
 
 export default function Nav() {

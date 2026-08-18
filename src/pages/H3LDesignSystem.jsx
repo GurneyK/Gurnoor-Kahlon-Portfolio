@@ -122,9 +122,8 @@ export default function H3LDesignSystem() {
           coded reference files, so engineering pulls real, working code
           rather than a static image they have to translate by eye. That
           handoff format is what let me contribute directly to front-end
-          implementation instead of staying purely in the design layer, the
-          line between "designed it" and "shipped it" is thinner here than
-          anywhere else I've worked.
+          implementation instead of staying purely in the design layer,
+          narrowing the gap between designing something and shipping it.
         </p>
       </Section>
 

@@ -74,12 +74,12 @@ export default function AskMeAnything() {
       <div className="mx-auto max-w-4xl">
         <p className="text-sm uppercase tracking-[0.2em] text-[var(--color-sage)]">Ask Me Anything</p>
         <h2 className="mt-4 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-4xl">
-          Skip the small talk
+          Common interview questions, answered directly
         </h2>
         <p className="mt-4 max-w-lg text-lg leading-relaxed text-[var(--color-paper-dim)]">
-          Questions I get asked in most interviews, answered directly.
-          No live AI behind this, just my actual answers, so they're
-          consistent every time.
+          Questions I'm asked in most interviews, answered here directly.
+          No live AI behind this, just my own answers, kept consistent
+          every time.
         </p>
 
         <div className="mt-10 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]">
