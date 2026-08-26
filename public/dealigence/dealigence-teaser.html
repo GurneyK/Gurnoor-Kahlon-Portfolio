@@ -1,0 +1,1541 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dealigence — Negotiation Practice Intelligence</title>
+
+<!-- React + Babel pinned. Re-derive integrity if you change versions. -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"
+        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"
+        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+        crossorigin="anonymous"></script>
+
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #111; }
+  #app { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .stage { position: relative; transform-origin: center; will-change: transform; }
+  .controls { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+              display: flex; gap: 12px; align-items: center;
+              background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+              padding: 8px 12px; border-radius: 999px; color: #fff;
+              font-size: 12px; z-index: 100; }
+  .controls button { background: none; border: 1px solid #fff3; color: #fff;
+                     padding: 4px 10px; border-radius: 999px; cursor: pointer; font-size: 12px; }
+  .controls input[type=range] { width: 200px; accent-color: #fff; }
+  @keyframes nx-blink { 50% { opacity: 0; } }
+
+  /* Fullscreen mode: hide controls + cursor for clean playback. Hovering the
+     bottom edge brings controls back. Required for screen-recording and demos. */
+  :fullscreen body, :-webkit-full-screen body { background: #000; cursor: none; }
+  :fullscreen .controls, :-webkit-full-screen .controls {
+    opacity: 0; pointer-events: none; transition: opacity 0.4s;
+  }
+  :fullscreen .controls:hover, :-webkit-full-screen .controls:hover {
+    opacity: 1; pointer-events: auto; cursor: default;
+  }
+  :fullscreen #app, :-webkit-full-screen #app { background: #000; }
+  .caret { display: inline-block; width: 2px; height: 1em; background: currentColor;
+           vertical-align: text-bottom; margin-left: 2px; animation: nx-blink 1s infinite; }
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<!-- Inlined assets (data URIs / inline SVG) go here. Set globals on window. -->
+<script>
+
+</script>
+
+<!-- Mode B: concatenated src/ files, each top-level file wrapped in its own
+     IIFE (see 02-components.jsx etc.) so top-level consts don't collide. -->
+<script type="text/babel" data-presets="react">
+// ──────── 00-utils.jsx ────────
+// Animation primitives — Stage, Sprite, Layer, useTime, useSprite, easing, interpolate, helpers.
+//
+// Drop this in as the FIRST <script type="text/babel"> block (Mode A) or as
+// src/01-utils.jsx + src/05-primitives.jsx in Mode B (split per concern).
+//
+// Everything attached to `window` so cross-block usage works (see references/react-babel-traps.md).
+
+const { useState, useRef, useEffect, useContext, createContext, useMemo } = React;
+
+// ── Easing ────────────────────────────────────────────────────────────────────
+
+const Easing = {
+  linear:    p => p,
+  in:        p => p * p,
+  out:       p => 1 - (1 - p) * (1 - p),
+  inOut:     p => p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2,
+  inCubic:   p => p ** 3,
+  outCubic:  p => 1 - Math.pow(1 - p, 3),
+  inOutCubic:p => p < 0.5 ? 4 * p ** 3 : 1 - Math.pow(-2 * p + 2, 3) / 2,
+  outQuart:  p => 1 - Math.pow(1 - p, 4),
+  outBack:   p => { const c1 = 1.70158, c3 = c1 + 1;
+                    return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2); },
+  smooth:    p => p * p * p * (p * (6 * p - 15) + 10),  // smootherstep — DEFAULT
+};
+
+// ── Math helpers ──────────────────────────────────────────────────────────────
+
+const clamp01 = p => Math.max(0, Math.min(1, p));
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const smoothstep = (a, b, t) => { const x = clamp01((t - a) / (b - a)); return x * x * (3 - 2 * x); };
+
+function twLerp(a, b, p) {
+  if (Array.isArray(a) && Array.isArray(b) && a.length === b.length) {
+    return a.map((v, i) => v + (b[i] - v) * p);
+  }
+  return a + (b - a) * p;
+}
+
+function interpolate(t, [i0, i1], [o0, o1], easing = Easing.linear) {
+  if (t <= i0) return o0;
+  if (t >= i1) return o1;
+  const p = easing((t - i0) / (i1 - i0));
+  if (Array.isArray(o0)) return twLerp(o0, o1, p);
+  return o0 + (o1 - o0) * p;
+}
+
+// keyframe sequence — stops = [[t, v, easing?], …]; per-stop easing wins over default.
+function seq(now, stops, easing = Easing.smooth) {
+  if (now <= stops[0][0]) return stops[0][1];
+  if (now >= stops.at(-1)[0]) return stops.at(-1)[1];
+  for (let i = 0; i < stops.length - 1; i++) {
+    const [t0, v0, e] = stops[i];
+    const [t1, v1] = stops[i + 1];
+    if (now >= t0 && now < t1) {
+      const p = (now - t0) / (t1 - t0);
+      return twLerp(v0, v1, (e || easing)(p));
+    }
+  }
+  return stops.at(-1)[1];
+}
+
+// step-hold — returns latest stop whose t <= now. No interpolation.
+function hold(now, stops) {
+  let v = stops[0][1];
+  for (const [t, val] of stops) if (now >= t) v = val; else break;
+  return v;
+}
+
+// envelope — fade in [t0,t1], hold [t1,t2], fade out [t2,t3]. Pass Infinity to skip a side.
+function envS(now, t0, t1, t2, t3) {
+  if (now <= t0) return 0;
+  if (now >= t3) return 0;
+  if (now < t1)  return Easing.smooth(clamp01((now - t0) / (t1 - t0)));
+  if (now < t2)  return 1;
+  return Easing.smooth(1 - clamp01((now - t2) / (t3 - t2)));
+}
+
+// ── Stage / Sprite / Layer ────────────────────────────────────────────────────
+
+const StageCtx  = createContext({ t: 0, duration: 1 });
+const SpriteCtx = createContext({ start: 0, end: 0, p: 0 });
+const useTime   = () => useContext(StageCtx).t;
+const useSprite = () => useContext(SpriteCtx).p;
+
+function Stage({ duration, width = 1280, height = 720, loop = false, children, onFinish }) {
+  const [t, setT] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [scale, setScale] = useState(1);
+  const tRef = useRef(0);
+  const lastRef = useRef(performance.now());
+  const playingRef = useRef(true);
+
+  useEffect(() => {
+    let raf;
+    const tick = (now) => {
+      const dt = Math.min((now - lastRef.current) / 1000, 0.05);
+      lastRef.current = now;
+      if (playingRef.current) {
+        const next = tRef.current + dt;
+        if (next >= duration) {
+          if (loop) { tRef.current = 0; setT(0); }
+          else {
+            tRef.current = duration; setT(duration);
+            if (onFinish) onFinish();
+            window.parent?.postMessage({ type: 'finished' }, '*');
+            return;
+          }
+        } else { tRef.current = next; setT(next); }
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [duration, loop, onFinish]);
+
+  useEffect(() => {
+    const onResize = () => setScale(Math.min(window.innerWidth / width, window.innerHeight / height));
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [width, height]);
+
+  const seek    = (v) => { tRef.current = clamp(v, 0, duration); setT(tRef.current); };
+  const toggle  = () => { playingRef.current = !playingRef.current; setPaused(!playingRef.current); };
+  const restart = () => { tRef.current = 0; setT(0); lastRef.current = performance.now();
+                          playingRef.current = true; setPaused(false); };
+  const toggleFullscreen = () => {
+    if (typeof document === 'undefined') return;
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    } else {
+      const el = document.documentElement;
+      (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+    }
+  };
+
+  // Keybindings: Space (toggle), R (restart), F (fullscreen)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const onKey = (e) => {
+      if (e.code === 'Space') { e.preventDefault(); toggle(); }
+      else if (e.code === 'KeyR') { restart(); }
+      else if (e.code === 'KeyF') { toggleFullscreen(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  const embed = typeof location !== 'undefined' &&
+                new URLSearchParams(location.search).get('embed') === '1';
+
+  // Deterministic-capture hook — works even in ?embed=1 (no visible controls).
+  // In embed mode only, pause live playback so headless frame capture fully
+  // controls time without the rAF loop racing ahead between seek and screenshot.
+  useEffect(() => {
+    if (embed) { playingRef.current = false; setPaused(true); }
+    window.__seekTo = seek;
+    return () => { delete window.__seekTo; };
+  }, []);
+
+  return (
+    React.createElement(React.Fragment, null,
+      React.createElement('div', {
+        className: 'stage',
+        style: { width, height, position: 'relative', transform: `scale(${scale})`,
+                 transformOrigin: 'center', willChange: 'transform' },
+      },
+        React.createElement(StageCtx.Provider, { value: { t, duration } }, children)
+      ),
+      !embed && React.createElement('div', {
+        className: 'controls',
+        style: {
+          position: 'fixed', bottom: 16, left: '50%', transform: 'translateX(-50%)',
+          display: 'flex', gap: 10, alignItems: 'center', padding: '8px 12px',
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
+          borderRadius: 999, color: '#fff', fontSize: 12, zIndex: 100,
+          fontFamily: '-apple-system, sans-serif',
+        },
+      },
+        React.createElement('button', { onClick: toggle, style: btnStyle, title: 'Play / Pause (Space)' }, paused ? '▶' : '❙❙'),
+        React.createElement('button', { onClick: restart, style: btnStyle, title: 'Restart (R)' }, '↺'),
+        React.createElement('input', {
+          type: 'range', min: 0, max: duration, step: 0.01, value: t,
+          style: { width: 240, accentColor: '#fff' },
+          onChange: e => seek(+e.target.value),
+        }),
+        React.createElement('span', null, `${t.toFixed(2)} / ${duration.toFixed(2)}s`),
+        React.createElement('button', { onClick: toggleFullscreen, style: btnStyle, title: 'Fullscreen (F)' }, '⛶')
+      )
+    )
+  );
+}
+
+const btnStyle = {
+  background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#fff',
+  padding: '4px 10px', borderRadius: 999, cursor: 'pointer', fontSize: 12,
+};
+
+function Sprite({ start, end, children }) {
+  const { t } = useContext(StageCtx);
+  if (t < start || t > end) return null;
+  const p = clamp01((t - start) / (end - start));
+  return React.createElement(SpriteCtx.Provider, { value: { start, end, p } }, children);
+}
+
+function Layer({ x = 0, y = 0, w, h, scale: s = 1, rotation = 0, opacity = 1, style, children }) {
+  return React.createElement('div', {
+    style: {
+      position: 'absolute', left: x, top: y, width: w, height: h, opacity,
+      transform: `scale(${s}) rotate(${rotation}deg)`, transformOrigin: 'center', ...style,
+    },
+  }, children);
+}
+
+// ── Tweak registry ────────────────────────────────────────────────────────────
+
+function createTweakCtx(tweaks = {}) {
+  const manifest = [];
+  const reg = (key, fallback, type, meta = {}) => {
+    const v = tweaks[key] ?? fallback;
+    manifest.push({ key, value: v, type, ...meta });
+    return v;
+  };
+  return {
+    num:   (k, f, m) => reg(k, f, 'num', m),
+    bool:  (k, f, m) => reg(k, f, 'bool', m),
+    text:  (k, f, m) => reg(k, f, 'text', m),
+    point: (k, f, m) => reg(k, f, 'point', m),
+    el:    (id, label) => manifest.push({ key: `_el_${id}`, value: null, type: 'el', label }),
+    manifest,
+  };
+}
+
+// ── Edge-trigger fire registry (for SFX) ──────────────────────────────────────
+
+function makeFireFn(tRefGetter) {
+  const fired = new Set();
+  let lastT = 0;
+  return function fire(threshold, key, fn) {
+    const now = tRefGetter();
+    if (now < lastT - 0.05 && fired.has(key)) fired.delete(key);   // re-arm on scrub-back
+    if (lastT <= threshold && now > threshold && !fired.has(key)) {
+      fired.add(key);
+      try { fn(); } catch (_) {}
+    }
+    lastT = now;
+  };
+}
+
+// ── Export ────────────────────────────────────────────────────────────────────
+
+Object.assign(window, {
+  Stage, Sprite, Layer, useTime, useSprite,
+  Easing, clamp01, clamp, smoothstep, twLerp, interpolate, seq, hold, envS,
+  createTweakCtx, makeFireFn,
+});
+
+
+// ──────── 01-theme.jsx ────────
+// Dealigence theme tokens — derived from style-pack.md (real logo SVG + existing teaser frames).
+window.THEME = {
+  bg: {
+    A: '#E7DECD',   // narrative / bookend scenes
+    B: '#F7F1EA',   // in-product UI scenes
+    card: '#FFFFFF',
+    cardMuted: '#EDE6D8',
+  },
+  ink: {
+    primary: '#3A2F22',      // warm charcoal headline
+    secondary: '#8A7F6C',    // muted warm gray subhead/caption
+    onDark: '#FFFFFF',
+  },
+  brand: {
+    navy: '#004B87',
+    sky: '#0091D2',
+    pale: '#BEE1F5',
+  },
+  accent: {
+    indigo: '#4A56C9',
+    indigoSoft: '#DEE1F7',
+  },
+  font: {
+    serif: 'Georgia, "Times New Roman", serif',
+    sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    mono: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+  },
+  shadow: {
+    card: '0 12px 32px rgba(58,47,34,0.10)',
+    cardLift: '0 18px 48px rgba(58,47,34,0.16)',
+  },
+};
+
+
+// ──────── 02-components.jsx ────────
+// Dealigence faux-UI + brand components. IIFE-wrapped so top-level consts
+// (T, destructured window primitives) don't collide with other concatenated files.
+(function () {
+  const { Layer, Easing, interpolate, seq, hold, envS, twLerp, clamp01 } = window;
+  const T = window.THEME;
+
+  // ── Deterministic "human" typing (scrub-safe, no Math.random) ─────────────
+  function pseudo(i) { const x = Math.sin(i * 12.9898) * 43758.5453; return x - Math.floor(x); }
+  function charDur(c, i, msPerChar, jitterMs) {
+    const jitter = (pseudo(i) - 0.5) * 2 * jitterMs;
+    let dur = msPerChar + jitter;
+    if (c === ' ') dur += 90;
+    if (/[,.!?;:]/.test(c)) dur += 220;
+    return Math.max(40, dur);
+  }
+  function typedText(text, start, t, msPerChar = 210, jitterMs = 35) {
+    const ltMs = (t - start) * 1000;
+    if (ltMs <= 0) return '';
+    let acc = 0, n = 0;
+    for (let i = 0; i < text.length; i++) {
+      acc += charDur(text[i], i, msPerChar, jitterMs);
+      if (acc > ltMs) break;
+      n = i + 1;
+    }
+    return text.slice(0, n);
+  }
+  function typingDurationS(text, msPerChar = 210, jitterMs = 35) {
+    let acc = 0;
+    for (let i = 0; i < text.length; i++) acc += charDur(text[i], i, msPerChar, jitterMs);
+    return acc / 1000;
+  }
+  function TypedText({ text, start, t, msPerChar = 210, jitterMs = 35, style, holdCaret = 1.2 }) {
+    const shown = typedText(text, start, t, msPerChar, jitterMs);
+    const done = shown.length >= text.length;
+    const totalDur = typingDurationS(text, msPerChar, jitterMs);
+    const showCaret = t >= start && t < start + totalDur + holdCaret;
+    return (
+      <span style={style}>
+        {shown}
+        {showCaret && <span className="caret" style={{ background: style?.color || 'currentColor' }} />}
+      </span>
+    );
+  }
+
+  // ── Typography ──────────────────────────────────────────────────────────
+  function EyebrowLabel({ children, color = T.accent.indigo, style }) {
+    return (
+      <div style={{
+        fontFamily: T.font.sans, fontSize: 12, fontWeight: 700, letterSpacing: 1.6,
+        textTransform: 'uppercase', color, ...style,
+      }}>{children}</div>
+    );
+  }
+  function Headline({ children, size = 42, style }) {
+    return (
+      <div style={{
+        fontFamily: T.font.serif, fontSize: size, fontWeight: 400,
+        color: T.ink.primary, letterSpacing: -0.5, lineHeight: 1.12, ...style,
+      }}>{children}</div>
+    );
+  }
+  function Subhead({ children, style }) {
+    return (
+      <div style={{
+        fontFamily: T.font.sans, fontSize: 17, color: T.ink.secondary,
+        lineHeight: 1.5, ...style,
+      }}>{children}</div>
+    );
+  }
+
+  // ── Brand mark (real geometry: two rounded squares + circle, from the
+  //    actual dealigence_logo_shareable_home.svg icon group) ────────────────
+  function IconMark({ size = 64, drawProgress = 1, style }) {
+    // native icon bbox ~ x:60-330 y:90-380 in source units; normalize to a 300x300 box.
+    const p = clamp01(drawProgress);
+    const sq1 = clamp01(p / 0.55);
+    const sq2 = clamp01((p - 0.25) / 0.55);
+    const circ = clamp01((p - 0.55) / 0.45);
+    return (
+      <svg width={size} height={size} viewBox="40 100 320 300" style={style}>
+        <rect x="60" y="120" width="160" height="160" rx="25" ry="25" fill={T.brand.navy}
+              opacity={sq1} transform={`scale(${0.85 + 0.15 * sq1})`} transformOrigin="140px 200px" />
+        <rect x="170" y="220" width="160" height="160" rx="25" ry="25" fill={T.brand.sky}
+              opacity={sq2} transform={`scale(${0.85 + 0.15 * sq2})`} transformOrigin="250px 300px" />
+        <circle cx="310" cy="140" r="50" fill={T.brand.pale} opacity={circ} />
+      </svg>
+    );
+  }
+  function Wordmark({ size = 40, color = T.brand.navy, style }) {
+    return (
+      <div style={{
+        fontFamily: T.font.sans, fontWeight: 800, fontSize: size, color,
+        letterSpacing: -0.5, ...style,
+      }}>Dealigence</div>
+    );
+  }
+  function LogoLockup({ scale = 1, iconSize = 44, wordSize = 34, opacity = 1, style }) {
+    return (
+      <Layer opacity={opacity} style={{ display: 'flex', alignItems: 'center', gap: 10, transform: `scale(${scale})`, transformOrigin: 'left center', ...style }}>
+        <IconMark size={iconSize} />
+        <Wordmark size={wordSize} />
+      </Layer>
+    );
+  }
+  function CornerLogo({ opacity = 1 }) {
+    return (
+      <Layer x={1280 - 190} y={720 - 44} w={170} h={28} opacity={opacity}
+             style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <IconMark size={22} />
+        <div style={{ fontFamily: T.font.sans, fontWeight: 800, fontSize: 16, color: T.brand.navy }}>Dealigence</div>
+      </Layer>
+    );
+  }
+
+  // ── Cards / panels ─────────────────────────────────────────────────────
+  function Panel({ x, y, w, h, opacity = 1, muted = false, style, children }) {
+    return (
+      <Layer x={x} y={y} w={w} h={h} opacity={opacity}>
+        <div style={{
+          width: '100%', height: '100%', background: muted ? T.bg.cardMuted : T.bg.card,
+          borderRadius: 18, boxShadow: muted ? 'none' : T.shadow.card,
+          border: muted ? `1px solid ${T.bg.cardMuted}` : 'none',
+          boxSizing: 'border-box', position: 'relative', ...style,
+        }}>{children}</div>
+      </Layer>
+    );
+  }
+  // Flow component (NOT Layer/absolute) — safe to stack inside a flex column.
+  function OptionPill({ w = 240, h = 44, label, selected, opacity = 1 }) {
+    return (
+      <div style={{
+        width: w, height: h, opacity, borderRadius: 10, display: 'flex', alignItems: 'center',
+        paddingLeft: 16, boxSizing: 'border-box', fontFamily: T.font.sans, fontSize: 14, fontWeight: 700,
+        background: selected ? T.accent.indigo : '#EFEBE2',
+        color: selected ? '#fff' : T.ink.primary,
+        flexShrink: 0,
+      }}>{label}</div>
+    );
+  }
+
+  // ── Cursor ──────────────────────────────────────────────────────────────
+  function Cursor({ x, y, opacity = 1, clicking = false }) {
+    return (
+      <Layer x={x} y={y} w={28} h={28} opacity={opacity} style={{ zIndex: 500 }}>
+        <svg width="28" height="28" viewBox="0 0 28 28" style={{ filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.35))' }}>
+          <path d="M4 2 L4 22 L9.5 17.5 L13 25 L16.5 23.5 L13 16 L20 16 Z"
+                fill="#fff" stroke="#2b2b2b" strokeWidth="1.4" strokeLinejoin="round" />
+        </svg>
+        {clicking && (
+          <div style={{
+            position: 'absolute', left: -10, top: -10, width: 40, height: 40, borderRadius: 999,
+            border: `2px solid ${T.accent.indigo}`, opacity: 0.9,
+          }} />
+        )}
+      </Layer>
+    );
+  }
+  // click-ring pulse: returns {scale, opacity} for a 0-1 local progress
+  function clickRing(p) {
+    return { scale: interpolate(p, [0, 1], [0.4, 1.6], Easing.outCubic), opacity: interpolate(p, [0, 1], [0.9, 0]) };
+  }
+
+  // ── Chat ────────────────────────────────────────────────────────────────
+  function ChatBubble({ x, y, w, align = 'right', mine = false, opacity = 1, children }) {
+    return (
+      <Layer x={x} y={y} w={w} opacity={opacity} style={{ display: 'flex', justifyContent: align === 'right' ? 'flex-end' : 'flex-start' }}>
+        <div style={{
+          maxWidth: '92%', padding: '12px 16px', borderRadius: 16,
+          borderBottomRightRadius: mine ? 4 : 16, borderBottomLeftRadius: mine ? 16 : 4,
+          background: mine ? T.accent.indigo : T.bg.card,
+          color: mine ? '#fff' : T.ink.primary,
+          fontFamily: T.font.sans, fontSize: 14.5, lineHeight: 1.45,
+          boxShadow: mine ? 'none' : T.shadow.card,
+        }}>{children}</div>
+      </Layer>
+    );
+  }
+
+  // ── Score ring ──────────────────────────────────────────────────────────
+  // Flow component (NOT Layer/absolute) — safe to stack inside a flex row/column.
+  function ScoreRing({ size = 96, stroke = 8, progress, value, label, color = T.brand.navy, opacity = 1 }) {
+    const r = (size - stroke) / 2;
+    const c = 2 * Math.PI * r;
+    const dash = c * clamp01(progress);
+    const shown = Math.round(value * clamp01(progress));
+    return (
+      <div style={{ width: size, opacity, flexShrink: 0, position: 'relative' }}>
+        <svg width={size} height={size} style={{ transform: 'rotate(-90deg)', display: 'block' }}>
+          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#EAE3D4" strokeWidth={stroke} />
+          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={stroke}
+                  strokeDasharray={`${dash} ${c}`} strokeLinecap="round" />
+        </svg>
+        <div style={{
+          position: 'absolute', left: 0, top: 0, width: size, height: size, display: 'flex',
+          alignItems: 'center', justifyContent: 'center', fontFamily: T.font.sans,
+          fontWeight: 800, fontSize: size * 0.3, color: T.ink.primary,
+        }}>{shown}</div>
+        <div style={{
+          textAlign: 'center', marginTop: 6, fontFamily: T.font.sans, fontSize: 12,
+          color: T.ink.secondary, textTransform: 'uppercase', letterSpacing: 0.8,
+        }}>{label}</div>
+      </div>
+    );
+  }
+
+  // ── Avatar (abstract — no photo/likeness) ─────────────────────────────────
+  // Original illustrated character — not a photo, no likeness/licensing risk.
+  // Same head/body geometry reused (as static markup) on the website and deck.
+  function PersonIllustration({ uid = 'a' }) {
+    return (
+      <svg width="100%" height="100%" viewBox="0 0 200 200" style={{ display: 'block', overflow: 'hidden' }}>
+        <defs>
+          <radialGradient id={`head-${uid}`} cx="32%" cy="26%" r="80%">
+            <stop offset="0%" stopColor={T.brand.pale} />
+            <stop offset="45%" stopColor={T.brand.sky} />
+            <stop offset="100%" stopColor={T.brand.navy} />
+          </radialGradient>
+          <linearGradient id={`body-${uid}`} x1="0" y1="0" x2="0.3" y2="1">
+            <stop offset="0%" stopColor={T.brand.navy} />
+            <stop offset="100%" stopColor="#00335C" />
+          </linearGradient>
+        </defs>
+        <ellipse cx="100" cy="205" rx="90" ry="68" fill={`url(#body-${uid})`} />
+        <circle cx="100" cy="88" r="55" fill={`url(#head-${uid})`} />
+        <ellipse cx="79" cy="84" rx="6" ry="7" fill="#00263F" />
+        <ellipse cx="121" cy="84" rx="6" ry="7" fill="#00263F" />
+        <circle cx="81" cy="82" r="1.6" fill="#fff" opacity="0.85" />
+        <circle cx="123" cy="82" r="1.6" fill="#fff" opacity="0.85" />
+        <path d="M76 106 Q100 122 124 106" stroke="#00263F" strokeWidth="5" strokeLinecap="round" fill="none" />
+      </svg>
+    );
+  }
+  function AvatarOrb({ x, y, size = 220, t = 0, opacity = 1, scale = 1 }) {
+    const pulse = 1 + Math.sin(t * 1.6) * 0.018;
+    const ring2 = 1 + Math.sin(t * 1.6 + 1.1) * 0.06;
+    return (
+      <Layer x={x} y={y} w={size} h={size} opacity={opacity} scale={scale}>
+        <div style={{
+          position: 'absolute', inset: -18, borderRadius: '50%',
+          border: `1.5px solid ${T.brand.sky}`, opacity: 0.35, transform: `scale(${ring2})`,
+        }} />
+        <div style={{
+          width: '100%', height: '100%', borderRadius: '50%', transform: `scale(${pulse})`,
+          overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,75,135,0.28)',
+        }}>
+          <PersonIllustration uid="teaser" />
+        </div>
+        <div style={{
+          position: 'absolute', right: -6, bottom: -6, width: 42, height: 42, borderRadius: '50%',
+          background: T.accent.indigo, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 6px 14px rgba(74,86,201,0.4)',
+        }}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <rect x="5.5" y="1" width="5" height="8" rx="2.5" fill="#fff" />
+            <path d="M3 7.5a5 5 0 0 0 10 0M8 12.5v2" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" />
+          </svg>
+        </div>
+      </Layer>
+    );
+  }
+  function Waveform({ x, y, w = 200, h = 40, t = 0, active = 1, color, opacity = 1 }) {
+    const bars = 22;
+    const items = [];
+    for (let i = 0; i < bars; i++) {
+      const seed = pseudo(i);
+      const amp = (0.25 + 0.75 * Math.abs(Math.sin(t * 3.2 + i * 0.7 + seed * 3))) * active;
+      const barH = Math.max(3, amp * h);
+      items.push(
+        <div key={i} style={{
+          width: (w / bars) * 0.5, height: barH, background: color || T.accent.indigo,
+          borderRadius: 2, opacity: 0.85,
+        }} />
+      );
+    }
+    return (
+      <Layer x={x} y={y} w={w} h={h} opacity={opacity}
+             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        {items}
+      </Layer>
+    );
+  }
+
+  // ── Leaderboard ─────────────────────────────────────────────────────────
+  function LeaderboardRow({ x, y, w, rank, name, score, highlight = false, opacity = 1 }) {
+    return (
+      <Layer x={x} y={y} w={w} h={44} opacity={opacity}>
+        <div style={{
+          width: '100%', height: '100%', display: 'flex', alignItems: 'center', padding: '0 16px',
+          boxSizing: 'border-box', borderRadius: 10,
+          background: highlight ? T.accent.indigoSoft : 'transparent',
+          border: highlight ? `1px solid ${T.accent.indigo}` : '1px solid transparent',
+        }}>
+          <div style={{ width: 26, fontFamily: T.font.sans, fontSize: 14, color: T.ink.secondary }}>{rank}</div>
+          <div style={{ flex: 1, fontFamily: T.font.sans, fontSize: 15, fontWeight: 600, color: T.ink.primary }}>{name}</div>
+          <div style={{ fontFamily: T.font.sans, fontSize: 15, fontWeight: 800, color: highlight ? T.accent.indigo : T.ink.primary }}>{score}</div>
+        </div>
+      </Layer>
+    );
+  }
+
+  Object.assign(window, {
+    TypedText, typedText, typingDurationS,
+    EyebrowLabel, Headline, Subhead,
+    IconMark, Wordmark, LogoLockup, CornerLogo,
+    Panel, OptionPill, Cursor, clickRing,
+    ChatBubble, ScoreRing, AvatarOrb, PersonIllustration, Waveform, LeaderboardRow,
+  });
+})();
+
+
+// ──────── 03-audio.jsx ────────
+// Procedural Web Audio SFX — no asset files. Silent until first user gesture
+// (browser autoplay policy); fine since Stage starts on load, sound catches up.
+(function () {
+  let ctx = null;
+  function getCtx() {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      ctx = new AC();
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+
+  function tone(freq, dur, { type = 'sine', gain = 0.06, attack = 0.005, decay = dur } = {}) {
+    try {
+      const c = getCtx();
+      const osc = c.createOscillator();
+      const g = c.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      g.gain.setValueAtTime(0, c.currentTime);
+      g.gain.linearRampToValueAtTime(gain, c.currentTime + attack);
+      g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + decay);
+      osc.connect(g).connect(c.destination);
+      osc.start();
+      osc.stop(c.currentTime + decay + 0.05);
+    } catch (_) {}
+  }
+
+  function click() { tone(720, 0.05, { type: 'sine', gain: 0.045, decay: 0.06 }); }
+  function tick() { tone(1000, 0.035, { type: 'sine', gain: 0.03, decay: 0.04 }); }
+  function whoosh() {
+    try {
+      const c = getCtx();
+      const bufSize = c.sampleRate * 0.35;
+      const buf = c.createBuffer(1, bufSize, c.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufSize);
+      const src = c.createBufferSource();
+      src.buffer = buf;
+      const filt = c.createBiquadFilter();
+      filt.type = 'bandpass';
+      filt.frequency.value = 900;
+      const g = c.createGain();
+      g.gain.value = 0.04;
+      src.connect(filt).connect(g).connect(c.destination);
+      src.start();
+    } catch (_) {}
+  }
+  function chime(freq = 660) {
+    tone(freq, 0.9, { type: 'sine', gain: 0.05, decay: 0.9 });
+    tone(freq * 1.5, 0.9, { type: 'sine', gain: 0.025, decay: 0.85 });
+  }
+
+  function makeFireFn() {
+    const fired = new Set();
+    let lastT = 0;
+    return function fire(threshold, key, fn) {
+      const now = arguments.length >= 4 ? arguments[3]() : lastT;
+      if (now < lastT - 0.05 && fired.has(key)) fired.delete(key);
+      if (lastT <= threshold && now > threshold && !fired.has(key)) {
+        fired.add(key);
+        try { fn(); } catch (_) {}
+      }
+      lastT = now;
+    };
+  }
+
+  window.AUDIO = { click, tick, whoosh, chime };
+  window.makeSfxFireFn = makeFireFn;
+})();
+
+
+// ──────── scenes\s1-hook.jsx ────────
+(function () {
+  const { Layer, Easing, interpolate, envS } = window;
+  const T = window.THEME;
+
+  function s1_hook(t, t0, sceneDur) {
+    const lt = t - t0;
+    const headOp = envS(lt, 0.4, 1.2, 12.5, 13.6);
+    const headY = interpolate(lt, [0.4, 1.2], [22, 0], Easing.outCubic);
+    const subOp = envS(lt, 1.6, 2.4, 12.5, 13.6);
+    const subY = interpolate(lt, [1.6, 2.4], [16, 0], Easing.outCubic);
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720}>
+        <Layer x={0} y={0} w={1280} h={720}
+               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+          <window.Headline size={44} style={{ opacity: headOp, transform: `translateY(${headY}px)`, textAlign: 'center', maxWidth: 780 }}>
+            Negotiation is a perishable skill.
+          </window.Headline>
+          <window.Subhead style={{ opacity: subOp, transform: `translateY(${subY}px)`, marginTop: 18, textAlign: 'center', maxWidth: 620 }}>
+            Most people never get a safe place to rehearse it — or real-time professional feedback.
+          </window.Subhead>
+        </Layer>
+        <window.CornerLogo opacity={interpolate(lt, [0.6, 1.2], [0, 1])} />
+      </Layer>
+    );
+  }
+  s1_hook.dur = 15;
+  window.s1_hook = s1_hook;
+})();
+
+
+// ──────── scenes\s2-product-modes.jsx ────────
+(function () {
+  const { Layer, Easing, interpolate, envS } = window;
+  const T = window.THEME;
+
+  function ModeCard({ x, y, w, h, tag, tagBg, title, body, opacity, style }) {
+    return (
+      <window.Panel x={x} y={y} w={w} h={h} opacity={opacity} style={{ padding: 28, boxSizing: 'border-box', ...style }}>
+        <div style={{
+          display: 'inline-block', background: tagBg, color: '#fff', fontFamily: T.font.sans,
+          fontSize: 11, fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase',
+          padding: '5px 12px', borderRadius: 999,
+        }}>{tag}</div>
+        <div style={{ marginTop: 16, fontFamily: T.font.sans, fontWeight: 700, fontSize: 19, color: T.ink.primary }}>{title}</div>
+        <div style={{ marginTop: 8, fontFamily: T.font.sans, fontSize: 14, color: T.ink.secondary, lineHeight: 1.5 }}>{body}</div>
+      </window.Panel>
+    );
+  }
+
+  function s2_product_modes(t, t0, sceneDur) {
+    const lt = t - t0;
+    const drawP = interpolate(lt, [0.3, 1.3], [0, 1], Easing.outCubic);
+    const iconOp = envS(lt, 0.3, 0.5, 10.5, 11.4);
+    const wordOp = envS(lt, 0.9, 1.5, 10.5, 11.4);
+    const wordY = interpolate(lt, [0.9, 1.5], [12, 0], Easing.outCubic);
+    const tagOp = envS(lt, 1.9, 2.5, 10.5, 11.4);
+    const tagY = interpolate(lt, [1.9, 2.5], [12, 0], Easing.outCubic);
+    const c1Op = envS(lt, 2.9, 3.4, 10.5, 11.4);
+    const c1Y = interpolate(lt, [2.9, 3.4], [26, 0], Easing.outCubic);
+    const c2Op = envS(lt, 3.05, 3.55, 10.5, 11.4);
+    const c2Y = interpolate(lt, [3.05, 3.55], [26, 0], Easing.outCubic);
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720}>
+        <Layer x={0} y={110} w={1280} h={160}
+               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Layer style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <window.IconMark size={56} drawProgress={drawP} style={{ opacity: iconOp }} />
+            <window.Wordmark size={46} style={{ opacity: wordOp, transform: `translateY(${wordY}px)` }} />
+          </Layer>
+          <div style={{
+            marginTop: 16, opacity: tagOp, transform: `translateY(${tagY}px)`,
+            fontFamily: T.font.sans, fontSize: 17, color: T.ink.secondary, textAlign: 'center',
+          }}>AI-powered negotiation practice. Practice solo. Compete fairly.</div>
+        </Layer>
+
+        <ModeCard x={304} y={368} w={320} h={192} opacity={c1Op}
+                  tag="Practice" tagBg={T.accent.indigo}
+                  title="Solo. Repeatable. On demand."
+                  body="Choose your role, case, and opponent persona. Negotiate. Get feedback."
+                  style={{ transform: `translateY(${c1Y}px)` }} />
+        <ModeCard x={656} y={368} w={320} h={192} opacity={c2Op}
+                  tag="Competition" tagBg="#1E1B16"
+                  title="Same case. Same rules. Ranked."
+                  body="Organizer locks the scenario. Everyone competes fairly. Live leaderboard."
+                  style={{ transform: `translateY(${c2Y}px)` }} />
+
+        <window.CornerLogo opacity={1} />
+      </Layer>
+    );
+  }
+  s2_product_modes.dur = 13;
+  window.s2_product_modes = s2_product_modes;
+})();
+
+
+// ──────── scenes\s3-cases.jsx ────────
+(function () {
+  const { Layer, Easing, interpolate, envS } = window;
+  const T = window.THEME;
+
+  const CASES = [
+    { tag: 'PROCUREMENT', title: 'Software Licensing — Q4', body: '3-year enterprise deal. Tight budget. Fixed deadline.' },
+    { tag: 'SALES', title: 'Renewal Negotiation', body: 'Existing customer pushes for a 20% discount at renewal.' },
+    { tag: 'VENDOR', title: 'Supply Contract', body: 'Multi-year agreement with volume-based pricing.' },
+    { tag: 'PARTNERSHIPS', title: 'Revenue Share', body: 'Splitting revenue terms with a channel partner.' },
+  ];
+  const CARD_W = 270, CARD_H = 218, GAP = 24;
+  const TOTAL_W = CARD_W * 4 + GAP * 3;
+  const START_X = (1280 - TOTAL_W) / 2;
+  const CARD_Y = 300;
+
+  function CaseCard({ x, y, tag, title, body, opacity, style }) {
+    return (
+      <window.Panel x={x} y={y} w={CARD_W} h={CARD_H} opacity={opacity} style={{ padding: 22, boxSizing: 'border-box', ...style }}>
+        <window.EyebrowLabel color={T.brand.sky} style={{ fontSize: 10.5 }}>{tag}</window.EyebrowLabel>
+        <div style={{ marginTop: 12, fontFamily: T.font.serif, fontSize: 18, color: T.ink.primary, lineHeight: 1.25 }}>{title}</div>
+        <div style={{ marginTop: 10, fontFamily: T.font.sans, fontSize: 12.5, color: T.ink.secondary, lineHeight: 1.5 }}>{body}</div>
+      </window.Panel>
+    );
+  }
+
+  function s3_cases(t, t0, sceneDur) {
+    const lt = t - t0;
+    const headOp = envS(lt, 0.3, 1.0, sceneDur - 1.2, sceneDur - 0.3);
+    const headY = interpolate(lt, [0.3, 1.0], [16, 0], Easing.outCubic);
+    const cardStarts = [1.3, 1.42, 1.54, 1.66];
+    const cardOps = cardStarts.map(s => envS(lt, s, s + 0.55, sceneDur - 1.2, sceneDur - 0.3));
+    const cardYs = cardStarts.map(s => interpolate(lt, [s, s + 0.55], [24, 0], Easing.outCubic));
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720}>
+        <Layer x={0} y={150} w={1280} opacity={headOp} style={{ transform: `translateY(${headY}px)`, textAlign: 'center' }}>
+          <window.EyebrowLabel style={{ textAlign: 'center' }}>A Growing Case Library</window.EyebrowLabel>
+          <window.Headline size={36} style={{ marginTop: 8, textAlign: 'center' }}>Real cases, not scripts.</window.Headline>
+          <window.Subhead style={{ marginTop: 8, textAlign: 'center', maxWidth: 620, marginLeft: 'auto', marginRight: 'auto' }}>
+            Realistic, industry-style scenarios across roles — not generic prompts.
+          </window.Subhead>
+        </Layer>
+
+        {CASES.map((c, i) => (
+          <CaseCard key={i} x={START_X + i * (CARD_W + GAP)} y={CARD_Y} opacity={cardOps[i]}
+                    tag={c.tag} title={c.title} body={c.body}
+                    style={{ transform: `translateY(${cardYs[i]}px)` }} />
+        ))}
+
+        <window.CornerLogo opacity={1} />
+      </Layer>
+    );
+  }
+  s3_cases.dur = 9;
+  window.s3_cases = s3_cases;
+})();
+
+
+// ──────── scenes\s4-configure.jsx ────────
+(function () {
+  const { Layer, Easing, interpolate, envS, clamp01 } = window;
+  const T = window.THEME;
+
+  // three selector cards laid side by side, each with 2-3 stacked option pills
+  const CARD_X = [56, 452, 848];
+  const CARD_Y = 190;
+  const CARD_W = 372;
+  const CARD_H = 176;
+  // click targets: center of the top (selected) pill in each card, in stage coords
+  const TARGETS = [
+    { x: CARD_X[0] + CARD_W / 2, y: CARD_Y + 74 },
+    { x: CARD_X[1] + CARD_W / 2, y: CARD_Y + 74 },
+    { x: CARD_X[2] + CARD_W / 2, y: CARD_Y + 74 },
+  ];
+
+  function s4_configure(t, t0, sceneDur) {
+    const lt = t - t0;
+    const headOp = envS(lt, 0.3, 1.0, 8.6, 9.5);
+    const cardOp = [1.2, 1.35, 1.5].map(s => envS(lt, s, s + 0.5, 8.6, 9.5));
+    const cardY = [1.2, 1.35, 1.5].map(s => interpolate(lt, [s, s + 0.5], [22, 0], Easing.outCubic));
+
+    // selection state flips true once the click for that card has landed
+    const selected = [lt >= 2.42, lt >= 3.43, lt >= 4.23];
+
+    // cursor path: start off right edge, move to card1 target, then card2, then card3
+    const cx = window.seq(lt, [
+      [1.9, 1180], [2.3, TARGETS[0].x, Easing.outCubic],
+      [2.75, TARGETS[0].x], [3.15, TARGETS[1].x, Easing.outCubic],
+      [3.55, TARGETS[1].x], [3.95, TARGETS[2].x, Easing.outCubic],
+      [4.3, TARGETS[2].x],
+    ]);
+    const cy = window.seq(lt, [
+      [1.9, 40], [2.3, TARGETS[0].y, Easing.outCubic],
+      [2.75, TARGETS[0].y], [3.15, TARGETS[1].y, Easing.outCubic],
+      [3.55, TARGETS[1].y], [3.95, TARGETS[2].y, Easing.outCubic],
+      [4.3, TARGETS[2].y],
+    ]);
+    const cursorOp = envS(lt, 1.85, 2.05, 8.6, 9.2);
+
+    // click-ring progress windows (0.16s each) right after each pause
+    const ring1 = clamp01((lt - 2.42) / 0.18);
+    const ring2 = clamp01((lt - 3.27) / 0.18);
+    const ring3 = clamp01((lt - 4.07) / 0.18);
+    const rings = [
+      { p: ring1, show: lt >= 2.42 && lt < 2.6, x: TARGETS[0].x, y: TARGETS[0].y },
+      { p: ring2, show: lt >= 3.27 && lt < 3.45, x: TARGETS[1].x, y: TARGETS[1].y },
+      { p: ring3, show: lt >= 4.07 && lt < 4.25, x: TARGETS[2].x, y: TARGETS[2].y },
+    ];
+
+    const briefOp = envS(lt, 4.5, 5.1, 8.6, 9.5);
+    const briefY = interpolate(lt, [4.5, 5.1], [18, 0], Easing.outCubic);
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720}>
+        <Layer x={56} y={64} w={800} opacity={headOp}>
+          <window.EyebrowLabel>Practice Mode · Step 1</window.EyebrowLabel>
+          <window.Headline size={34} style={{ marginTop: 8 }}>Configure your session.</window.Headline>
+          <window.Subhead style={{ marginTop: 6 }}>Choose your role, a realistic case, and how hard the AI pushes back.</window.Subhead>
+        </Layer>
+
+        {/* Role card */}
+        <window.Panel x={CARD_X[0]} y={CARD_Y} w={CARD_W} h={CARD_H} opacity={cardOp[0]}
+                      style={{ padding: 22, boxSizing: 'border-box', transform: `translateY(${cardY[0]}px)` }}>
+          <window.EyebrowLabel color={T.ink.secondary}>Your Role</window.EyebrowLabel>
+          <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <window.OptionPill w={CARD_W - 44} label="Procurement Buyer" selected={selected[0]} />
+            <window.OptionPill w={CARD_W - 44} label="Sales Representative" selected={false} />
+          </div>
+        </window.Panel>
+
+        {/* Case card */}
+        <window.Panel x={CARD_X[1]} y={CARD_Y} w={CARD_W} h={CARD_H} opacity={cardOp[1]}
+                      style={{ padding: 22, boxSizing: 'border-box', transform: `translateY(${cardY[1]}px)` }}>
+          <window.EyebrowLabel color={T.ink.secondary}>Case</window.EyebrowLabel>
+          <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <window.OptionPill w={CARD_W - 44} label="Software Licensing — Q4" selected={selected[1]} />
+          </div>
+          <div style={{ marginTop: 10, fontFamily: T.font.sans, fontSize: 12.5, color: T.ink.secondary }}>
+            3-year enterprise deal. Tight budget. November deadline.
+          </div>
+        </window.Panel>
+
+        {/* Persona card */}
+        <window.Panel x={CARD_X[2]} y={CARD_Y} w={CARD_W} h={CARD_H} opacity={cardOp[2]}
+                      style={{ padding: 22, boxSizing: 'border-box', transform: `translateY(${cardY[2]}px)` }}>
+          <window.EyebrowLabel color={T.ink.secondary}>Opponent Style</window.EyebrowLabel>
+          <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <window.OptionPill w={CARD_W - 44} label="Assertive · Holds firm" selected={selected[2]} />
+            <window.OptionPill w={CARD_W - 44} label="Collaborative · Flexible" selected={false} />
+          </div>
+        </window.Panel>
+
+        {/* Prep brief */}
+        <window.Panel x={56} y={392} w={1164} h={110} opacity={briefOp} muted
+                      style={{ padding: '18px 26px', boxSizing: 'border-box', transform: `translateY(${briefY}px)`, display: 'flex', gap: 60 }}>
+          <div>
+            <window.EyebrowLabel color={T.ink.secondary}>Your Preparation Brief</window.EyebrowLabel>
+          </div>
+          <div>
+            <div style={{ fontFamily: T.font.sans, fontSize: 11, color: T.ink.secondary, textTransform: 'uppercase', letterSpacing: 0.6 }}>Objective</div>
+            <div style={{ fontFamily: T.font.sans, fontSize: 14, color: T.ink.primary, marginTop: 4 }}>Keep cost under $240k. Secure Nov 30 delivery.</div>
+          </div>
+          <div>
+            <div style={{ fontFamily: T.font.sans, fontSize: 11, color: T.ink.secondary, textTransform: 'uppercase', letterSpacing: 0.6 }}>Watch For</div>
+            <div style={{ fontFamily: T.font.sans, fontSize: 14, color: T.ink.primary, marginTop: 4 }}>Counterpart anchors high, resists non-price terms.</div>
+          </div>
+        </window.Panel>
+
+        <window.Cursor x={cx} y={cy} opacity={cursorOp} />
+        {rings.map((r, i) => r.show && (
+          <Layer key={i} x={r.x - 20} y={r.y - 20} w={40} h={40}
+                 opacity={window.clickRing(r.p).opacity}
+                 style={{ transform: `scale(${window.clickRing(r.p).scale})` }}>
+            <div style={{ width: '100%', height: '100%', borderRadius: 999, border: `2px solid ${T.accent.indigo}` }} />
+          </Layer>
+        ))}
+
+        <window.CornerLogo opacity={1} />
+      </Layer>
+    );
+  }
+  s4_configure.dur = 10;
+  window.s4_configure = s4_configure;
+})();
+
+
+// ──────── scenes\s5-negotiate.jsx ────────
+(function () {
+  const { Layer, Easing, interpolate, envS } = window;
+  const T = window.THEME;
+
+  const USER_MSG = 'We need it live by Nov 30th. Budget is firm at $240k.';
+  const AI_MSG = 'Our standard package runs $310k — lets find what works.';
+  const USER2_MSG = 'Deal — 3-year term, $265k, priority onboarding.';
+  const USER_START = 2.6, USER_RATE = 100, USER_JIT = 20;
+  const AI_START = USER_START + window.typingDurationS(USER_MSG, USER_RATE, USER_JIT) + 0.5;
+  const AI_RATE = 78, AI_JIT = 16;
+  const AI_END = AI_START + window.typingDurationS(AI_MSG, AI_RATE, AI_JIT);
+  const USER2_START = AI_END + 0.6;
+  const USER2_RATE = 75, USER2_JIT = 15;
+  const USER2_END = USER2_START + window.typingDurationS(USER2_MSG, USER2_RATE, USER2_JIT);
+
+  function s5_negotiate(t, t0, sceneDur) {
+    const lt = t - t0;
+    const headOp = envS(lt, 0.3, 1.0, sceneDur - 1.4, sceneDur - 0.3);
+    const sideOp = envS(lt, 1.2, 1.8, sceneDur - 1.4, sceneDur - 0.3);
+    const guideOp = envS(lt, 1.9, 2.4, sceneDur - 1.4, sceneDur - 0.3);
+
+    const userVisible = lt >= USER_START;
+    const userDone = lt >= USER_START + window.typingDurationS(USER_MSG, USER_RATE, USER_JIT);
+    const thinking = userDone && lt < AI_START;
+    const aiVisible = lt >= AI_START;
+    const aiDone = lt >= AI_END;
+    const thinking2 = aiDone && lt < USER2_START;
+    const user2Visible = lt >= USER2_START;
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720}>
+        <Layer x={56} y={44} w={900} opacity={headOp}>
+          <window.EyebrowLabel>Practice Mode · Step 2</window.EyebrowLabel>
+          <window.Headline size={30} style={{ marginTop: 6 }}>Negotiate, turn by turn.</window.Headline>
+          <window.Subhead style={{ marginTop: 4 }}>Text chat with a streaming AI counterpart. Live coaching hints on the right.</window.Subhead>
+        </Layer>
+
+        {/* key points sidebar */}
+        <Layer x={56} y={168} w={190} opacity={sideOp}>
+          <window.EyebrowLabel color={T.ink.secondary}>Key Points</window.EyebrowLabel>
+          {['Budget ceiling: $240k', 'Deadline: Nov 30', '3-year term preferred'].map((s, i) => (
+            <div key={i} style={{ display: 'flex', gap: 8, marginTop: 12, fontFamily: T.font.sans, fontSize: 13.5, color: T.ink.primary }}>
+              <div style={{ width: 5, height: 5, borderRadius: 999, background: T.accent.indigo, marginTop: 6, flexShrink: 0 }} />
+              <div>{s}</div>
+            </div>
+          ))}
+        </Layer>
+
+        {/* live guidance */}
+        <Layer x={1034} y={168} w={190} opacity={guideOp}>
+          <window.EyebrowLabel color={T.ink.secondary}>Live Guidance</window.EyebrowLabel>
+          {['Anchor your walk-away number early', 'Name the benchmark — it creates pressure'].map((s, i) => (
+            <window.Panel key={i} x={0} y={30 + i * 66} w={190} h={56} muted style={{ marginTop: 0, padding: 12, boxSizing: 'border-box' }}>
+              <div style={{ fontFamily: T.font.sans, fontSize: 12.5, color: T.accent.indigo, lineHeight: 1.35 }}>{s}</div>
+            </window.Panel>
+          ))}
+        </Layer>
+
+        {/* dialogue column */}
+        <Layer x={280} y={220} w={700}>
+          {userVisible && (
+            <window.ChatBubble x={0} y={0} w={700} mine align="right" opacity={1}>
+              <window.TypedText text={USER_MSG} start={USER_START} t={t} msPerChar={USER_RATE} jitterMs={USER_JIT}
+                                 style={{ color: '#fff' }} />
+            </window.ChatBubble>
+          )}
+          {thinking && (
+            <Layer x={0} y={64} w={120} opacity={interpolate(lt, [AI_START - 0.3, AI_START], [0, 1])}>
+              <div style={{ display: 'flex', gap: 5, padding: '10px 4px' }}>
+                {[0, 1, 2].map(i => (
+                  <div key={i} style={{
+                    width: 6, height: 6, borderRadius: 999, background: T.ink.secondary,
+                    opacity: 0.4 + 0.6 * Math.abs(Math.sin(t * 4 + i * 1.1)),
+                  }} />
+                ))}
+              </div>
+            </Layer>
+          )}
+          {aiVisible && (
+            <window.ChatBubble x={0} y={80} w={700} align="left" opacity={1}>
+              <window.TypedText text={AI_MSG} start={AI_START} t={t} msPerChar={AI_RATE} jitterMs={AI_JIT} />
+            </window.ChatBubble>
+          )}
+          {thinking2 && (
+            <Layer x={620} y={160} w={80} opacity={interpolate(lt, [USER2_START - 0.3, USER2_START], [0, 1])}>
+              <div style={{ display: 'flex', gap: 5, padding: '10px 4px', justifyContent: 'flex-end' }}>
+                {[0, 1, 2].map(i => (
+                  <div key={i} style={{
+                    width: 6, height: 6, borderRadius: 999, background: T.accent.indigo,
+                    opacity: 0.4 + 0.6 * Math.abs(Math.sin(t * 4 + i * 1.1)),
+                  }} />
+                ))}
+              </div>
+            </Layer>
+          )}
+          {user2Visible && (
+            <window.ChatBubble x={0} y={168} w={700} mine align="right" opacity={1}>
+              <window.TypedText text={USER2_MSG} start={USER2_START} t={t} msPerChar={USER2_RATE} jitterMs={USER2_JIT}
+                                 style={{ color: '#fff' }} />
+            </window.ChatBubble>
+          )}
+        </Layer>
+
+        <window.CornerLogo opacity={1} />
+      </Layer>
+    );
+  }
+  s5_negotiate.dur = 23;
+  window.s5_negotiate = s5_negotiate;
+})();
+
+
+// ──────── scenes\s6-avatar.jsx ────────
+(function () {
+  const { Layer, Easing, interpolate, envS } = window;
+  const T = window.THEME;
+
+  function s6_avatar(t, t0, sceneDur) {
+    const lt = t - t0;
+    const headOp = envS(lt, 0.3, 1.1, sceneDur - 2.1, sceneDur - 1.0);
+    const orbOp = envS(lt, 1.3, 2.0, sceneDur - 2.1, sceneDur - 1.0);
+    const orbScale = interpolate(lt, [1.3, 2.0], [0.7, 1], Easing.outBack);
+    const waveOp = envS(lt, 1.6, 2.1, sceneDur - 2.1, sceneDur - 1.0);
+    const quoteOp = envS(lt, 2.4, 3.0, sceneDur - 2.1, sceneDur - 1.0);
+    const quoteY = interpolate(lt, [2.4, 3.0], [14, 0], Easing.outCubic);
+    const bulletStarts = [3.3, 3.45, 3.6];
+    const bulletOp = bulletStarts.map(s => envS(lt, s, s + 0.5, sceneDur - 2.1, sceneDur - 1.0));
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720}>
+        <Layer x={56} y={64} w={560} opacity={headOp}>
+          <window.EyebrowLabel>Voice &amp; Avatar Mode</window.EyebrowLabel>
+          <window.Headline size={38} style={{ marginTop: 10 }}>Meet your AI negotiation partner.</window.Headline>
+          <window.Subhead style={{ marginTop: 10 }}>Practice with a lifelike AI counterpart. Text or voice — same case, same stakes.</window.Subhead>
+        </Layer>
+
+        <Layer x={56} y={280} w={420}>
+          {['Speak naturally', 'Type at your pace', 'Switch any time'].map((label, i) => (
+            <Layer key={i} x={0} y={i * 52} w={400} opacity={bulletOp[i]}
+                   style={{ transform: `translateY(${interpolate(lt, [bulletStarts[i], bulletStarts[i] + 0.5], [14, 0], Easing.outCubic)}px)`, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{
+                width: 30, height: 30, borderRadius: 9, background: T.accent.indigoSoft,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <div style={{ width: 8, height: 8, borderRadius: 999, background: T.accent.indigo }} />
+              </div>
+              <div style={{ fontFamily: T.font.sans, fontSize: 15, color: T.ink.primary }}>{label}</div>
+            </Layer>
+          ))}
+        </Layer>
+
+        <window.AvatarOrb x={780} y={140} size={220} t={t} opacity={orbOp} scale={orbScale} />
+        <window.Waveform x={758} y={392} w={260} h={40} t={t} active={aiActive(lt)} opacity={waveOp} color={T.accent.indigo} />
+
+        <window.Panel x={700} y={452} w={400} h={92} opacity={quoteOp}
+                      style={{ padding: 18, boxSizing: 'border-box', transform: `translateY(${quoteY}px)` }}>
+          <window.EyebrowLabel color={T.accent.indigo} style={{ fontSize: 10.5 }}>AI Counterpart · Speaking</window.EyebrowLabel>
+          <div style={{ marginTop: 8, fontFamily: T.font.serif, fontStyle: 'italic', fontSize: 14.5, color: T.ink.primary, lineHeight: 1.4 }}>
+            "If you commit to a 3-year term today, I can bring this to $265k with priority onboarding."
+          </div>
+        </window.Panel>
+
+        <window.CornerLogo opacity={1} />
+      </Layer>
+    );
+  }
+  function aiActive(lt) { return lt > 1.8 && lt < 100 ? 1 : 0; }
+  s6_avatar.dur = 14;
+  window.s6_avatar = s6_avatar;
+})();
+
+
+// ──────── scenes\s7-outcomes.jsx ────────
+(function () {
+  const { Layer, Easing, interpolate, envS, clamp01 } = window;
+  const T = window.THEME;
+
+  function s7_outcomes(t, t0, sceneDur) {
+    const lt = t - t0;
+    const headOp = envS(lt, 0.3, 1.0, sceneDur - 2.1, sceneDur - 1.0);
+    const shellOp = envS(lt, 1.2, 1.9, sceneDur - 2.1, sceneDur - 1.0);
+
+    // hero payoff: scorecard ring count-up + brief zoom on the whole group
+    const ringP = clamp01((lt - 2.0) / 3.5);          // main ring 2.0-5.5
+    const subRingP = clamp01((lt - 3.2) / 2.4);        // sub rings lag slightly, 3.2-5.6
+    const groupScale = seqScale(lt);
+    const dimOthers = interpolate(lt, [2.0, 2.6], [1, 0.55]) * (1 - interpolate(lt, [6.8, 7.6], [0, 0.45]));
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720}>
+        <Layer x={56} y={44} w={800} opacity={headOp}>
+          <window.EyebrowLabel>Practice Mode · Step 3</window.EyebrowLabel>
+          <window.Headline size={32} style={{ marginTop: 6 }}>Clear outcomes. Actionable feedback.</window.Headline>
+          <window.Subhead style={{ marginTop: 6 }}>Every session ends with a deal summary, a scored evaluation, and specific improvement hints.</window.Subhead>
+        </Layer>
+
+        <Layer x={56} y={168} w={1168} h={480} opacity={shellOp}
+               style={{ transform: `scale(${groupScale})`, transformOrigin: '50% 30%' }}>
+          {/* Deal summary — dimmed during count-up */}
+          <window.Panel x={0} y={0} w={368} h={330} opacity={dimOthers} style={{ padding: 24, boxSizing: 'border-box' }}>
+            <window.EyebrowLabel color={T.ink.secondary}>Deal Summary</window.EyebrowLabel>
+            {[['Final Price', '$265,000'], ['Term', '3 years'], ['Onboarding', 'Priority'], ['Deadline', 'Nov 30 ✓'], ['Status', 'Deal reached']].map(([k, v], i) => (
+              <div key={i} style={{
+                display: 'flex', justifyContent: 'space-between', padding: '10px 0',
+                borderTop: i > 0 ? '1px solid #EFE9DC' : 'none', fontFamily: T.font.sans, fontSize: 14,
+              }}>
+                <div style={{ color: T.ink.secondary }}>{k}</div>
+                <div style={{ color: T.ink.primary, fontWeight: 700 }}>{v}</div>
+              </div>
+            ))}
+          </window.Panel>
+
+          {/* Scorecard — the hero payoff */}
+          <window.Panel x={400} y={0} w={368} h={330} style={{ padding: 24, boxSizing: 'border-box' }}>
+            <window.EyebrowLabel color={T.ink.secondary}>Scorecard</window.EyebrowLabel>
+            <Layer x={0} y={30} w={368} style={{ display: 'flex', justifyContent: 'center' }}>
+              <window.ScoreRing size={112} stroke={9} progress={ringP} value={78} label="Overall Score" color={T.brand.navy} />
+            </Layer>
+            <Layer x={20} y={180} w={328} style={{ display: 'flex', justifyContent: 'space-around' }}>
+              <window.ScoreRing size={76} stroke={7} progress={subRingP} value={82} label="ZOPA Control" color={T.accent.indigo} />
+              <window.ScoreRing size={76} stroke={7} progress={subRingP} value={71} label="Concessions" color={T.brand.sky} />
+            </Layer>
+          </window.Panel>
+
+          {/* Feedback — dimmed during count-up */}
+          <window.Panel x={800} y={0} w={368} h={330} opacity={dimOthers} style={{ padding: 24, boxSizing: 'border-box' }}>
+            <window.EyebrowLabel color={T.ink.secondary}>Performance Feedback</window.EyebrowLabel>
+            {[
+              'Strong anchoring — your $240k open created downward pressure on price.',
+              'Opportunity: introduce non-price terms earlier to widen trade space.',
+              'Good close — accepting the 3-year term to unlock $45k was well-timed.',
+            ].map((s, i) => (
+              <div key={i} style={{
+                marginTop: 12, padding: 12, borderRadius: 10, background: T.accent.indigoSoft,
+                fontFamily: T.font.sans, fontSize: 12.5, color: T.ink.primary, lineHeight: 1.4,
+              }}>{s}</div>
+            ))}
+          </window.Panel>
+        </Layer>
+
+        <window.CornerLogo opacity={1} />
+      </Layer>
+    );
+  }
+
+  function seqScale(lt) {
+    // ease up to 1.08x through the count-up, settle back to 1.0 by 7.5s
+    const up = interpolate(lt, [2.0, 4.2], [1, 1.08], Easing.outCubic);
+    const down = interpolate(lt, [5.8, 7.6], [1.08, 1], Easing.inOutCubic);
+    if (lt < 5.8) return up;
+    return down;
+  }
+
+  s7_outcomes.dur = 20;
+  window.s7_outcomes = s7_outcomes;
+})();
+
+
+// ──────── scenes\s8-competition.jsx ────────
+(function () {
+  const { Layer, Easing, interpolate, envS, clamp01 } = window;
+  const T = window.THEME;
+
+  const ROWS = [
+    { rank: 1, name: 'Sarah M.', score: 91, highlight: false },
+    { rank: 2, name: 'James K.', score: 84, highlight: true },
+    { rank: 3, name: 'Priya R.', score: 84, highlight: false },
+    { rank: 4, name: 'Tom H.', score: 78, highlight: false },
+    { rank: 5, name: 'Aisha L.', score: 74, highlight: false },
+  ];
+
+  function s8_competition(t, t0, sceneDur) {
+    const lt = t - t0;
+    const headOp = envS(lt, 0.3, 1.0, sceneDur - 2.1, sceneDur - 1.0);
+    const orgOp = envS(lt, 1.2, 1.8, sceneDur - 2.1, sceneDur - 1.0);
+    const boardOp = envS(lt, 1.35, 1.95, sceneDur - 2.1, sceneDur - 1.0);
+
+    const btnCx = interpolate(lt, [2.3, 2.7], [700, 165 + 63], Easing.outCubic);
+    const btnCy = interpolate(lt, [2.3, 2.7], [40, 490], Easing.outCubic);
+    const cursorOp = envS(lt, 2.15, 2.35, 3.4, 3.9);
+    const clickP = clamp01((lt - 2.8) / 0.18);
+    const showClick = lt >= 2.8 && lt < 2.98;
+
+    const codeOp = envS(lt, 3.1, 3.5, sceneDur - 2.1, sceneDur - 1.0);
+    const codeScale = interpolate(lt, [3.1, 3.5], [0.85, 1], Easing.outBack);
+
+    const rowStarts = [4.2, 4.35, 4.5, 4.65, 4.8];
+    const jamesScore = Math.round(interpolate(lt, [8.5, 9.3], [84, 87]));
+    const jamesPulse = interpolate(lt, [8.4, 8.7], [1, 1.05], Easing.outCubic) * (lt > 8.7 ? interpolate(lt, [8.7, 9.4], [1, 1], Easing.linear) : 1);
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720}>
+        <Layer x={56} y={44} w={800} opacity={headOp}>
+          <window.EyebrowLabel>Competition Mode</window.EyebrowLabel>
+          <window.Headline size={34} style={{ marginTop: 6 }}>Fair practice. Ranked results.</window.Headline>
+          <window.Subhead style={{ marginTop: 6 }}>Organizer locks the case. Everyone negotiates the same scenario. Leaderboard updates live.</window.Subhead>
+        </Layer>
+
+        {/* Organizer panel */}
+        <window.Panel x={56} y={172} w={520} h={488} opacity={orgOp} muted style={{ padding: 28, boxSizing: 'border-box' }}>
+          <window.EyebrowLabel color={T.ink.secondary}>Organizer Sets Up</window.EyebrowLabel>
+          {[['Case', 'Software Licensing — Q4'], ['Opponent Style', 'Assertive · Holds firm'], ['Time Limit', '20 minutes per attempt']].map(([k, v], i) => (
+            <div key={i} style={{ marginTop: 16 }}>
+              <div style={{ fontFamily: T.font.sans, fontSize: 12, color: T.ink.secondary }}>{k}</div>
+              <div style={{
+                marginTop: 6, padding: '12px 14px', borderRadius: 10, background: '#E3DACB',
+                fontFamily: T.font.sans, fontSize: 14.5, fontWeight: 700, color: T.ink.primary,
+              }}>{v}</div>
+            </div>
+          ))}
+          <Layer x={0} y={288} w={230} h={44} style={{
+            background: T.accent.indigo, borderRadius: 10, display: 'flex', alignItems: 'center',
+            justifyContent: 'center', fontFamily: T.font.sans, fontWeight: 700, fontSize: 14, color: '#fff',
+          }}>Generate Room Code</Layer>
+
+          <Layer x={0} y={354} w={464} h={78} opacity={codeOp}
+                 style={{ transform: `scale(${codeScale})`, transformOrigin: 'left center' }}>
+            <div style={{
+              border: `1.5px solid ${T.accent.indigo}`, borderRadius: 12, padding: '14px 20px',
+              background: T.accent.indigoSoft, textAlign: 'center',
+            }}>
+              <div style={{ fontFamily: T.font.mono, fontWeight: 800, fontSize: 26, letterSpacing: 4, color: T.accent.indigo }}>DLG-4829</div>
+              <div style={{ marginTop: 4, fontFamily: T.font.sans, fontSize: 11, color: T.ink.secondary }}>Case &amp; persona locked — zero setup for participants</div>
+            </div>
+          </Layer>
+        </window.Panel>
+
+        {/* Leaderboard */}
+        <window.Panel x={604} y={172} w={620} h={488} opacity={boardOp} style={{ padding: 28, boxSizing: 'border-box' }}>
+          <window.EyebrowLabel color={T.ink.secondary}>Live Leaderboard</window.EyebrowLabel>
+          <Layer x={0} y={34} w={564}>
+            {ROWS.map((r, i) => {
+              const rOp = envS(lt, rowStarts[i], rowStarts[i] + 0.45, sceneDur - 2.1, sceneDur - 1.0);
+              const rY = interpolate(lt, [rowStarts[i], rowStarts[i] + 0.45], [16, 0], Easing.outCubic);
+              const isJames = r.name === 'James K.';
+              return (
+                <Layer key={i} x={0} y={i * 54} w={564} opacity={rOp}
+                       style={{ transform: `translateY(${rY}px) scale(${isJames ? jamesPulse : 1})`, transformOrigin: 'left center' }}>
+                  <window.LeaderboardRow x={0} y={0} w={564} rank={r.rank} name={r.name}
+                                         score={isJames ? jamesScore : r.score} highlight={r.highlight} />
+                </Layer>
+              );
+            })}
+          </Layer>
+        </window.Panel>
+
+        <window.Cursor x={btnCx} y={btnCy} opacity={cursorOp} />
+        {showClick && (
+          <Layer x={165 + 63 - 20} y={490 - 20} w={40} h={40}
+                 opacity={window.clickRing(clickP).opacity}
+                 style={{ transform: `scale(${window.clickRing(clickP).scale})` }}>
+            <div style={{ width: '100%', height: '100%', borderRadius: 999, border: `2px solid ${T.accent.indigo}` }} />
+          </Layer>
+        )}
+
+        <window.CornerLogo opacity={1} />
+      </Layer>
+    );
+  }
+  s8_competition.dur = 20;
+  window.s8_competition = s8_competition;
+})();
+
+
+// ──────── scenes\s9-close.jsx ────────
+(function () {
+  const { Layer, Easing, interpolate } = window;
+  const T = window.THEME;
+
+  function s9_close(t, t0, sceneDur) {
+    const lt = t - t0;
+    const logoOp = interpolate(lt, [0.3, 1.1], [0, 1], Easing.outCubic);
+    const logoScale = interpolate(lt, [0.3, 1.1], [0.9, 1], Easing.outBack);
+    const urlOp = interpolate(lt, [1.3, 1.8], [0, 1], Easing.outCubic);
+    const ctaOp = interpolate(lt, [1.9, 2.4], [0, 1], Easing.outCubic);
+
+    return (
+      <Layer x={0} y={0} w={1280} h={720}
+             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+        <Layer opacity={logoOp} scale={logoScale} style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <window.IconMark size={64} />
+          <window.Wordmark size={54} />
+        </Layer>
+        <div style={{
+          marginTop: 22, opacity: urlOp, fontFamily: T.font.mono, fontSize: 16,
+          letterSpacing: 1, color: T.brand.sky,
+        }}>dealigence.ai</div>
+        <div style={{
+          marginTop: 14, opacity: ctaOp, fontFamily: T.font.serif, fontStyle: 'italic',
+          fontSize: 19, color: T.ink.secondary,
+        }}>Try it. Tell us what breaks.</div>
+      </Layer>
+    );
+  }
+  s9_close.dur = 8;
+  window.s9_close = s9_close;
+})();
+
+
+// ──────── 99-app.jsx ────────
+// Stage, Layer, Easing, interpolate already exist as top-level identifiers
+// from 00-utils.jsx (same concatenated script scope) — do not redeclare here.
+const T = window.THEME;
+
+const SCENES = [
+  window.s1_hook, window.s2_product_modes, window.s3_cases, window.s4_configure,
+  window.s5_negotiate, window.s6_avatar, window.s7_outcomes, window.s8_competition, window.s9_close,
+];
+const SCENE_BG = ['A', 'A', 'A', 'B', 'B', 'A', 'B', 'A', 'A'];
+const PAD = 0.45;
+const FADE = 0.8;
+
+const durs = SCENES.map(s => s.dur);
+const starts = durs.reduce((acc, d, i) => [...acc, (acc[i - 1] ?? 0) + (durs[i - 1] ?? 0)], []);
+const total = starts.at(-1) + durs.at(-1);
+
+// ── one-shot procedural SFX events, edge-triggered, scrub-safe ────────────
+const EVENTS = [
+  ...starts.slice(1).map(s => ({ t: s - 0.25, fn: () => window.AUDIO.whoosh() })),
+  { t: starts[1] + 1.3, fn: () => window.AUDIO.chime(720) },        // logo settle
+  { t: starts[3] + 2.42, fn: () => window.AUDIO.tick() },           // configure clicks
+  { t: starts[3] + 3.27, fn: () => window.AUDIO.tick() },
+  { t: starts[3] + 4.07, fn: () => window.AUDIO.tick() },
+  { t: starts[4] + 9.34, fn: () => window.AUDIO.click() },          // message sent
+  { t: starts[4] + 9.84, fn: () => window.AUDIO.tick() },           // AI reply starts
+  { t: starts[4] + 15.77, fn: () => window.AUDIO.click() },         // closing message sent
+  { t: starts[4] + 20.54, fn: () => window.AUDIO.chime(600) },      // deal reached
+  { t: starts[6] + 5.5, fn: () => window.AUDIO.chime(560) },        // scorecard payoff
+  { t: starts[7] + 2.8, fn: () => window.AUDIO.click() },           // generate room code
+  { t: starts[8] + 1.1, fn: () => window.AUDIO.chime(660) },        // close logo settle
+];
+
+function findSceneIndex(t) {
+  let idx = 0;
+  for (let i = 0; i < starts.length; i++) if (t >= starts[i]) idx = i;
+  return idx;
+}
+
+// ── Ambient background blobs — very low-opacity brand-color depth, always
+//    present, independent of scene. Subtle "premium" texture, not decoration. ──
+function AmbientBlobs({ t }) {
+  const bx1 = 180 + Math.sin(t * 0.05) * 60;
+  const by1 = 140 + Math.cos(t * 0.04) * 40;
+  const bx2 = 1040 + Math.sin(t * 0.045 + 2) * 70;
+  const by2 = 560 + Math.cos(t * 0.05 + 1) * 50;
+  return (
+    <div style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+      <div style={{
+        position: 'absolute', left: bx1 - 260, top: by1 - 260, width: 520, height: 520,
+        borderRadius: '50%', background: T.brand.pale, opacity: 0.16, filter: 'blur(90px)',
+      }} />
+      <div style={{
+        position: 'absolute', left: bx2 - 220, top: by2 - 220, width: 440, height: 440,
+        borderRadius: '50%', background: T.accent.indigoSoft, opacity: 0.14, filter: 'blur(90px)',
+      }} />
+    </div>
+  );
+}
+
+function Background({ t }) {
+  const idx = findSceneIndex(t);
+  const bottomColor = T.bg[SCENE_BG[Math.max(0, idx - 1)]];
+  const topColor = T.bg[SCENE_BG[idx]];
+  const fadeP = idx === 0 ? 1 : interpolate(
+    t, [starts[idx] - FADE / 2, starts[idx] + FADE / 2], [0, 1], Easing.smooth
+  );
+  // gentle scale-settle on the incoming background — 1.012 -> 1.0 as it fades in
+  const topScale = idx === 0 ? 1 : interpolate(fadeP, [0, 1], [1.012, 1]);
+  return (
+    <>
+      <div style={{ position: 'absolute', inset: 0, background: bottomColor, zIndex: 0 }} />
+      <div style={{
+        position: 'absolute', inset: 0, background: topColor, opacity: fadeP, zIndex: 0,
+        transform: `scale(${topScale})`, transformOrigin: 'center',
+      }} />
+      <AmbientBlobs t={t} />
+    </>
+  );
+}
+
+function SceneRender({ s, start, dur }) {
+  const t = window.useTime();
+  if (t < start - PAD || t > start + dur + PAD) return null;
+  return s(t, start, dur);
+}
+
+function SfxDriver() {
+  const t = window.useTime();
+  const fireRef = React.useRef(window.makeFireFn(() => t));
+  React.useEffect(() => {
+    for (const ev of EVENTS) fireRef.current(ev.t, `${ev.t}`, ev.fn);
+  }, [t]);
+  return null;
+}
+
+function App() {
+  return (
+    <Stage duration={total} width={1280} height={720}>
+      <BgLayer />
+      {SCENES.map((s, i) => (
+        <Layer key={i} x={0} y={0} w={1280} h={720} style={{ position: 'absolute', inset: 0 }}>
+          <SceneRender s={s} start={starts[i]} dur={durs[i]} />
+        </Layer>
+      ))}
+      <SfxDriver />
+    </Stage>
+  );
+}
+
+function BgLayer() {
+  const t = window.useTime();
+  return <Background t={t} />;
+}
+
+ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+
+</script>
+
+</body>
+</html>

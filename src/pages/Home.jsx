@@ -165,9 +165,11 @@ export default function Home() {
 
             <Reveal className="mt-14">
               <p className="text-base text-[var(--color-paper-mute)]">
-                Below: three assets generated for a fictional company,
-                "Handled," an AI life-admin assistant concept. Same toolkit,
-                same session, no manual editing after the fact.
+                Below: the actual site, teaser, and deck for Dealigence, an
+                AI negotiation-practice platform I built with this toolkit
+                during my time at Horizon 3 Labs, Unilever's AI innovation
+                lab. Same toolkit, same session, no manual editing after the
+                fact, three assets, one hour, zero feedback rounds.
               </p>
               <div className="mt-6 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]">
                 <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-4 py-3">
@@ -175,12 +177,12 @@ export default function Home() {
                   <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-border)]" />
                   <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-border)]" />
                   <span className="ml-3 text-xs text-[var(--color-paper-mute)]">
-                    handled-website.html
+                    dealigence-website.html
                   </span>
                 </div>
                 <iframe
-                  src={`${BASE}handled/handled-website.html`}
-                  title="Handled website demo"
+                  src={`${BASE}dealigence/dealigence-website.html`}
+                  title="Dealigence website demo"
                   className="h-[380px] w-full bg-white sm:h-[520px]"
                   loading="lazy"
                 />
@@ -188,7 +190,7 @@ export default function Home() {
 
               <div className="mt-4 flex flex-wrap gap-4 text-base">
                 <a
-                  href={`${BASE}handled/handled-teaser.html`}
+                  href={`${BASE}dealigence/dealigence-teaser.html`}
                   target="_blank"
                   rel="noreferrer"
                   className="text-[var(--color-paper-dim)] underline decoration-[var(--color-border)] underline-offset-4 transition-colors hover:text-[var(--color-sage-bright)]"
@@ -196,12 +198,20 @@ export default function Home() {
                   Open launch teaser ↗
                 </a>
                 <a
-                  href={`${BASE}handled/handled-pitch-deck.html`}
+                  href={`${BASE}dealigence/dealigence-deck.html`}
                   target="_blank"
                   rel="noreferrer"
                   className="text-[var(--color-paper-dim)] underline decoration-[var(--color-border)] underline-offset-4 transition-colors hover:text-[var(--color-sage-bright)]"
                 >
                   Open pitch deck ↗
+                </a>
+                <a
+                  href={`${BASE}dealigence/dealigence-walkthrough.html`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[var(--color-paper-dim)] underline decoration-[var(--color-border)] underline-offset-4 transition-colors hover:text-[var(--color-sage-bright)]"
+                >
+                  Watch the full team walkthrough ↗
                 </a>
               </div>
             </Reveal>

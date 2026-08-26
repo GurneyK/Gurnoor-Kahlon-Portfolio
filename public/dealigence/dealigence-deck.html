@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dealigence — Deck</title>
+<style>
+  :root{
+    --bgA:#E7DECD; --bgB:#F7F1EA; --card:#FFFFFF; --cardMuted:#EDE6D8;
+    --ink:#3A2F22; --ink2:#8A7F6C;
+    --navy:#004B87; --sky:#0091D2; --pale:#BEE1F5;
+    --indigo:#4A56C9; --indigoSoft:#DEE1F7;
+    --serif:Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  html,body{margin:0;padding:0;height:100%;background:#1b1712;overflow:hidden;}
+  body{font-family:var(--sans);color:var(--ink);}
+  #viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;}
+  #canvas{width:1280px;height:720px;position:relative;transform-origin:center;box-shadow:0 30px 80px rgba(0,0,0,0.45);}
+  .slide{position:absolute;inset:0;background:var(--bgA);opacity:0;transition:opacity .28s ease;overflow:hidden;}
+  .slide.active{opacity:1;}
+  .slide.tone-b{background:var(--bgB);}
+
+  .pad{padding:64px 72px;height:100%;box-sizing:border-box;}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--indigo);}
+  h1.slide-h{font-family:var(--serif);font-weight:400;font-size:42px;line-height:1.12;letter-spacing:-.5px;margin:12px 0 16px;}
+  .sub{font-size:16.5px;color:var(--ink2);line-height:1.55;max-width:760px;}
+
+  .stagger{opacity:0;transform:translateY(16px);animation:sIn .55s cubic-bezier(.22,.9,.28,1) forwards;animation-delay:calc(var(--i,0) * 110ms);}
+  @keyframes sIn{to{opacity:1;transform:translateY(0);}}
+
+  .brandmark{display:flex;align-items:center;gap:10px;font-weight:800;}
+  .card{background:var(--card);border-radius:16px;box-shadow:0 12px 32px rgba(58,47,34,0.10);padding:24px;}
+  .card.muted{background:var(--cardMuted);box-shadow:none;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .num{width:32px;height:32px;border-radius:9px;background:var(--indigoSoft);color:var(--indigo);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;margin-bottom:12px;}
+  .card h3{font-size:17px;margin:0 0 6px;}
+  .card p{font-size:13.5px;color:var(--ink2);line-height:1.5;margin:0;}
+  .card ul{margin:10px 0 0;padding:0;list-style:none;}
+  .card li{display:flex;gap:8px;font-size:12.5px;color:var(--ink);line-height:1.4;margin-bottom:6px;}
+  .card li::before{content:'';width:5px;height:5px;border-radius:99px;background:var(--indigo);margin-top:6px;flex-shrink:0;}
+  .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#fff;padding:5px 12px;border-radius:999px;}
+  .tag-practice{background:var(--indigo);} .tag-competition{background:#1E1B16;}
+
+  /* split (text | mockup) layout for content-light topics */
+  .split{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center;height:100%;padding-top:8px;}
+  .split ul{margin:16px 0 0;padding:0;list-style:none;}
+  .split li{display:flex;gap:10px;font-size:14.5px;color:var(--ink);line-height:1.45;margin-bottom:10px;}
+  .split li::before{content:'';width:6px;height:6px;border-radius:99px;background:var(--indigo);margin-top:7px;flex-shrink:0;}
+
+  /* mockup window */
+  .mockup{background:var(--card);border-radius:16px;overflow:hidden;box-shadow:0 20px 50px rgba(58,47,34,.18);}
+  .mockup-bar{height:30px;background:#F1EEE3;display:flex;align-items:center;gap:6px;padding:0 13px;}
+  .mockup-dot{width:8px;height:8px;border-radius:99px;}
+  .mockup-body{padding:22px;background:var(--bgB);}
+  .mockup-eyebrow{font-size:10px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;color:var(--indigo);}
+  .mockup-h{font-family:var(--serif);font-size:18px;color:var(--ink);margin:5px 0 14px;}
+  .pill{border-radius:9px;padding:10px 13px;font-size:12.5px;font-weight:700;margin-bottom:7px;}
+  .pill.on{background:var(--indigo);color:#fff;} .pill.off{background:#EFEBE0;color:var(--ink);}
+  .fieldlabel{font-size:10.5px;color:var(--ink2);margin:0 0 5px;}
+  .bubble{max-width:84%;padding:10px 13px;border-radius:13px;font-size:12.5px;line-height:1.4;margin-bottom:9px;}
+  .bubble.mine{background:var(--indigo);color:#fff;border-bottom-right-radius:4px;margin-left:auto;}
+  .bubble.theirs{background:#fff;color:var(--ink);border-bottom-left-radius:4px;box-shadow:0 4px 12px rgba(58,47,34,.08);}
+  .orb-wrap{display:flex;flex-direction:column;align-items:center;padding:2px 0;}
+  .orb{width:104px;height:104px;position:relative;}
+  .orb-face{width:100%;height:100%;border-radius:50%;overflow:hidden;box-shadow:0 14px 34px rgba(0,75,135,.28);}
+  .mic-badge{position:absolute;right:-2px;bottom:-2px;width:28px;height:28px;border-radius:50%;background:var(--indigo);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(74,86,201,.4);}
+  .wave{display:flex;align-items:center;gap:3px;height:28px;margin-top:12px;}
+  .wave span{width:4px;border-radius:2px;background:var(--indigo);}
+  .quote-box{margin-top:12px;background:#fff;border-radius:11px;padding:11px 13px;box-shadow:0 4px 12px rgba(58,47,34,.08);font-family:var(--serif);font-style:italic;font-size:12px;color:var(--ink);line-height:1.4;}
+  .ring{width:88px;height:88px;border-radius:50%;background:conic-gradient(var(--navy) 0 78%, #EAE3D4 0 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .ring .hole{width:68px;height:68px;border-radius:50%;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .ring .hole b{font-size:19px;} .ring .hole span{font-size:8px;color:var(--ink2);text-transform:uppercase;letter-spacing:.4px;}
+  .fb-chip{background:var(--indigoSoft);border-radius:9px;padding:9px 12px;font-size:11.5px;line-height:1.4;color:var(--ink);margin-top:8px;}
+  .code-box{border:1.5px solid var(--indigo);border-radius:10px;background:var(--indigoSoft);text-align:center;padding:11px;margin-bottom:12px;}
+  .code-box b{font-family:var(--mono);font-size:18px;letter-spacing:3px;color:var(--indigo);}
+  .lb-row{display:flex;align-items:center;padding:7px 9px;border-radius:8px;font-size:12px;}
+  .lb-row.hl{background:var(--indigoSoft);border:1px solid var(--indigo);}
+  .lb-row .r{width:18px;color:var(--ink2);} .lb-row .n{flex:1;font-weight:600;} .lb-row .s{font-weight:800;}
+
+  .title-slide{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;}
+  .title-slide .brandmark{font-size:44px;color:var(--navy);gap:14px;}
+  .title-slide .tagline{margin-top:10px;font-size:13px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--sky);}
+  .title-slide .deck-title{margin-top:28px;font-family:var(--serif);font-size:24px;color:var(--ink2);font-style:italic;}
+
+  .close-slide{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;}
+  .close-slide .url{font-family:var(--mono);color:var(--sky);font-size:16px;margin-top:18px;}
+  .close-slide .line{font-family:var(--serif);font-style:italic;color:var(--ink2);font-size:18px;margin-top:10px;}
+
+  /* chrome */
+  #dots{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:20;flex-wrap:wrap;max-width:60vw;justify-content:center;}
+  #dots button{width:7px;height:7px;border-radius:99px;border:none;background:rgba(255,255,255,0.28);cursor:pointer;padding:0;}
+  #dots button.on{background:#fff;}
+  #arrows{position:fixed;bottom:18px;right:22px;display:flex;gap:8px;z-index:20;}
+  #arrows button{width:34px;height:34px;border-radius:999px;border:1px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.35);color:#fff;cursor:pointer;font-size:14px;}
+  #counter{position:fixed;bottom:22px;left:22px;color:rgba(255,255,255,0.65);font-family:var(--sans);font-size:12px;z-index:20;}
+  #notesToggle{position:fixed;top:18px;right:22px;z-index:20;background:rgba(0,0,0,0.35);color:#fff;border:1px solid rgba(255,255,255,0.25);border-radius:999px;padding:7px 14px;font-size:12px;cursor:pointer;}
+  #notesDrawer{position:fixed;left:0;right:0;bottom:0;max-height:34vh;background:#141210;color:#f1ede4;transform:translateY(100%);transition:transform .3s ease;z-index:30;padding:22px 34px;font-size:14px;line-height:1.6;overflow:auto;border-top:1px solid rgba(255,255,255,0.12);}
+  #notesDrawer.open{transform:translateY(0);}
+  #notesDrawer b{color:#fff;}
+</style>
+</head>
+<body>
+
+<div id="viewport"><div id="canvas"><div id="slide" class="slide active"></div></div></div>
+<div id="dots"></div>
+<div id="counter"></div>
+<div id="arrows"><button id="prev">&#8592;</button><button id="next">&#8594;</button></div>
+<button id="notesToggle">Notes (N)</button>
+<div id="notesDrawer"></div>
+
+<script>
+const icon = (size) => `<svg width="${size}" height="${size}" viewBox="40 100 320 300"><rect x="60" y="120" width="160" height="160" rx="25" fill="#004B87"/><rect x="170" y="220" width="160" height="160" rx="25" fill="#0091D2"/><circle cx="310" cy="140" r="50" fill="#BEE1F5"/></svg>`;
+const chromeDots = `<div class="mockup-bar"><div class="mockup-dot" style="background:#FF5F57"></div><div class="mockup-dot" style="background:#FEBC2E"></div><div class="mockup-dot" style="background:#28C840"></div></div>`;
+
+const SLIDES = [
+{
+  tone: 'a',
+  notes: "One-line summary if skimmed: Dealigence turns negotiation practice into something repeatable and measurable, for solo learners and organized cohorts alike. Hold here — let the mark land before advancing.",
+  html: () => `<div class="pad title-slide">
+    <div class="brandmark stagger" style="--i:0">${icon(64)}Dealigence</div>
+    <div class="tagline stagger" style="--i:1">Negotiation Practice Intelligence</div>
+    <div class="deck-title stagger" style="--i:2">Overview — Unilever H3L</div>
+  </div>`
+},
+{
+  tone: 'a',
+  notes: "Open on the pain, not the product. This is the same hook as the teaser — reveal the claim first, let it sit, THEN name the product on the next slide. Evidence before claim.",
+  html: () => `<div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
+    <div class="eyebrow stagger" style="--i:0">The Problem</div>
+    <h1 class="slide-h stagger" style="--i:1">Negotiation is a perishable skill.</h1>
+    <p class="sub stagger" style="--i:2">Most people never get a safe place to rehearse it — or real-time
+      professional feedback. Traditional training is episodic and hard to measure.</p>
+    <div class="stagger" style="--i:3;display:flex;gap:14px;margin-top:34px;flex-wrap:wrap;">
+      ${['Skill decays without repetition','Real feedback is rare','Hard to compare outcomes fairly'].map(t=>`
+        <div style="background:var(--card);border-radius:999px;padding:11px 20px;font-size:13.5px;font-weight:700;box-shadow:0 8px 22px rgba(58,47,34,.10);display:flex;align-items:center;gap:9px;">
+          <span style="width:6px;height:6px;border-radius:99px;background:var(--indigo);"></span>${t}
+        </div>`).join('')}
+    </div>
+  </div>`
+},
+{
+  tone: 'b',
+  notes: "This is the 'why it's needed' slide — three concrete benefits, not abstract claims. Read them in order: safety, repeatability, then actionability — that's the logical build.",
+  html: () => `<div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
+    <div class="eyebrow stagger" style="--i:0">Why It's Needed</div>
+    <h1 class="slide-h stagger" style="--i:1">Practice you can repeat on demand.</h1>
+    <div class="grid3" style="margin-top:26px;">
+      <div class="card stagger" style="--i:2"><div class="num">1</div><h3>Safe rehearsal</h3><p>Realistic AI-led role plays before the real deal.</p>
+        <ul><li>No downside to a bad session</li><li>No human counterpart required</li><li>Run it as many times as you need</li></ul></div>
+      <div class="card stagger" style="--i:3"><div class="num">2</div><h3>Repeatable, comparable</h3><p>Same case and persona, every time.</p>
+        <ul><li>Consistent scenario across attempts</li><li>Same setup for everyone in a competition</li><li>Results that actually compare</li></ul></div>
+      <div class="card stagger" style="--i:4"><div class="num">3</div><h3>Actionable, not generic</h3><p>Feedback tied to what happened.</p>
+        <ul><li>Deal summary and scorecard</li><li>Improvement hints from your own session</li><li>Not a canned tips list</li></ul></div>
+    </div>
+  </div>`
+},
+{
+  tone: 'a',
+  notes: "Reveal the product name and the two-mode structure together — this is the slide that answers 'what is this' after two slides of problem framing.",
+  html: () => `<div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;">${icon(46)}<span style="font-family:var(--sans);font-weight:800;font-size:32px;color:var(--navy);">Dealigence</span></div>
+    <p style="text-align:center;font-size:15px;color:var(--ink2);margin:14px 0 0;">AI-powered negotiation practice. Practice solo. Compete fairly.</p>
+    <div class="grid2 stagger" style="--i:1;margin-top:34px;max-width:900px;width:100%;margin-left:auto;margin-right:auto;">
+      <div class="card"><span class="tag tag-practice">Practice</span><h3 style="margin-top:12px;">Solo. Repeatable. On demand.</h3>
+        <ul><li>Choose role, case, opponent persona</li><li>Negotiate turn by turn, text or voice</li><li>Structured feedback every session</li></ul></div>
+      <div class="card"><span class="tag tag-competition">Competition</span><h3 style="margin-top:12px;">Same case. Same rules. Ranked.</h3>
+        <ul><li>Organizer locks case + persona</li><li>Room code in — zero setup to join</li><li>Live leaderboard, best-score ranking</li></ul></div>
+    </div>
+  </div>`
+},
+{
+  tone: 'b',
+  notes: "Walk the three-step Practice loop in order — configure, negotiate, feedback. Don't skip to the payoff slide yet; this slide is about the mechanism, not the result.",
+  html: () => `<div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
+    <div class="eyebrow stagger" style="--i:0">Practice Mode</div>
+    <h1 class="slide-h stagger" style="--i:1">Configure → Negotiate → Feedback.</h1>
+    <div class="grid3" style="margin-top:26px;">
+      <div class="card stagger" style="--i:2"><div class="num">01</div><h3>Configure</h3><p>Role, case, opponent persona.</p>
+        <ul><li>Lands on a prep brief</li><li>Objective + what to watch for</li></ul></div>
+      <div class="card stagger" style="--i:3"><div class="num">02</div><h3>Negotiate</h3><p>Turn-by-turn with a streaming AI counterpart.</p>
+        <ul><li>Text by default, voice/avatar optional</li><li>Live coaching hints alongside</li></ul></div>
+      <div class="card stagger" style="--i:4"><div class="num">03</div><h3>Feedback</h3><p>Structured, evidence-based wrap-up.</p>
+        <ul><li>Deal summary + scorecard</li><li>Hints tied to your actual chat</li></ul></div>
+    </div>
+  </div>`
+},
+{
+  tone: 'a',
+  notes: "This slide exists to answer a question execs always ask about AI negotiation demos: 'does it only work as text?' No — same scenario, same stakes, voice is just a second interface. Let the mockup carry visual weight here.",
+  html: () => `<div class="pad">
+    <div class="split">
+      <div class="stagger" style="--i:0">
+        <div class="eyebrow">Voice &amp; Avatar Mode</div>
+        <h1 class="slide-h" style="font-size:36px;">Same practice. More immersion.</h1>
+        <p class="sub">Text is the default path. Voice/avatar uses the same scenario and persona —
+          only the interface changes.</p>
+        <ul>
+          <li>Speak naturally with a live AI counterpart</li>
+          <li>Type at your pace instead, any time</li>
+          <li>Switch between text and voice mid-session</li>
+        </ul>
+      </div>
+      <div class="stagger" style="--i:1">
+        <div class="mockup">${chromeDots}
+          <div class="mockup-body" style="background:var(--bgA);">
+            <div class="mockup-eyebrow">Voice &amp; Avatar Mode</div>
+            <div class="orb-wrap">
+              <div class="orb">
+                <div class="orb-face">
+                  <svg viewBox="0 0 200 200" width="100%" height="100%" style="display:block;">
+                    <defs>
+                      <radialGradient id="head-deck" cx="32%" cy="26%" r="80%"><stop offset="0%" stop-color="var(--pale)"/><stop offset="45%" stop-color="var(--sky)"/><stop offset="100%" stop-color="var(--navy)"/></radialGradient>
+                      <linearGradient id="body-deck" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0%" stop-color="var(--navy)"/><stop offset="100%" stop-color="#00335C"/></linearGradient>
+                    </defs>
+                    <ellipse cx="100" cy="205" rx="90" ry="68" fill="url(#body-deck)"/>
+                    <circle cx="100" cy="88" r="55" fill="url(#head-deck)"/>
+                    <ellipse cx="79" cy="84" rx="6" ry="7" fill="#00263F"/><ellipse cx="121" cy="84" rx="6" ry="7" fill="#00263F"/>
+                    <circle cx="81" cy="82" r="1.6" fill="#fff" opacity="0.85"/><circle cx="123" cy="82" r="1.6" fill="#fff" opacity="0.85"/>
+                    <path d="M76 106 Q100 122 124 106" stroke="#00263F" stroke-width="5" stroke-linecap="round" fill="none"/>
+                  </svg>
+                </div>
+                <div class="mic-badge"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="5.5" y="1" width="5" height="8" rx="2.5" fill="#fff"/><path d="M3 7.5a5 5 0 0 0 10 0M8 12.5v2" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+              </div>
+              <div class="wave">${[14,24,10,30,16,26,12,22,18,9].map(h=>`<span style="height:${h}px"></span>`).join('')}</div>
+              <div class="quote-box">"If you commit to a 3-year term today, I can bring this to $265k with priority onboarding."</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`
+},
+{
+  tone: 'b',
+  notes: "The payoff slide — this is what makes the platform defensible, not just 'an AI chatbot.' Let the ring visual land before reading the feedback lines; evidence, then claim.",
+  html: () => `<div class="pad">
+    <div class="split">
+      <div class="stagger" style="--i:0">
+        <div class="eyebrow">After The Deal</div>
+        <h1 class="slide-h" style="font-size:36px;">Clear outcomes. Actionable feedback.</h1>
+        <p class="sub">Every session ends with a deal summary, a scored evaluation, and specific
+          improvement hints.</p>
+        <ul>
+          <li>Deal summary — final price, term, status</li>
+          <li>Scorecard — overall, ZOPA control, concessions</li>
+          <li>Feedback tied to your actual conversation</li>
+        </ul>
+      </div>
+      <div class="stagger" style="--i:1">
+        <div class="mockup">${chromeDots}
+          <div class="mockup-body" style="display:flex;gap:16px;align-items:center;">
+            <div class="ring"><div class="hole"><b>78</b><span>Overall</span></div></div>
+            <div style="flex:1;">
+              <div class="fb-chip">Strong anchoring — created downward pressure on price.</div>
+              <div class="fb-chip">Opportunity: introduce non-price terms earlier.</div>
+              <div class="fb-chip">Good close — 3-year term unlocked $45k.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`
+},
+{
+  tone: 'a',
+  notes: "Competition mode is the group/event use case — organizer sets it up, participants skip configuration entirely. Emphasize 'zero setup for participants,' that's the actual differentiator for workshops.",
+  html: () => `<div class="pad">
+    <div class="split">
+      <div class="stagger" style="--i:0">
+        <div class="eyebrow">Competition Mode</div>
+        <h1 class="slide-h" style="font-size:36px;">Fair practice. Ranked results.</h1>
+        <p class="sub">An organizer locks the case and persona so every participant gets an identical
+          test — zero setup for participants.</p>
+        <ul>
+          <li>Room code in, negotiate — no free-form setup</li>
+          <li>Same case + persona discipline for everyone</li>
+          <li>Live leaderboard, ranked by best qualifying score</li>
+        </ul>
+      </div>
+      <div class="stagger" style="--i:1">
+        <div class="mockup">${chromeDots}
+          <div class="mockup-body">
+            <div class="code-box"><b>DLG-4829</b></div>
+            <div class="lb-row"><span class="r">1</span><span class="n">Sarah M.</span><span class="s">91</span></div>
+            <div class="lb-row hl"><span class="r">2</span><span class="n">James K.</span><span class="s" style="color:var(--indigo)">87</span></div>
+            <div class="lb-row"><span class="r">3</span><span class="n">Priya R.</span><span class="s">84</span></div>
+            <div class="lb-row"><span class="r">4</span><span class="n">Tom H.</span><span class="s">78</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`
+},
+{
+  tone: 'b',
+  notes: "This is the differentiation slide for anyone asking 'why not just use ChatGPT for this.' Three specific answers, not a vague 'AI-powered' claim.",
+  html: () => `<div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
+    <div class="eyebrow stagger" style="--i:0">What Makes It Different</div>
+    <h1 class="slide-h stagger" style="--i:1">Discipline, not just dialogue.</h1>
+    <div class="grid3" style="margin-top:26px;">
+      <div class="card muted stagger" style="--i:2"><h3>Same case + persona</h3><p>Discipline for everyone in a competition.</p>
+        <ul><li>Server-locked settings</li><li>Results are actually comparable</li></ul></div>
+      <div class="card muted stagger" style="--i:3"><h3>Text and avatar</h3><p>Two faces of one practice session.</p>
+        <ul><li>Not two different products</li><li>Switch mid-session, same stakes</li></ul></div>
+      <div class="card muted stagger" style="--i:4"><h3>One flow</h3><p>Wrap-up artifacts in a single session.</p>
+        <ul><li>Deal + scores + report together</li><li>Not a separate reporting step</li></ul></div>
+    </div>
+  </div>`
+},
+{
+  tone: 'a',
+  notes: "Audience slide — three groups now, including the enterprise IT/compliance angle since that's a live concern for a Unilever-scale reviewer.",
+  html: () => `<div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
+    <div class="eyebrow stagger" style="--i:0">Who It's For</div>
+    <h1 class="slide-h stagger" style="--i:1" style="font-size:36px;">Practitioners. Organizers. IT can sign off.</h1>
+    <div class="grid3 stagger" style="--i:2;margin-top:24px;">
+      <div class="card"><h3>Practitioners</h3><p>Professionals who negotiate as part of their job.</p>
+        <ul><li>Procurement buyers, sales, deal teams</li><li>Repeatable reps between real deals</li></ul></div>
+      <div class="card"><h3>Organizers</h3><p>Workshop leads and cohort/event organizers.</p>
+        <ul><li>Scalable, comparable practice sessions</li><li>One case, one persona, whole cohort</li></ul></div>
+      <div class="card"><h3>IT &amp; Compliance</h3><p>No real customer data, ever.</p>
+        <ul><li>Cases and personas are synthetic</li><li>Standard enterprise review gate applies</li></ul></div>
+    </div>
+  </div>`
+},
+{
+  tone: 'b',
+  notes: "New slide — market timing. Keep this to three concrete reasons AI negotiation practice is possible NOW, not aspirational hand-waving.",
+  html: () => `<div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
+    <div class="eyebrow stagger" style="--i:0">Why Now</div>
+    <h1 class="slide-h stagger" style="--i:1">AI makes this practical for the first time.</h1>
+    <div class="grid3" style="margin-top:26px;">
+      <div class="card stagger" style="--i:2"><h3>Adaptive counterparts</h3><p>Modern models hold a genuinely responsive, persona-consistent negotiation — not scripted branching dialogue.</p></div>
+      <div class="card stagger" style="--i:3"><h3>Voice removes the last excuse</h3><p>Real-time voice/avatar interaction closes the gap between "a chatbot" and a credible practice partner.</p></div>
+      <div class="card stagger" style="--i:4"><h3>Cohort-scale is feasible</h3><p>Competition mode lets one organizer run comparable practice for a whole team or accelerator cohort at once.</p></div>
+    </div>
+    <p class="sub stagger" style="--i:5;margin-top:26px;">None of this required a breakthrough in negotiation theory — it required models good enough
+      to hold up their end of a realistic conversation. That threshold has now been crossed.</p>
+  </div>`
+},
+{
+  tone: 'a',
+  notes: "New slide — the actual ask. Keep it concrete and small: a pilot, not a company-wide rollout ask. This is what makes the closing slide's CTA land as credible rather than vague.",
+  html: () => `<div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
+    <div class="eyebrow stagger" style="--i:0">Next Steps</div>
+    <h1 class="slide-h stagger" style="--i:1">A focused pilot, not a big bet.</h1>
+    <div class="grid3" style="margin-top:26px;">
+      <div class="card stagger" style="--i:2"><div class="num">1</div><h3>Pilot</h3><p>Run one cohort — a workshop or team — through Practice and Competition mode on a real-style case.</p></div>
+      <div class="card stagger" style="--i:3"><div class="num">2</div><h3>Feedback</h3><p>Collect session data plus qualitative feedback on realism, coaching value, and fairness.</p></div>
+      <div class="card stagger" style="--i:4"><div class="num">3</div><h3>Iterate</h3><p>Expand the case library and refine scoring based on what the pilot actually surfaces.</p></div>
+    </div>
+    <p class="sub stagger" style="--i:5;margin-top:26px;">Scoped to prove the concept with one real cohort before any wider rollout conversation —
+      small enough to say yes to quickly.</p>
+  </div>`
+},
+{
+  tone: 'b',
+  notes: "Closing ask — keep it to one clear next step. This is a pilot/feedback ask, not a hard sell.",
+  html: () => `<div class="pad close-slide">
+    <div class="brandmark stagger" style="--i:0">${icon(52)}<span style="font-size:32px;">Dealigence</span></div>
+    <div class="url stagger" style="--i:1">dealigence.ai</div>
+    <div class="line stagger" style="--i:2">Try it. Tell us what breaks.</div>
+  </div>`
+},
+];
+
+let idx = 0;
+const slideEl = document.getElementById('slide');
+const dotsEl = document.getElementById('dots');
+const counterEl = document.getElementById('counter');
+const notesEl = document.getElementById('notesDrawer');
+
+function renderDots(){
+  dotsEl.innerHTML = SLIDES.map((_,i)=>`<button data-i="${i}" class="${i===idx?'on':''}"></button>`).join('');
+  Array.from(dotsEl.children).forEach(btn=>btn.addEventListener('click',()=>go(+btn.dataset.i)));
+}
+function renderNotes(){
+  notesEl.innerHTML = `<b>Slide ${idx+1} of ${SLIDES.length} — speaker notes</b><br/><br/>${SLIDES[idx].notes}`;
+}
+function go(i){
+  if (i<0 || i>=SLIDES.length || i===idx) return;
+  idx = i;
+  slideEl.classList.remove('active');
+  setTimeout(()=>{
+    slideEl.className = 'slide active tone-' + SLIDES[idx].tone;
+    slideEl.innerHTML = SLIDES[idx].html();
+    renderDots();
+    counterEl.textContent = (idx+1) + ' / ' + SLIDES.length;
+    renderNotes();
+  }, 220);
+}
+document.getElementById('prev').onclick = ()=>go(idx-1);
+document.getElementById('next').onclick = ()=>go(idx+1);
+document.getElementById('notesToggle').onclick = ()=>notesEl.classList.toggle('open');
+window.addEventListener('keydown', (e)=>{
+  if (e.code==='ArrowRight' || e.code==='Space') { e.preventDefault(); go(idx+1); }
+  else if (e.code==='ArrowLeft') go(idx-1);
+  else if (e.code==='KeyN') notesEl.classList.toggle('open');
+});
+document.getElementById('canvas').addEventListener('click', (e)=>{
+  if (e.target.closest('#notesDrawer')) return;
+  go(idx+1);
+});
+
+function fitScale(){
+  const canvas = document.getElementById('canvas');
+  const s = Math.min(window.innerWidth/1280, window.innerHeight/720) * 0.94;
+  canvas.style.transform = 'scale(' + s + ')';
+}
+window.addEventListener('resize', fitScale);
+fitScale();
+
+// initial render
+slideEl.className = 'slide active tone-' + SLIDES[0].tone;
+slideEl.innerHTML = SLIDES[0].html();
+renderDots();
+counterEl.textContent = '1 / ' + SLIDES.length;
+renderNotes();
+</script>
+
+</body>
+</html>

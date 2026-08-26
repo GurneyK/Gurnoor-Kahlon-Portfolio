@@ -1,24 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { qaPairs, fallbackAnswer } from "../data/qa.js";
-
-const KEYWORD_MAP = [
-  ["apart", "different", "stand out", "unique"],
-  ["proud", "proudest", "best work", "favorite project", "favourite project"],
-  ["pushback", "disagree", "conflict", "criticism", "feedback"],
-  ["process", "workflow", "approach", "how do you design"],
-  ["marketing", "why did you", "background", "brock"],
-  ["next role", "looking for", "opportunit", "what kind of team", "hiring"],
-];
-
-function matchAnswer(input) {
-  const normalized = input.toLowerCase();
-  for (let i = 0; i < qaPairs.length; i++) {
-    if (KEYWORD_MAP[i].some((kw) => normalized.includes(kw))) {
-      return qaPairs[i].answer;
-    }
-  }
-  return fallbackAnswer;
-}
+import { qaPairs, matchAnswer } from "../data/qa.jsx";
 
 function Bubble({ role, children }) {
   const isUser = role === "user";
@@ -77,9 +58,10 @@ export default function AskMeAnything() {
           Common interview questions, answered directly
         </h2>
         <p className="mt-4 max-w-lg text-lg leading-relaxed text-[var(--color-paper-dim)]">
-          Questions I'm asked in most interviews, answered here directly.
-          No live AI behind this, just my own answers, kept consistent
-          every time.
+          Pick a question below, or type your own about my work, background,
+          or projects. No live AI behind this, just my own answers, kept
+          consistent every time, ready to route you to a real conversation
+          when it's worth having one.
         </p>
 
         <div className="mt-10 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]">
