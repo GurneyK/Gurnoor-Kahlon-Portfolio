@@ -190,12 +190,12 @@ export default function Home() {
 
               <div className="mt-4 flex flex-wrap gap-4 text-base">
                 <a
-                  href={`${BASE}dealigence/dealigence-teaser.html`}
+                  href={`${BASE}dealigence/dealigence-final.mp4`}
                   target="_blank"
                   rel="noreferrer"
                   className="text-[var(--color-paper-dim)] underline decoration-[var(--color-border)] underline-offset-4 transition-colors hover:text-[var(--color-sage-bright)]"
                 >
-                  Open launch teaser ↗
+                  Open showcased teaser ↗
                 </a>
                 <a
                   href={`${BASE}dealigence/dealigence-deck.html`}
