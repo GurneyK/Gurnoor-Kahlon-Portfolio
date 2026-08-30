@@ -7,7 +7,7 @@ const NAV_LINKS = [
   { id: "work", label: "Work", type: "anchor" },
   { id: "side-project", label: "Independent Work", type: "anchor" },
   { to: "/about", label: "About", type: "route" },
-  { id: "contact", label: "Contact", type: "anchor" },
+  { to: "/contact", label: "Contact", type: "route" },
 ];
 
 function LinkedInIcon({ className = "" }) {
