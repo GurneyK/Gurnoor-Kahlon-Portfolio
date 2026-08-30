@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Nav from "./components/Nav.jsx";
@@ -12,6 +13,10 @@ import RDAgent from "./pages/RDAgent.jsx";
 
 function App() {
   const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen bg-[var(--color-ink)] text-[var(--color-paper)]">
