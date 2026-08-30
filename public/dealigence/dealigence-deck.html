@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Dealigence — Deck</title>
+<title>Dealigence: Deck</title>
 <style>
   :root{
     --bgA:#E7DECD; --bgB:#F7F1EA; --card:#FFFFFF; --cardMuted:#EDE6D8;
@@ -118,20 +118,20 @@ const chromeDots = `<div class="mockup-bar"><div class="mockup-dot" style="backg
 const SLIDES = [
 {
   tone: 'a',
-  notes: "One-line summary if skimmed: Dealigence turns negotiation practice into something repeatable and measurable, for solo learners and organized cohorts alike. Hold here — let the mark land before advancing.",
+  notes: "One-line summary if skimmed: Dealigence turns negotiation practice into something repeatable and measurable, for solo learners and organized cohorts alike. Hold here, let the mark land before advancing.",
   html: () => `<div class="pad title-slide">
     <div class="brandmark stagger" style="--i:0">${icon(64)}Dealigence</div>
     <div class="tagline stagger" style="--i:1">Negotiation Practice Intelligence</div>
-    <div class="deck-title stagger" style="--i:2">Overview — Unilever H3L</div>
+    <div class="deck-title stagger" style="--i:2">Overview: Unilever H3L</div>
   </div>`
 },
 {
   tone: 'a',
-  notes: "Open on the pain, not the product. This is the same hook as the teaser — reveal the claim first, let it sit, THEN name the product on the next slide. Evidence before claim.",
+  notes: "Open on the pain, not the product. This is the same hook as the teaser: reveal the claim first, let it sit, THEN name the product on the next slide. Evidence before claim.",
   html: () => `<div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
     <div class="eyebrow stagger" style="--i:0">The Problem</div>
     <h1 class="slide-h stagger" style="--i:1">Negotiation is a perishable skill.</h1>
-    <p class="sub stagger" style="--i:2">Most people never get a safe place to rehearse it — or real-time
+    <p class="sub stagger" style="--i:2">Most people never get a safe place to rehearse it, or real-time
       professional feedback. Traditional training is episodic and hard to measure.</p>
     <div class="stagger" style="--i:3;display:flex;gap:14px;margin-top:34px;flex-wrap:wrap;">
       ${['Skill decays without repetition','Real feedback is rare','Hard to compare outcomes fairly'].map(t=>`
@@ -143,7 +143,7 @@ const SLIDES = [
 },
 {
   tone: 'b',
-  notes: "This is the 'why it's needed' slide — three concrete benefits, not abstract claims. Read them in order: safety, repeatability, then actionability — that's the logical build.",
+  notes: "This is the 'why it's needed' slide: three concrete benefits, not abstract claims. Read them in order: safety, repeatability, then actionability, that's the logical build.",
   html: () => `<div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
     <div class="eyebrow stagger" style="--i:0">Why It's Needed</div>
     <h1 class="slide-h stagger" style="--i:1">Practice you can repeat on demand.</h1>
@@ -159,7 +159,7 @@ const SLIDES = [
 },
 {
   tone: 'a',
-  notes: "Reveal the product name and the two-mode structure together — this is the slide that answers 'what is this' after two slides of problem framing.",
+  notes: "Reveal the product name and the two-mode structure together. This is the slide that answers 'what is this' after two slides of problem framing.",
   html: () => `<div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
     <div style="display:flex;align-items:center;justify-content:center;gap:12px;">${icon(46)}<span style="font-family:var(--sans);font-weight:800;font-size:32px;color:var(--navy);">Dealigence</span></div>
     <p style="text-align:center;font-size:15px;color:var(--ink2);margin:14px 0 0;">AI-powered negotiation practice. Practice solo. Compete fairly.</p>
@@ -167,13 +167,13 @@ const SLIDES = [
       <div class="card"><span class="tag tag-practice">Practice</span><h3 style="margin-top:12px;">Solo. Repeatable. On demand.</h3>
         <ul><li>Choose role, case, opponent persona</li><li>Negotiate turn by turn, text or voice</li><li>Structured feedback every session</li></ul></div>
       <div class="card"><span class="tag tag-competition">Competition</span><h3 style="margin-top:12px;">Same case. Same rules. Ranked.</h3>
-        <ul><li>Organizer locks case + persona</li><li>Room code in — zero setup to join</li><li>Live leaderboard, best-score ranking</li></ul></div>
+        <ul><li>Organizer locks case + persona</li><li>Room code in, zero setup to join</li><li>Live leaderboard, best-score ranking</li></ul></div>
     </div>
   </div>`
 },
 {
   tone: 'b',
-  notes: "Walk the three-step Practice loop in order — configure, negotiate, feedback. Don't skip to the payoff slide yet; this slide is about the mechanism, not the result.",
+  notes: "Walk the three-step Practice loop in order: configure, negotiate, feedback. Don't skip to the payoff slide yet; this slide is about the mechanism, not the result.",
   html: () => `<div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
     <div class="eyebrow stagger" style="--i:0">Practice Mode</div>
     <h1 class="slide-h stagger" style="--i:1">Configure → Negotiate → Feedback.</h1>
@@ -189,13 +189,13 @@ const SLIDES = [
 },
 {
   tone: 'a',
-  notes: "This slide exists to answer a question execs always ask about AI negotiation demos: 'does it only work as text?' No — same scenario, same stakes, voice is just a second interface. Let the mockup carry visual weight here.",
+  notes: "This slide exists to answer a question execs always ask about AI negotiation demos: 'does it only work as text?' No, same scenario, same stakes, voice is just a second interface. Let the mockup carry visual weight here.",
   html: () => `<div class="pad">
     <div class="split">
       <div class="stagger" style="--i:0">
         <div class="eyebrow">Voice &amp; Avatar Mode</div>
         <h1 class="slide-h" style="font-size:36px;">Same practice. More immersion.</h1>
-        <p class="sub">Text is the default path. Voice/avatar uses the same scenario and persona —
+        <p class="sub">Text is the default path. Voice/avatar uses the same scenario and persona,
           only the interface changes.</p>
         <ul>
           <li>Speak naturally with a live AI counterpart</li>
@@ -235,7 +235,7 @@ const SLIDES = [
 },
 {
   tone: 'b',
-  notes: "The payoff slide — this is what makes the platform defensible, not just 'an AI chatbot.' Let the ring visual land before reading the feedback lines; evidence, then claim.",
+  notes: "The payoff slide: this is what makes the platform defensible, not just 'an AI chatbot.' Let the ring visual land before reading the feedback lines; evidence, then claim.",
   html: () => `<div class="pad">
     <div class="split">
       <div class="stagger" style="--i:0">
@@ -244,8 +244,8 @@ const SLIDES = [
         <p class="sub">Every session ends with a deal summary, a scored evaluation, and specific
           improvement hints.</p>
         <ul>
-          <li>Deal summary — final price, term, status</li>
-          <li>Scorecard — overall, ZOPA control, concessions</li>
+          <li>Deal summary: final price, term, status</li>
+          <li>Scorecard: overall, ZOPA control, concessions</li>
           <li>Feedback tied to your actual conversation</li>
         </ul>
       </div>
@@ -254,9 +254,9 @@ const SLIDES = [
           <div class="mockup-body" style="display:flex;gap:16px;align-items:center;">
             <div class="ring"><div class="hole"><b>78</b><span>Overall</span></div></div>
             <div style="flex:1;">
-              <div class="fb-chip">Strong anchoring — created downward pressure on price.</div>
+              <div class="fb-chip">Strong anchoring: created downward pressure on price.</div>
               <div class="fb-chip">Opportunity: introduce non-price terms earlier.</div>
-              <div class="fb-chip">Good close — 3-year term unlocked $45k.</div>
+              <div class="fb-chip">Good close: 3-year term unlocked $45k.</div>
             </div>
           </div>
         </div>
@@ -266,16 +266,16 @@ const SLIDES = [
 },
 {
   tone: 'a',
-  notes: "Competition mode is the group/event use case — organizer sets it up, participants skip configuration entirely. Emphasize 'zero setup for participants,' that's the actual differentiator for workshops.",
+  notes: "Competition mode is the group/event use case: organizer sets it up, participants skip configuration entirely. Emphasize 'zero setup for participants,' that's the actual differentiator for workshops.",
   html: () => `<div class="pad">
     <div class="split">
       <div class="stagger" style="--i:0">
         <div class="eyebrow">Competition Mode</div>
         <h1 class="slide-h" style="font-size:36px;">Fair practice. Ranked results.</h1>
         <p class="sub">An organizer locks the case and persona so every participant gets an identical
-          test — zero setup for participants.</p>
+          test, zero setup for participants.</p>
         <ul>
-          <li>Room code in, negotiate — no free-form setup</li>
+          <li>Room code in, negotiate, no free-form setup</li>
           <li>Same case + persona discipline for everyone</li>
           <li>Live leaderboard, ranked by best qualifying score</li>
         </ul>
@@ -312,7 +312,7 @@ const SLIDES = [
 },
 {
   tone: 'a',
-  notes: "Audience slide — three groups now, including the enterprise IT/compliance angle since that's a live concern for a Unilever-scale reviewer.",
+  notes: "Audience slide: three groups now, including the enterprise IT/compliance angle since that's a live concern for a Unilever-scale reviewer.",
   html: () => `<div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
     <div class="eyebrow stagger" style="--i:0">Who It's For</div>
     <h1 class="slide-h stagger" style="--i:1" style="font-size:36px;">Practitioners. Organizers. IT can sign off.</h1>
@@ -328,37 +328,37 @@ const SLIDES = [
 },
 {
   tone: 'b',
-  notes: "New slide — market timing. Keep this to three concrete reasons AI negotiation practice is possible NOW, not aspirational hand-waving.",
+  notes: "New slide: market timing. Keep this to three concrete reasons AI negotiation practice is possible NOW, not aspirational hand-waving.",
   html: () => `<div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
     <div class="eyebrow stagger" style="--i:0">Why Now</div>
     <h1 class="slide-h stagger" style="--i:1">AI makes this practical for the first time.</h1>
     <div class="grid3" style="margin-top:26px;">
-      <div class="card stagger" style="--i:2"><h3>Adaptive counterparts</h3><p>Modern models hold a genuinely responsive, persona-consistent negotiation — not scripted branching dialogue.</p></div>
+      <div class="card stagger" style="--i:2"><h3>Adaptive counterparts</h3><p>Modern models hold a genuinely responsive, persona-consistent negotiation, not scripted branching dialogue.</p></div>
       <div class="card stagger" style="--i:3"><h3>Voice removes the last excuse</h3><p>Real-time voice/avatar interaction closes the gap between "a chatbot" and a credible practice partner.</p></div>
       <div class="card stagger" style="--i:4"><h3>Cohort-scale is feasible</h3><p>Competition mode lets one organizer run comparable practice for a whole team or accelerator cohort at once.</p></div>
     </div>
-    <p class="sub stagger" style="--i:5;margin-top:26px;">None of this required a breakthrough in negotiation theory — it required models good enough
+    <p class="sub stagger" style="--i:5;margin-top:26px;">None of this required a breakthrough in negotiation theory. It required models good enough
       to hold up their end of a realistic conversation. That threshold has now been crossed.</p>
   </div>`
 },
 {
   tone: 'a',
-  notes: "New slide — the actual ask. Keep it concrete and small: a pilot, not a company-wide rollout ask. This is what makes the closing slide's CTA land as credible rather than vague.",
+  notes: "New slide: the actual ask. Keep it concrete and small: a pilot, not a company-wide rollout ask. This is what makes the closing slide's CTA land as credible rather than vague.",
   html: () => `<div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
     <div class="eyebrow stagger" style="--i:0">Next Steps</div>
     <h1 class="slide-h stagger" style="--i:1">A focused pilot, not a big bet.</h1>
     <div class="grid3" style="margin-top:26px;">
-      <div class="card stagger" style="--i:2"><div class="num">1</div><h3>Pilot</h3><p>Run one cohort — a workshop or team — through Practice and Competition mode on a real-style case.</p></div>
+      <div class="card stagger" style="--i:2"><div class="num">1</div><h3>Pilot</h3><p>Run one cohort, a workshop or team, through Practice and Competition mode on a real-style case.</p></div>
       <div class="card stagger" style="--i:3"><div class="num">2</div><h3>Feedback</h3><p>Collect session data plus qualitative feedback on realism, coaching value, and fairness.</p></div>
       <div class="card stagger" style="--i:4"><div class="num">3</div><h3>Iterate</h3><p>Expand the case library and refine scoring based on what the pilot actually surfaces.</p></div>
     </div>
-    <p class="sub stagger" style="--i:5;margin-top:26px;">Scoped to prove the concept with one real cohort before any wider rollout conversation —
+    <p class="sub stagger" style="--i:5;margin-top:26px;">Scoped to prove the concept with one real cohort before any wider rollout conversation,
       small enough to say yes to quickly.</p>
   </div>`
 },
 {
   tone: 'b',
-  notes: "Closing ask — keep it to one clear next step. This is a pilot/feedback ask, not a hard sell.",
+  notes: "Closing ask: keep it to one clear next step. This is a pilot/feedback ask, not a hard sell.",
   html: () => `<div class="pad close-slide">
     <div class="brandmark stagger" style="--i:0">${icon(52)}<span style="font-size:32px;">Dealigence</span></div>
     <div class="url stagger" style="--i:1">dealigence.ai</div>
@@ -378,7 +378,7 @@ function renderDots(){
   Array.from(dotsEl.children).forEach(btn=>btn.addEventListener('click',()=>go(+btn.dataset.i)));
 }
 function renderNotes(){
-  notesEl.innerHTML = `<b>Slide ${idx+1} of ${SLIDES.length} — speaker notes</b><br/><br/>${SLIDES[idx].notes}`;
+  notesEl.innerHTML = `<b>Slide ${idx+1} of ${SLIDES.length}, speaker notes</b><br/><br/>${SLIDES[idx].notes}`;
 }
 function go(i){
   if (i<0 || i>=SLIDES.length || i===idx) return;

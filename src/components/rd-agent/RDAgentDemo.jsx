@@ -637,7 +637,7 @@ function ScoringGuideView() {
       </div>
 
       <h3 className="mt-10 text-sm font-semibold uppercase tracking-wide text-[#8B98AC]">
-        Components <span className="normal-case text-[#5B6B85]">— click a card for scoring signals</span>
+        Components <span className="normal-case text-[#5B6B85]">(click a card for scoring signals)</span>
       </h3>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         {scoringComponents.map((c) => (

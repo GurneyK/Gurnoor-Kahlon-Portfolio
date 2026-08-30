@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Dealigence — Negotiation Practice Intelligence</title>
+<title>Dealigence: Negotiation Practice Intelligence</title>
 
 <!-- React + Babel pinned. Re-derive integrity if you change versions. -->
 <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"
@@ -753,7 +753,7 @@ window.THEME = {
             Negotiation is a perishable skill.
           </window.Headline>
           <window.Subhead style={{ opacity: subOp, transform: `translateY(${subY}px)`, marginTop: 18, textAlign: 'center', maxWidth: 620 }}>
-            Most people never get a safe place to rehearse it — or real-time professional feedback.
+            Most people never get a safe place to rehearse it, or real-time professional feedback.
           </window.Subhead>
         </Layer>
         <window.CornerLogo opacity={interpolate(lt, [0.6, 1.2], [0, 1])} />
@@ -837,7 +837,7 @@ window.THEME = {
   const T = window.THEME;
 
   const CASES = [
-    { tag: 'PROCUREMENT', title: 'Software Licensing — Q4', body: '3-year enterprise deal. Tight budget. Fixed deadline.' },
+    { tag: 'PROCUREMENT', title: 'Software Licensing: Q4', body: '3-year enterprise deal. Tight budget. Fixed deadline.' },
     { tag: 'SALES', title: 'Renewal Negotiation', body: 'Existing customer pushes for a 20% discount at renewal.' },
     { tag: 'VENDOR', title: 'Supply Contract', body: 'Multi-year agreement with volume-based pricing.' },
     { tag: 'PARTNERSHIPS', title: 'Revenue Share', body: 'Splitting revenue terms with a channel partner.' },
@@ -871,7 +871,7 @@ window.THEME = {
           <window.EyebrowLabel style={{ textAlign: 'center' }}>A Growing Case Library</window.EyebrowLabel>
           <window.Headline size={36} style={{ marginTop: 8, textAlign: 'center' }}>Real cases, not scripts.</window.Headline>
           <window.Subhead style={{ marginTop: 8, textAlign: 'center', maxWidth: 620, marginLeft: 'auto', marginRight: 'auto' }}>
-            Realistic, industry-style scenarios across roles — not generic prompts.
+            Realistic, industry-style scenarios across roles, not generic prompts.
           </window.Subhead>
         </Layer>
 
@@ -967,7 +967,7 @@ window.THEME = {
                       style={{ padding: 22, boxSizing: 'border-box', transform: `translateY(${cardY[1]}px)` }}>
           <window.EyebrowLabel color={T.ink.secondary}>Case</window.EyebrowLabel>
           <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <window.OptionPill w={CARD_W - 44} label="Software Licensing — Q4" selected={selected[1]} />
+            <window.OptionPill w={CARD_W - 44} label="Software Licensing: Q4" selected={selected[1]} />
           </div>
           <div style={{ marginTop: 10, fontFamily: T.font.sans, fontSize: 12.5, color: T.ink.secondary }}>
             3-year enterprise deal. Tight budget. November deadline.
@@ -1024,8 +1024,8 @@ window.THEME = {
   const T = window.THEME;
 
   const USER_MSG = 'We need it live by Nov 30th. Budget is firm at $240k.';
-  const AI_MSG = 'Our standard package runs $310k — lets find what works.';
-  const USER2_MSG = 'Deal — 3-year term, $265k, priority onboarding.';
+  const AI_MSG = 'Our standard package runs $310k. Lets find what works.';
+  const USER2_MSG = 'Deal: 3-year term, $265k, priority onboarding.';
   const USER_START = 2.6, USER_RATE = 100, USER_JIT = 20;
   const AI_START = USER_START + window.typingDurationS(USER_MSG, USER_RATE, USER_JIT) + 0.5;
   const AI_RATE = 78, AI_JIT = 16;
@@ -1070,7 +1070,7 @@ window.THEME = {
         {/* live guidance */}
         <Layer x={1034} y={168} w={190} opacity={guideOp}>
           <window.EyebrowLabel color={T.ink.secondary}>Live Guidance</window.EyebrowLabel>
-          {['Anchor your walk-away number early', 'Name the benchmark — it creates pressure'].map((s, i) => (
+          {['Anchor your walk-away number early', 'Name the benchmark: it creates pressure'].map((s, i) => (
             <window.Panel key={i} x={0} y={30 + i * 66} w={190} h={56} muted style={{ marginTop: 0, padding: 12, boxSizing: 'border-box' }}>
               <div style={{ fontFamily: T.font.sans, fontSize: 12.5, color: T.accent.indigo, lineHeight: 1.35 }}>{s}</div>
             </window.Panel>
@@ -1152,7 +1152,7 @@ window.THEME = {
         <Layer x={56} y={64} w={560} opacity={headOp}>
           <window.EyebrowLabel>Voice &amp; Avatar Mode</window.EyebrowLabel>
           <window.Headline size={38} style={{ marginTop: 10 }}>Meet your AI negotiation partner.</window.Headline>
-          <window.Subhead style={{ marginTop: 10 }}>Practice with a lifelike AI counterpart. Text or voice — same case, same stakes.</window.Subhead>
+          <window.Subhead style={{ marginTop: 10 }}>Practice with a lifelike AI counterpart. Text or voice, same case, same stakes.</window.Subhead>
         </Layer>
 
         <Layer x={56} y={280} w={420}>
@@ -1247,9 +1247,9 @@ window.THEME = {
           <window.Panel x={800} y={0} w={368} h={330} opacity={dimOthers} style={{ padding: 24, boxSizing: 'border-box' }}>
             <window.EyebrowLabel color={T.ink.secondary}>Performance Feedback</window.EyebrowLabel>
             {[
-              'Strong anchoring — your $240k open created downward pressure on price.',
+              'Strong anchoring: your $240k open created downward pressure on price.',
               'Opportunity: introduce non-price terms earlier to widen trade space.',
-              'Good close — accepting the 3-year term to unlock $45k was well-timed.',
+              'Good close: accepting the 3-year term to unlock $45k was well-timed.',
             ].map((s, i) => (
               <div key={i} style={{
                 marginTop: 12, padding: 12, borderRadius: 10, background: T.accent.indigoSoft,
@@ -1320,7 +1320,7 @@ window.THEME = {
         {/* Organizer panel */}
         <window.Panel x={56} y={172} w={520} h={488} opacity={orgOp} muted style={{ padding: 28, boxSizing: 'border-box' }}>
           <window.EyebrowLabel color={T.ink.secondary}>Organizer Sets Up</window.EyebrowLabel>
-          {[['Case', 'Software Licensing — Q4'], ['Opponent Style', 'Assertive · Holds firm'], ['Time Limit', '20 minutes per attempt']].map(([k, v], i) => (
+          {[['Case', 'Software Licensing: Q4'], ['Opponent Style', 'Assertive · Holds firm'], ['Time Limit', '20 minutes per attempt']].map(([k, v], i) => (
             <div key={i} style={{ marginTop: 16 }}>
               <div style={{ fontFamily: T.font.sans, fontSize: 12, color: T.ink.secondary }}>{k}</div>
               <div style={{
@@ -1341,7 +1341,7 @@ window.THEME = {
               background: T.accent.indigoSoft, textAlign: 'center',
             }}>
               <div style={{ fontFamily: T.font.mono, fontWeight: 800, fontSize: 26, letterSpacing: 4, color: T.accent.indigo }}>DLG-4829</div>
-              <div style={{ marginTop: 4, fontFamily: T.font.sans, fontSize: 11, color: T.ink.secondary }}>Case &amp; persona locked — zero setup for participants</div>
+              <div style={{ marginTop: 4, fontFamily: T.font.sans, fontSize: 11, color: T.ink.secondary }}>Case &amp; persona locked, zero setup for participants</div>
             </div>
           </Layer>
         </window.Panel>

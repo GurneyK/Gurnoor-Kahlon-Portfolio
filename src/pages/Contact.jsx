@@ -50,7 +50,7 @@ export default function Contact() {
           </p>
           <p>
             I'm always glad to hear from people working on AI products, design
-            systems, or anything where the two intersect — whether that's a
+            systems, or anything where the two intersect, whether that's a
             role, a project, or just a good conversation. Email or LinkedIn
             are the fastest ways to reach me.
           </p>
