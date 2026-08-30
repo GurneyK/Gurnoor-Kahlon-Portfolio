@@ -33,6 +33,7 @@ export default function AskMeAnything() {
   const endRef = useRef(null);
 
   useEffect(() => {
+    if (thread.length === 0) return;
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [thread]);
 
