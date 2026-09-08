@@ -2,7 +2,7 @@ export const projects = [
   {
     slug: "h3l-design-system",
     name: "Full Design System",
-    role: "Front-end UX/UI Designer, Horizon 3 Labs (Unilever)",
+    role: "Senior Front-end UX/UI Designer, Horizon 3 Labs (Unilever)",
     dates: "December 2025 to Present",
     tags: ["Design System", "AI Agent Products", "Infrastructure"],
     summary:
@@ -14,7 +14,7 @@ export const projects = [
   {
     slug: "ccgs-copilot",
     name: "CCGS Copilot",
-    role: "Front-end UX/UI Designer, Horizon 3 Labs (Unilever)",
+    role: "Senior Front-end UX/UI Designer, Horizon 3 Labs (Unilever)",
     dates: "December 2025 to Present",
     tags: ["AI Agent", "Category Strategy", "Dashboard"],
     summary:
@@ -26,7 +26,7 @@ export const projects = [
   {
     slug: "rd-agent",
     name: "R&D Fit Agent",
-    role: "Front-end UX/UI Designer, Horizon 3 Labs (Unilever)",
+    role: "Senior Front-end UX/UI Designer, Horizon 3 Labs (Unilever)",
     dates: "December 2025 to Present",
     tags: ["AI Agent", "Innovation Scouting", "Admin Tooling"],
     summary:
