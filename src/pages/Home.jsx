@@ -5,9 +5,54 @@ import Footer from "../components/Footer.jsx";
 import KeywordMarquee from "../components/KeywordMarquee.jsx";
 import AskMeAnything from "../components/AskMeAnything.jsx";
 import { Reveal } from "../components/CaseStudyLayout.jsx";
-import { projects, sideProject } from "../data/projects.js";
+import { projects, sideProject, independentProjects } from "../data/projects.js";
+import pagodaOnboarding from "../assets/pagoda/onboarding-3.jpg";
+import pagodaLogo from "../assets/pagoda/logo-mark.png";
 
 const BASE = import.meta.env.BASE_URL;
+
+const INDEPENDENT_VISUALS = {
+  "pagoda-yoga": { image: pagodaOnboarding, logo: pagodaLogo },
+};
+
+function IndependentCard({ project }) {
+  const visual = INDEPENDENT_VISUALS[project.slug];
+  return (
+    <Reveal>
+      <Link
+        to={`/work/${project.slug}`}
+        className="group grid overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] transition-colors hover:border-[var(--color-sage-dim)] md:grid-cols-[1fr_1.05fr]"
+      >
+        <div className="flex flex-col justify-between p-7 md:p-10">
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="font-[family-name:var(--font-display)] text-base text-[var(--color-paper-mute)]">01</span>
+              {visual?.logo && <img src={visual.logo} alt="" className="h-7 w-7" />}
+            </div>
+            <h3 className="mt-5 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] transition-colors group-hover:text-[var(--color-sage-bright)] md:text-4xl">
+              {project.name}
+            </h3>
+            <p className="mt-3 text-lg leading-relaxed text-[var(--color-paper-dim)]">{project.summary}</p>
+          </div>
+          <div className="mt-8 flex items-center justify-between gap-4">
+            <span className="text-sm text-[var(--color-paper-mute)]">
+              {project.tags.join(" · ")} · {project.role}
+            </span>
+            <span className="shrink-0 text-xl text-[var(--color-sage)] transition-transform group-hover:translate-x-1">→</span>
+          </div>
+        </div>
+        <div className="relative overflow-hidden bg-[linear-gradient(145deg,#f1eaf7_0%,#dccbea_60%,#cdb6e0_100%)]">
+          <img
+            src={visual?.image}
+            alt="Pagoda Yoga onboarding screen"
+            loading="lazy"
+            className="aspect-square w-full object-cover mix-blend-multiply transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+          />
+        </div>
+      </Link>
+    </Reveal>
+  );
+}
 
 function ProjectRow({ project, index }) {
   return (
@@ -145,8 +190,26 @@ export default function Home() {
                 Independent Work
               </p>
               <h2 className="mt-4 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-4xl">
-                {sideProject.name}
+                Outside the day job
               </h2>
+              <p className="mt-4 max-w-lg text-lg leading-relaxed text-[var(--color-paper-dim)]">
+                Things I've designed and built on my own, end to end.
+              </p>
+            </Reveal>
+
+            <div className="mt-14">
+              {independentProjects.map((p) => (
+                <IndependentCard key={p.slug} project={p} />
+              ))}
+            </div>
+
+            <Reveal className="mt-20">
+              <p className="font-[family-name:var(--font-display)] text-base text-[var(--color-paper-mute)]">
+                {String(independentProjects.length + 1).padStart(2, "0")}
+              </p>
+              <h3 className="mt-2 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-4xl">
+                {sideProject.name}
+              </h3>
               <p className="mt-4 max-w-lg text-lg leading-relaxed text-[var(--color-paper-dim)]">
                 {sideProject.summary} No editor, no timeline, no render farm.
                 I built it because I got tired of the gap between having an

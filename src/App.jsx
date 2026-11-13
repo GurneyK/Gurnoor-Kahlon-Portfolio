@@ -11,6 +11,7 @@ import CustomsCity from "./pages/CustomsCity.jsx";
 import H3LDesignSystem from "./pages/H3LDesignSystem.jsx";
 import CCGSCopilot from "./pages/CCGSCopilot.jsx";
 import RDAgent from "./pages/RDAgent.jsx";
+import PagodaYoga from "./pages/PagodaYoga.jsx";
 
 function App() {
   const location = useLocation();
@@ -32,6 +33,7 @@ function App() {
           <Route path="/work/h3l-design-system" element={<PageTransition><H3LDesignSystem /></PageTransition>} />
           <Route path="/work/ccgs-copilot" element={<PageTransition><CCGSCopilot /></PageTransition>} />
           <Route path="/work/rd-agent" element={<PageTransition><RDAgent /></PageTransition>} />
+          <Route path="/work/pagoda-yoga" element={<PageTransition><PagodaYoga /></PageTransition>} />
         </Routes>
       </AnimatePresence>
     </div>

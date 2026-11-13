@@ -94,7 +94,7 @@ export const knowledgeBase = [
   {
     keywords: ["pagoda", "yoga", "wellness app", "onboarding completion"],
     answer:
-      "At Pagoda Yoga I was Lead Product Designer for four months, designing the onboarding and scheduling experience for a mobile wellness product. Usability testing and behavioral analysis I ran increased onboarding completion by 15 percent.",
+      "Pagoda Yoga is an independent project: a subscription yoga app for iOS and Android, and I was the only designer on it, from research through launch (November 2024 to January 2025). It is still live. The full case study is in the Independent Work section.",
   },
   {
     keywords: ["velocity tech", "velocity", "recruiting platform", "erp"],

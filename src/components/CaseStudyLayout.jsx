@@ -88,10 +88,10 @@ export default function CaseStudyLayout({ project, children }) {
       <ScrollRail sections={sections} />
       <div className="mx-auto max-w-4xl px-6 md:px-10">
         <Link
-          to="/#work"
+          to={project.backTo || "/#work"}
           className="text-sm text-[var(--color-paper-mute)] transition-colors hover:text-[var(--color-sage-bright)]"
         >
-          ← Back to work
+          {project.backLabel || "← Back to work"}
         </Link>
 
         <Reveal className="mt-8">
@@ -119,7 +119,7 @@ export default function CaseStudyLayout({ project, children }) {
                 rel="noreferrer"
                 className="rounded-full border border-[var(--color-sage-dim)] px-5 py-2 text-[var(--color-sage-bright)] transition-colors hover:border-[var(--color-sage-bright)] hover:bg-[var(--color-sage-dim)]/30"
               >
-                View live ↗
+                {project.liveLabel || "View live ↗"}
               </a>
             )}
             {project.repoUrl && (

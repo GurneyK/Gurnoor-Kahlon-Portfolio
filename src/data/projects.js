@@ -61,3 +61,19 @@ export const sideProject = {
     "A toolkit for going from a written prompt to a shippable content asset without touching a video editor.",
   repoUrl: "https://github.com/GurneyK/Video-prompting",
 };
+
+export const independentProjects = [
+  {
+    slug: "pagoda-yoga",
+    name: "Pagoda Yoga",
+    role: "Sole Product Designer",
+    dates: "November 2024 to January 2025",
+    tags: ["Mobile App", "iOS + Android", "Shipped"],
+    summary:
+      "A subscription yoga app that turns a YouTube instructor's library into a calm, easy-to-navigate mobile product. I was the only designer, from research to launch, and it's still live.",
+    liveUrl: "https://apps.apple.com/app/id6738764405",
+    liveLabel: "View on the App Store ↗",
+    backTo: "/",
+    backLabel: "← Back to home",
+  },
+];
