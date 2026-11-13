@@ -2,7 +2,7 @@ export const experience = [
   {
     year: "2025",
     title: "Senior Design Engineer, Horizon 3 Labs (Unilever)",
-    duration: "9 months · Present",
+    duration: "1 year · Present",
     description:
       "Sole designer and design lead across multiple AI agent products, from discovery through production-ready UI. Built and now govern the full component library and design system all of it runs on, and author coded reference files directly in GitHub so engineering can implement from working code, not just a spec.",
   },
@@ -12,13 +12,6 @@ export const experience = [
     duration: "9 months",
     description:
       "Led end-to-end design for web and mobile tax remittance software used by accounting firms. Mapped how firms actually manage dozens of clients at once, interviewed accountants at conferences and demos, and shipped motion-based microinteractions that built confidence in a high-stakes financial workflow.",
-  },
-  {
-    year: "2024",
-    title: "Lead Product Designer, Pagoda Yoga",
-    duration: "4 months",
-    description:
-      "Designed the onboarding and scheduling experience for a mobile wellness product. Usability testing and behavioral analysis I ran increased onboarding completion by 15 percent.",
   },
   {
     year: "2024",

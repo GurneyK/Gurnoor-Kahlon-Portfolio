@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 
 const BASE = import.meta.env.BASE_URL;
 
-export default function Footer() {
+export default function Footer({ linkTo = "about" }) {
+  const toContact = linkTo === "contact";
   return (
     <footer id="contact" className="border-t border-[var(--color-border-soft)] px-6 py-24 md:px-10">
       <div className="mx-auto max-w-6xl">
@@ -12,13 +13,14 @@ export default function Footer() {
               Contact
             </h2>
             <p className="mt-6 max-w-md text-lg text-[var(--color-paper-dim)] leading-relaxed">
-              Based in Toronto. For more on who I am and the work I've done,
-              see the{" "}
+              {toContact
+                ? "Based in Toronto. Want to work together or just say hi? Head to the"
+                : "Based in Toronto. For more on who I am and the work I've done, see the"}{" "}
               <Link
-                to="/about"
+                to={toContact ? "/contact" : "/about"}
                 className="text-[var(--color-sage-bright)] underline decoration-[var(--color-sage-dim)] underline-offset-4"
               >
-                About page
+                {toContact ? "Contact page" : "About page"}
               </Link>
               .
             </p>

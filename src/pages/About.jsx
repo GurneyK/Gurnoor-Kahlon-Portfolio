@@ -80,7 +80,7 @@ export default function About() {
       </div>
 
       <div className="mt-32">
-        <Footer />
+        <Footer linkTo="contact" />
       </div>
     </main>
   );
