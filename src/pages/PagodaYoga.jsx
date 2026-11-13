@@ -2,17 +2,38 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import CaseStudyLayout, { Section, Reveal } from "../components/CaseStudyLayout.jsx";
 import PhoneMock from "../components/pagoda/PhoneMock.jsx";
-import OnboardingStepper from "../components/pagoda/OnboardingStepper.jsx";
+import PhoneRow from "../components/pagoda/PhoneRow.jsx";
 import JourneyMap from "../components/pagoda/JourneyMap.jsx";
 import { independentProjects } from "../data/projects.js";
 import { slugify } from "../lib/slugify.js";
 
 import logoMark from "../assets/pagoda/logo-mark.png";
-import onboardingBefore from "../assets/pagoda/onboarding-before.jpg";
 import categoryScreens from "../assets/pagoda/category-screens.jpg";
 import liveScreens from "../assets/pagoda/live-screens.jpg";
+import before1 from "../assets/pagoda/before-1.jpg";
+import before2 from "../assets/pagoda/before-2.jpg";
+import before3 from "../assets/pagoda/before-3.jpg";
+import before4 from "../assets/pagoda/before-4.jpg";
+import after1 from "../assets/pagoda/onboarding-1.jpg";
+import after2 from "../assets/pagoda/onboarding-6.jpg";
+import after3 from "../assets/pagoda/onboarding-4.jpg";
+import after4 from "../assets/pagoda/onboarding-3.jpg";
 
 const project = independentProjects.find((p) => p.slug === "pagoda-yoga");
+
+const BEFORE_SCREENS = [
+  { src: before1, label: "Splash" },
+  { src: before2, label: "Free content" },
+  { src: before3, label: "Recommendations" },
+  { src: before4, label: "Offline" },
+];
+
+const AFTER_SCREENS = [
+  { src: after1, label: "Welcome" },
+  { src: after2, label: "Stream & download" },
+  { src: after3, label: "Build your routine" },
+  { src: after4, label: "Exclusive classes" },
+];
 
 const T = {
   research: "Research & discovery",
@@ -284,13 +305,7 @@ function BeforeAfter() {
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="mt-8"
         >
-          {view === "before" ? (
-            <div className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white p-4 sm:p-6">
-              <img src={onboardingBefore} alt="The original four-screen onboarding, before testing" className="w-full" />
-            </div>
-          ) : (
-            <OnboardingStepper />
-          )}
+          <PhoneRow screens={view === "before" ? BEFORE_SCREENS : AFTER_SCREENS} variant={view} />
           <ul className="mt-8 grid gap-4 sm:grid-cols-3">
             {changes[view].map((c) => (
               <li key={c} className="border-l-2 border-[#9b6cc0] pl-4 text-base leading-relaxed text-[var(--color-paper-dim)]">
@@ -399,8 +414,8 @@ export default function PagodaYoga() {
           We couldn't recruit outside testers, so I ran internal usability
           rounds with the development team. The feedback centred on
           onboarding and the colour scheme. The first version explained the
-          app. The second shows it. Swipe through the final flow, or switch
-          back to compare.
+          app. The second shows it. Switch
+          between the two versions to compare.
         </p>
       </Section>
       <BeforeAfter />
