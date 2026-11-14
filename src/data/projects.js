@@ -76,4 +76,18 @@ export const independentProjects = [
     backTo: "/",
     backLabel: "← Back to home",
   },
+  {
+    slug: "tcc",
+    name: "Treasury Command Center",
+    role: "Designer and engineer, solo concept",
+    dates: "November 2026",
+    tags: ["Fintech", "AI Agents", "Web App"],
+    summary:
+      "A working treasury hub where four agents watch bank, ERP and FX data and explain every risk they flag. People approve every payment, and every decision is audited.",
+    liveUrl: "https://gurneyk.github.io/TCC/",
+    liveLabel: "Try the live demo ↗",
+    repoUrl: "https://github.com/GurneyK/TCC",
+    backTo: "/",
+    backLabel: "← Back to home",
+  },
 ];

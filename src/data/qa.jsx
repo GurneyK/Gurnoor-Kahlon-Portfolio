@@ -97,6 +97,11 @@ export const knowledgeBase = [
       "Pagoda Yoga is an independent project: a subscription yoga app for iOS and Android, and I was the only designer on it, from research through launch (November 2024 to January 2025). It is still live. The full case study is in the Independent Work section.",
   },
   {
+    keywords: ["tcc", "treasury", "treasury command center", "maker checker", "audit trail", "banking"],
+    answer:
+      "Treasury Command Center is an independent concept I designed and built on my own in November 2026: a working treasury hub where four agents watch bank, ERP and FX data and explain every finding, while people make every decision that moves money. It uses maker and checker approvals, a full audit trail and data freshness checks, all on synthetic data, and it is built on my Design System. The live demo and case study are in the Independent Work section.",
+  },
+  {
     keywords: ["velocity tech", "velocity", "recruiting platform", "erp"],
     answer:
       "At Velocity Tech I designed dashboards and flows for a platform connecting engineers with companies hiring for specialized technical roles, simplifying dense ERP data through visual hierarchy and accessible UI structure. That was a five-month engagement in 2024.",

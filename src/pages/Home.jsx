@@ -8,15 +8,53 @@ import { Reveal } from "../components/CaseStudyLayout.jsx";
 import { projects, sideProject, independentProjects } from "../data/projects.js";
 import pagodaOnboarding from "../assets/pagoda/onboarding-3.jpg";
 import pagodaLogo from "../assets/pagoda/logo-mark.png";
+import tccHub from "../assets/tcc/hub.png";
 
 const BASE = import.meta.env.BASE_URL;
 
+function PagodaVisual() {
+  return (
+    <div className="relative h-full overflow-hidden bg-[linear-gradient(145deg,#f1eaf7_0%,#dccbea_60%,#cdb6e0_100%)]">
+      <img
+        src={pagodaOnboarding}
+        alt="Pagoda Yoga onboarding screen"
+        loading="lazy"
+        className="aspect-square h-full w-full object-cover mix-blend-multiply transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+      />
+    </div>
+  );
+}
+
+function TccVisual() {
+  return (
+    <div className="relative aspect-square h-full overflow-hidden bg-[linear-gradient(150deg,#eeebfa_0%,#d9d2f2_55%,#c3b7e8_100%)]">
+      <img
+        src={tccHub}
+        alt="Treasury Command Center hub showing total cash, a stale feed warning and the 13 week forecast"
+        loading="lazy"
+        className="absolute left-[9%] top-[13%] w-[165%] max-w-none origin-top-left rounded-lg border border-white/80 shadow-[0_30px_60px_-24px_rgba(40,28,105,0.5)] transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-x-[3%] group-hover:-translate-y-[2%]"
+      />
+      <div className="absolute bottom-[9%] left-[6%] flex max-w-[78%] items-start gap-2.5 rounded-xl border border-[#f5d08a] bg-[#fffaeb] px-4 py-3 text-left shadow-[0_18px_40px_-18px_rgba(40,28,105,0.55)] transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1.5">
+        <svg aria-hidden="true" viewBox="0 0 24 24" className="mt-0.5 h-4 w-4 shrink-0 text-[#b54708]" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="5" y="11" width="14" height="10" rx="2" />
+          <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+        </svg>
+        <p className="text-sm leading-snug text-[#7a2e0e]">
+          <span className="font-semibold">Approve is unavailable.</span> Bank details changed 2 days before a USD 1.84M payment.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 const INDEPENDENT_VISUALS = {
-  "pagoda-yoga": { image: pagodaOnboarding, logo: pagodaLogo },
+  "pagoda-yoga": { Visual: PagodaVisual, logo: pagodaLogo },
+  tcc: { Visual: TccVisual },
 };
 
-function IndependentCard({ project }) {
+function IndependentCard({ project, index }) {
   const visual = INDEPENDENT_VISUALS[project.slug];
+  const Visual = visual?.Visual;
   return (
     <Reveal>
       <Link
@@ -26,7 +64,9 @@ function IndependentCard({ project }) {
         <div className="flex flex-col justify-between p-7 md:p-10">
           <div>
             <div className="flex items-center gap-3">
-              <span className="font-[family-name:var(--font-display)] text-base text-[var(--color-paper-mute)]">01</span>
+              <span className="font-[family-name:var(--font-display)] text-base text-[var(--color-paper-mute)]">
+                {String(index + 1).padStart(2, "0")}
+              </span>
               {visual?.logo && <img src={visual.logo} alt="" className="h-7 w-7" />}
             </div>
             <h3 className="mt-5 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] transition-colors group-hover:text-[var(--color-sage-bright)] md:text-4xl">
@@ -41,14 +81,7 @@ function IndependentCard({ project }) {
             <span className="shrink-0 text-xl text-[var(--color-sage)] transition-transform group-hover:translate-x-1">→</span>
           </div>
         </div>
-        <div className="relative overflow-hidden bg-[linear-gradient(145deg,#f1eaf7_0%,#dccbea_60%,#cdb6e0_100%)]">
-          <img
-            src={visual?.image}
-            alt="Pagoda Yoga onboarding screen"
-            loading="lazy"
-            className="aspect-square w-full object-cover mix-blend-multiply transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
-          />
-        </div>
+        {Visual && <Visual />}
       </Link>
     </Reveal>
   );
@@ -197,9 +230,9 @@ export default function Home() {
               </p>
             </Reveal>
 
-            <div className="mt-14">
-              {independentProjects.map((p) => (
-                <IndependentCard key={p.slug} project={p} />
+            <div className="mt-14 space-y-8">
+              {independentProjects.map((p, i) => (
+                <IndependentCard key={p.slug} project={p} index={i} />
               ))}
             </div>
 
