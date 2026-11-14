@@ -341,6 +341,21 @@ export default function TCC() {
     <CaseStudyLayout project={project}>
       <Showcase />
       <MetaGrid />
+      <Reveal className="mt-10">
+        <div className="max-w-3xl space-y-4 text-lg leading-relaxed text-[var(--color-paper-dim)]">
+          <p className="text-xs uppercase tracking-[0.16em] text-[var(--color-sage)]">What it does</p>
+          <p>
+            Treasury Command Center gives a company&apos;s finance team one place to see all of its money, spot
+            problems early and approve payments safely.
+          </p>
+          <ul className="grid gap-3 text-base sm:grid-cols-2">
+            <li><span className="text-[var(--color-paper)]">See every balance.</span> Cash across every bank and country, with a warning when a bank&apos;s data is out of date.</li>
+            <li><span className="text-[var(--color-paper)]">Catch fraud and errors.</span> Four AI assistants check payments, invoices, forecasts and currency risk, and explain what they found.</li>
+            <li><span className="text-[var(--color-paper)]">Plan ahead.</span> A 13 week cash forecast shows which country will run short, and when.</li>
+            <li><span className="text-[var(--color-paper)]">Approve with confidence.</span> People make every decision. Nobody can approve their own payment, and every action is recorded.</li>
+          </ul>
+        </div>
+      </Reveal>
       <Prototype url={project.liveUrl} />
 
       <Section eyebrow="The problem" title="Treasury runs on trust">
