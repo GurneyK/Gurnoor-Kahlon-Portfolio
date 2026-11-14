@@ -79,7 +79,18 @@ export default function Walkthrough({ steps }) {
               exit={{ opacity: 0, y: -10, scale: 0.985 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
-              <BrowserShot src={step.image} alt={step.alt} url={`gurneyk.github.io/TCC/#${step.path}`} />
+              <a
+                href={`https://gurneyk.github.io/TCC/#${step.link ?? step.path}`}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`Open the ${step.label} screen in the prototype`}
+                className="group relative block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4b3a9c]"
+              >
+                <BrowserShot src={step.image} alt={step.alt} url={`gurneyk.github.io/TCC/#${step.path}`} />
+                <span className="pointer-events-none absolute bottom-4 right-4 rounded-full bg-[#1f1745] px-4 py-2 text-sm font-semibold text-white opacity-0 shadow-lg transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                  Open this screen ↗
+                </span>
+              </a>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -93,7 +104,7 @@ export default function Walkthrough({ steps }) {
             className="grid gap-6 md:grid-cols-[1fr_auto] md:items-end"
           >
             <div className="max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#4b3a9c]">Viewing as {step.persona}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#4b3a9c]">Signed in as {step.persona}</p>
               <p className="mt-3 font-[family-name:var(--font-display)] text-2xl leading-snug text-[#1f1745] md:text-3xl">{step.title}</p>
               <p className="mt-3 text-base leading-relaxed text-[#3d3760] md:text-lg">{step.body}</p>
             </div>

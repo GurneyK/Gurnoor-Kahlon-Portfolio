@@ -47,6 +47,7 @@ const STEPS = [
     id: "hub",
     label: "Hub",
     path: "/",
+    link: "/?as=analyst",
     persona: "Priya",
     image: hub,
     alt: "Hub with USD 4.53B total cash, a stale Crestwood Trust warning, 18 open findings and the group forecast",
@@ -57,6 +58,7 @@ const STEPS = [
     id: "exceptions",
     label: "Exceptions",
     path: "/exceptions",
+    link: "/exceptions?as=analyst&f=pr-pay-s1-orchard",
     persona: "Priya",
     image: exceptions,
     alt: "Exceptions queue with a critical finding, its reasons, evidence chips and agent trace",
@@ -67,6 +69,7 @@ const STEPS = [
     id: "payments",
     label: "Approval",
     path: "/payments",
+    link: "/payments?as=treasurer&p=pay-s1-orchard",
     persona: "Daniel",
     image: payments,
     alt: "Payment drawer where Approve is disabled with the reason: open critical finding",
@@ -77,6 +80,7 @@ const STEPS = [
     id: "forecast",
     label: "Forecast",
     path: "/forecast",
+    link: "/forecast?as=analyst&entity=ent-br",
     persona: "Priya",
     image: forecast,
     alt: "13 week forecast for Brazil dropping below its minimum balance in week 6, with a drivers waterfall",
@@ -87,6 +91,7 @@ const STEPS = [
     id: "fx",
     label: "FX",
     path: "/fx",
+    link: "/fx?as=analyst",
     persona: "Priya",
     image: fx,
     alt: "FX exposure screen with hedge coverage per currency against a 70 percent target",
@@ -97,6 +102,7 @@ const STEPS = [
     id: "audit",
     label: "Audit",
     path: "/audit",
+    link: "/audit?as=auditor",
     persona: "Mei",
     image: audit,
     alt: "Audit log listing actor, action, target and details for every event, with filters and CSV export",
@@ -164,6 +170,67 @@ function Showcase() {
             <p className="mt-1.5 text-sm leading-snug text-[#93370d]">Approve is unavailable until a callback is recorded.</p>
           </motion.div>
         </motion.div>
+      </div>
+    </Reveal>
+  );
+}
+
+const PROTO_LINKS = [
+  ["Take the 6 step tour", "#/?tour=1&as=analyst", "Two minutes, guided"],
+  ["Open the fraud finding", "#/exceptions?as=analyst&f=pr-pay-s1-orchard", "As Priya, the analyst"],
+  ["Try to approve it", "#/payments?as=treasurer&p=pay-s1-orchard", "As Daniel, the treasurer"],
+];
+
+function Prototype({ url }) {
+  return (
+    <Reveal className="mt-16">
+      <div className="grid gap-8 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 sm:p-8">
+        <a
+          href={url}
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Open the clickable prototype in a new tab"
+          className="group relative block overflow-hidden rounded-xl border border-[var(--color-border)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-sage)]"
+        >
+          <img src={exceptions} alt="" className="block w-full transition-transform duration-500 ease-out group-hover:scale-[1.02]" />
+          <span className="absolute inset-0 flex items-center justify-center bg-[#1f1745]/0 transition-colors duration-300 group-hover:bg-[#1f1745]/35">
+            <span className="translate-y-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#1f1745] opacity-0 shadow-lg transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+              Open prototype ↗
+            </span>
+          </span>
+        </a>
+        <div className="grid gap-8 md:grid-cols-2 md:items-start">
+        <div>
+          <p className="text-xs uppercase tracking-[0.16em] text-[var(--color-sage)]">Clickable prototype</p>
+          <p className="mt-3 font-[family-name:var(--font-display)] text-2xl leading-snug text-[var(--color-paper)] md:text-3xl">
+            Click through the real thing.
+          </p>
+          <p className="mt-3 text-base leading-relaxed text-[var(--color-paper-dim)]">
+            Every screen works with live data. Switch user in the bottom left to see what each role can do.
+          </p>
+          <a
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-sage)] px-5 py-2.5 text-base font-medium text-[var(--color-ink)] transition-transform hover:-translate-y-0.5"
+          >
+            Open the prototype ↗
+          </a>
+        </div>
+          <ul className="divide-y divide-[var(--color-border)] border-y border-[var(--color-border)]">
+            {PROTO_LINKS.map(([label, hash, note]) => (
+              <li key={label}>
+                <a href={url + hash} target="_blank" rel="noreferrer" className="group flex items-center justify-between gap-4 py-3">
+                  <span>
+                    <span className="block text-base text-[var(--color-paper)] group-hover:text-[var(--color-sage-bright)]">{label}</span>
+                    <span className="block text-sm text-[var(--color-paper-mute)]">{note}</span>
+                  </span>
+                  <span aria-hidden="true" className="text-[var(--color-paper-mute)] transition-transform group-hover:translate-x-1 group-hover:text-[var(--color-sage-bright)]">↗</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </Reveal>
   );
@@ -274,6 +341,7 @@ export default function TCC() {
     <CaseStudyLayout project={project}>
       <Showcase />
       <MetaGrid />
+      <Prototype url={project.liveUrl} />
 
       <Section eyebrow="The problem" title="Treasury runs on trust">
         <p>
@@ -288,8 +356,8 @@ export default function TCC() {
       <Section eyebrow="Users" title="Three roles, one rule">
         <p>
           The rule is separation of duties. Whoever makes a payment can't approve it, and the auditor
-          can see everything but change nothing. Switching roles in the top bar changes what each
-          person is allowed to do, and the UI always says why something is off limits.
+          can see everything but change nothing. Switching user in the bottom left of the app changes
+          what each person is allowed to do, and the UI always says why something is off limits.
         </p>
       </Section>
       <Personas />
@@ -359,8 +427,8 @@ export default function TCC() {
 
       <Section eyebrow="Try it" title="Use it right here">
         <p>
-          This is the real app, not a recording. Switch roles in the top bar, press Start guided demo,
-          or import the sample bank statement on Data sources. Reset demo puts everything back.
+          This is the real app, not a recording. Switch user in the bottom left, press Start tour in the
+          banner, or import the sample bank statement on Data sources. Reset data puts everything back.
         </p>
       </Section>
       <Reveal className="mt-10">
