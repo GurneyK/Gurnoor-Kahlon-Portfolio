@@ -57,7 +57,7 @@ export default function ScrollRail({ sections }) {
             <span
               className={`block shrink-0 rounded-full transition-all duration-300 ${
                 isActive
-                  ? "h-2.5 w-2.5 bg-[var(--color-sage-bright)]"
+                  ? "h-2.5 w-2.5 bg-[var(--accent,var(--color-sage-bright))] shadow-[0_0_0_4px_color-mix(in_oklab,var(--accent,var(--color-sage-bright))_20%,transparent)]"
                   : "h-1.5 w-1.5 bg-[var(--color-border)] group-hover:bg-[var(--color-sage)]"
               }`}
             />

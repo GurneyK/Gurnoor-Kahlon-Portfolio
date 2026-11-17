@@ -1,3 +1,4 @@
+import { Eyebrow } from "./CaseStudyLayout.jsx";
 import { useState, useRef, useEffect } from "react";
 import { qaPairs, matchAnswer } from "../data/qa.jsx";
 
@@ -54,7 +55,7 @@ export default function AskMeAnything() {
   return (
     <section id="ask" className="border-t border-[var(--color-border-soft)] px-6 py-32 md:px-10">
       <div className="mx-auto max-w-4xl">
-        <p className="text-sm uppercase tracking-[0.2em] text-[var(--color-sage)]">Ask Me Anything</p>
+        <Eyebrow>Ask Me Anything</Eyebrow>
         <h2 className="mt-4 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-4xl">
           Common interview questions, answered directly
         </h2>

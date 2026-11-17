@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, MotionConfig } from "framer-motion";
 import Nav from "./components/Nav.jsx";
 import PageTransition from "./components/PageTransition.jsx";
 import Home from "./pages/Home.jsx";
@@ -22,6 +22,7 @@ function App() {
   }, [location.pathname]);
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="min-h-screen bg-[var(--color-ink)] text-[var(--color-paper)]">
       <Nav />
       <AnimatePresence mode="wait">
@@ -39,6 +40,7 @@ function App() {
         </Routes>
       </AnimatePresence>
     </div>
+    </MotionConfig>
   );
 }
 

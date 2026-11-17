@@ -1,4 +1,4 @@
-import { Reveal } from "../components/CaseStudyLayout.jsx";
+import { Reveal, Eyebrow } from "../components/CaseStudyLayout.jsx";
 import Footer from "../components/Footer.jsx";
 import { experience } from "../data/experience.js";
 import profilePhoto from "../assets/profile.jpg";
@@ -18,12 +18,16 @@ function ProfilePhoto() {
 
 export default function About() {
   return (
-    <main className="pt-32 pb-24">
-      <div className="mx-auto max-w-3xl px-6 md:px-10">
+    <main className="relative pt-32 pb-24">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[520px] overflow-hidden">
+        <div className="absolute -top-48 left-1/2 h-[480px] w-[860px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--color-teal)_24%,transparent),transparent)] blur-2xl" />
+        <div className="hero-grid" />
+      </div>
+      <div className="relative mx-auto max-w-3xl px-6 md:px-10">
         <Reveal className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
           <ProfilePhoto />
           <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-[var(--color-sage)]">About</p>
+            <Eyebrow>About</Eyebrow>
             <h1 className="mt-2 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] sm:text-4xl">
               Gurnoor Kahlon
             </h1>

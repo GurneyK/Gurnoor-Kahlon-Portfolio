@@ -1,6 +1,7 @@
 export const projects = [
   {
     slug: "h3l-design-system",
+    accent: "#6f9cff",
     name: "Full Design System",
     role: "Senior Front-end UX/UI Designer, Horizon 3 Labs (Unilever)",
     dates: "December 2025 to Present",
@@ -13,6 +14,7 @@ export const projects = [
   },
   {
     slug: "ccgs-copilot",
+    accent: "#4fb68a",
     name: "CCGS Copilot",
     role: "Senior Front-end UX/UI Designer, Horizon 3 Labs (Unilever)",
     dates: "December 2025 to Present",
@@ -25,6 +27,7 @@ export const projects = [
   },
   {
     slug: "rd-agent",
+    accent: "#e0a458",
     name: "R&D Fit Agent",
     role: "Senior Front-end UX/UI Designer, Horizon 3 Labs (Unilever)",
     dates: "December 2025 to Present",
@@ -37,6 +40,7 @@ export const projects = [
   },
   {
     slug: "remitian",
+    accent: "#5ec2c9",
     name: "Remitian",
     role: "Lead Product Designer",
     dates: "February 2025 to October 2025",
@@ -46,6 +50,7 @@ export const projects = [
   },
   {
     slug: "customscity",
+    accent: "#e57b6a",
     name: "CustomsCity",
     role: "UX/UI Designer",
     dates: "June 2024 to February 2025",
@@ -65,6 +70,7 @@ export const sideProject = {
 export const independentProjects = [
   {
     slug: "pagoda-yoga",
+    accent: "#b48ee0",
     name: "Pagoda Yoga",
     role: "Sole Product Designer",
     dates: "November 2024 to January 2025",
@@ -78,6 +84,7 @@ export const independentProjects = [
   },
   {
     slug: "tcc",
+    accent: "#8b84f5",
     name: "Treasury Command Center",
     role: "Designer and engineer, solo concept",
     dates: "November 2026",

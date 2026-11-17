@@ -4,13 +4,40 @@ import ScrollRail from "../components/ScrollRail.jsx";
 import Footer from "../components/Footer.jsx";
 import KeywordMarquee from "../components/KeywordMarquee.jsx";
 import AskMeAnything from "../components/AskMeAnything.jsx";
-import { Reveal } from "../components/CaseStudyLayout.jsx";
+import { Reveal, Eyebrow } from "../components/CaseStudyLayout.jsx";
+import { trackSpot } from "../lib/spotlight.js";
 import { projects, sideProject, independentProjects } from "../data/projects.js";
 import pagodaOnboarding from "../assets/pagoda/onboarding-3.jpg";
 import pagodaLogo from "../assets/pagoda/logo-mark.png";
 import tccHub from "../assets/tcc/hub.png";
 
 const BASE = import.meta.env.BASE_URL;
+const EASE = [0.22, 1, 0.36, 1];
+
+/** Headline that rises in word by word; the last words carry the gradient */
+function Headline({ text, highlight }) {
+  const all = [...text.split(" ").map((w) => [w, false]), ...highlight.split(" ").map((w) => [w, true])];
+  return (
+    <h1
+      aria-label={`${text} ${highlight}`}
+      className="mt-6 font-[family-name:var(--font-display)] text-4xl leading-[1.08] text-[var(--color-paper)] sm:text-5xl md:text-[4.25rem]"
+    >
+      {all.map(([w, isLit], i) => (
+        <span key={i} aria-hidden="true" className="inline-block overflow-hidden pb-[0.12em] align-top">
+          <motion.span
+            className={`inline-block ${isLit ? "text-gradient" : ""}`}
+            initial={{ y: "105%" }}
+            animate={{ y: "0%" }}
+            transition={{ duration: 0.9, ease: EASE, delay: 0.15 + i * 0.045 }}
+          >
+            {w}
+          </motion.span>
+          {i < all.length - 1 ? "\u00a0" : ""}
+        </span>
+      ))}
+    </h1>
+  );
+}
 
 function PagodaVisual() {
   return (
@@ -59,17 +86,19 @@ function IndependentCard({ project, index }) {
     <Reveal>
       <Link
         to={`/work/${project.slug}`}
-        className="group grid overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] transition-colors hover:border-[var(--color-sage-dim)] md:grid-cols-[1fr_1.05fr]"
+        onMouseMove={trackSpot}
+        style={{ "--accent": project.accent }}
+        className="spotlight group grid overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] transition-[border-color,transform,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--accent)_45%,var(--color-border))] hover:shadow-[0_40px_90px_-45px_color-mix(in_oklab,var(--accent)_70%,transparent)] md:grid-cols-[1fr_1.05fr]"
       >
         <div className="flex flex-col justify-between p-7 md:p-10">
           <div>
             <div className="flex items-center gap-3">
-              <span className="font-[family-name:var(--font-display)] text-base text-[var(--color-paper-mute)]">
+              <span className="font-[family-name:var(--font-display)] text-base text-accent">
                 {String(index + 1).padStart(2, "0")}
               </span>
               {visual?.logo && <img src={visual.logo} alt="" className="h-7 w-7" />}
             </div>
-            <h3 className="mt-5 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] transition-colors group-hover:text-[var(--color-sage-bright)] md:text-4xl">
+            <h3 className="mt-5 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-4xl">
               {project.name}
             </h3>
             <p className="mt-3 text-lg leading-relaxed text-[var(--color-paper-dim)]">{project.summary}</p>
@@ -78,7 +107,7 @@ function IndependentCard({ project, index }) {
             <span className="text-sm text-[var(--color-paper-mute)]">
               {project.tags.join(" · ")} · {project.role}
             </span>
-            <span className="shrink-0 text-xl text-[var(--color-sage)] transition-transform group-hover:translate-x-1">→</span>
+            <Arrow />
           </div>
         </div>
         {Visual && <Visual />}
@@ -87,40 +116,58 @@ function IndependentCard({ project, index }) {
   );
 }
 
+function Arrow() {
+  return (
+    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-[var(--color-paper-dim)] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-rotate-45 group-hover:border-transparent group-hover:bg-[var(--accent)] group-hover:text-[#0b0d0b]">
+      <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </span>
+  );
+}
+
 function ProjectRow({ project, index }) {
   return (
     <Reveal>
       <Link
         to={`/work/${project.slug}`}
-        className={`group block border-b border-[var(--color-border-soft)] py-14 transition-colors ${
-          index === 0 ? "pt-0" : ""
-        }`}
+        onMouseMove={trackSpot}
+        style={{ "--accent": project.accent }}
+        className="spotlight group relative block overflow-hidden rounded-2xl border border-[var(--color-border-soft)] bg-[color-mix(in_oklab,var(--color-surface)_60%,transparent)] p-6 transition-[border-color,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-[color-mix(in_oklab,var(--accent)_40%,var(--color-border))] sm:p-8"
       >
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-          <div className="flex items-baseline gap-6">
-            <span className="font-[family-name:var(--font-display)] text-base text-[var(--color-paper-mute)]">
+        <span
+          aria-hidden="true"
+          className="absolute inset-y-6 left-0 w-[3px] origin-top scale-y-0 rounded-r-full bg-[var(--accent)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-y-100"
+        />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-24 -top-24 -z-10 h-72 w-72 rounded-full bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--accent)_22%,transparent),transparent)] opacity-70 transition-opacity duration-500 group-hover:opacity-100"
+        />
+        <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:gap-6">
+            <span className="font-[family-name:var(--font-display)] text-base text-accent">
               {String(index + 1).padStart(2, "0")}
             </span>
             <div>
-              <h3 className="font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] transition-colors group-hover:text-[var(--color-sage-bright)] md:text-4xl">
+              <h3 className="font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-4xl">
                 {project.name}
               </h3>
-              <p className="mt-3 max-w-lg text-lg leading-relaxed text-[var(--color-paper-dim)]">
-                {project.summary}
-              </p>
-              <div className="mt-4 flex flex-wrap gap-x-2 gap-y-1">
+              <p className="mt-3 max-w-xl text-lg leading-relaxed text-[var(--color-paper-dim)]">{project.summary}</p>
+              <div className="mt-5 flex flex-wrap items-center gap-2">
                 {project.tags.map((tag) => (
-                  <span key={tag} className="text-sm text-[var(--color-paper-mute)]">
+                  <span
+                    key={tag}
+                    className="rounded-full bg-[color-mix(in_oklab,var(--accent)_13%,transparent)] px-3 py-1 text-xs font-medium text-[var(--color-paper-dim)]"
+                  >
                     {tag}
-                    {" · "}
                   </span>
                 ))}
-                <span className="text-sm text-[var(--color-paper-mute)]">{project.role}</span>
               </div>
+              <p className="mt-3 text-sm text-[var(--color-paper-mute)]">{project.role}</p>
             </div>
           </div>
-          <span className="shrink-0 self-start text-xl text-[var(--color-sage)] transition-transform group-hover:translate-x-1 md:self-center">
-            →
+          <span className="self-end sm:self-center">
+            <Arrow />
           </span>
         </div>
       </Link>
@@ -135,30 +182,35 @@ export default function Home() {
       <main>
         <section
           id="hero"
-          className="flex min-h-screen flex-col justify-center px-6 pt-24 md:px-10"
+          className="relative flex min-h-screen flex-col justify-center overflow-hidden px-6 pt-24 md:px-10"
         >
-          <div className="mx-auto w-full max-w-4xl">
+          <div aria-hidden="true" className="aurora">
+            <span className="a1" />
+            <span className="a2" />
+            <span className="a3" />
+          </div>
+          <div aria-hidden="true" className="hero-grid" />
+          <div className="relative mx-auto w-full max-w-4xl">
             <motion.p
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-sm uppercase tracking-[0.2em] text-[var(--color-sage)]"
+              className="inline-flex items-center gap-2.5 rounded-full border border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-surface)_70%,transparent)] px-4 py-1.5 text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-paper-dim)] backdrop-blur"
             >
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-teal)] opacity-60 motion-reduce:animate-none" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-teal)]" />
+              </span>
               Design Engineer &middot; Toronto
             </motion.p>
-            <motion.h1
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="mt-6 font-[family-name:var(--font-display)] text-4xl leading-[1.1] text-[var(--color-paper)] sm:text-5xl md:text-6xl"
-            >
-              I design the interface between people and the AI products
-              they're asked to trust.
-            </motion.h1>
+            <Headline
+              text="I design the interface between people and the AI products they're"
+              highlight="asked to trust."
+            />
             <motion.p
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.35 }}
+              transition={{ duration: 0.8, delay: 0.75, ease: EASE }}
               className="mt-8 max-w-xl text-xl leading-relaxed text-[var(--color-paper-dim)]"
             >
               Currently the design lead for Horizon 3 Labs, Unilever's AI
@@ -169,7 +221,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.5 }}
+              transition={{ duration: 0.8, delay: 0.9, ease: EASE }}
               className="mt-10 flex flex-wrap gap-4"
             >
               <a
@@ -178,18 +230,29 @@ export default function Home() {
                   e.preventDefault();
                   document.getElementById("work")?.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="rounded-full bg-[var(--color-sage-dim)] px-6 py-3 text-base text-[var(--color-paper)] transition-colors hover:bg-[var(--color-sage)]"
+                className="btn-primary rounded-full px-6 py-3 text-base font-medium"
               >
                 See the work
               </a>
               <Link
                 to="/about"
-                className="rounded-full border border-[var(--color-border)] px-6 py-3 text-base text-[var(--color-paper-dim)] transition-colors hover:border-[var(--color-sage-bright)] hover:text-[var(--color-sage-bright)]"
+                className="rounded-full border border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-surface)_60%,transparent)] px-6 py-3 text-base text-[var(--color-paper-dim)] backdrop-blur transition-colors hover:border-[var(--color-sage-bright)] hover:text-[var(--color-paper)]"
               >
                 About
               </Link>
             </motion.div>
           </div>
+          <motion.div
+            aria-hidden="true"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.6, duration: 1 }}
+            className="absolute bottom-10 left-1/2 hidden -translate-x-1/2 md:block"
+          >
+            <span className="block h-12 w-px overflow-hidden bg-[var(--color-border)]">
+              <span className="block h-1/2 w-px animate-[scrollcue_2.2s_ease-in-out_infinite] bg-[var(--color-sage-bright)] motion-reduce:animate-none" />
+            </span>
+          </motion.div>
         </section>
 
         <KeywordMarquee />
@@ -199,7 +262,8 @@ export default function Home() {
         <section id="work" className="px-6 py-32 md:px-10">
           <div className="mx-auto max-w-4xl">
             <Reveal>
-              <h2 className="font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-4xl">
+              <Eyebrow>Selected work</Eyebrow>
+              <h2 className="mt-4 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-5xl">
                 Work
               </h2>
               <p className="mt-4 max-w-lg text-lg leading-relaxed text-[var(--color-paper-dim)]">
@@ -208,7 +272,7 @@ export default function Home() {
                 screenshot: why I made the calls I made.
               </p>
             </Reveal>
-            <div className="mt-14">
+            <div className="mt-14 space-y-4">
               {projects.map((project, index) => (
                 <ProjectRow key={project.slug} project={project} index={index} />
               ))}
@@ -219,10 +283,8 @@ export default function Home() {
         <section id="side-project" className="border-t border-[var(--color-border-soft)] px-6 py-32 md:px-10">
           <div className="mx-auto max-w-4xl">
             <Reveal>
-              <p className="text-sm uppercase tracking-[0.2em] text-[var(--color-sage)]">
-                Independent Work
-              </p>
-              <h2 className="mt-4 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-4xl">
+              <Eyebrow>Independent Work</Eyebrow>
+              <h2 className="mt-4 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-5xl">
                 Outside the day job
               </h2>
               <p className="mt-4 max-w-lg text-lg leading-relaxed text-[var(--color-paper-dim)]">
@@ -237,7 +299,7 @@ export default function Home() {
             </div>
 
             <Reveal className="mt-20">
-              <p className="font-[family-name:var(--font-display)] text-base text-[var(--color-paper-mute)]">
+              <p className="font-[family-name:var(--font-display)] text-base text-[var(--color-amber)]">
                 {String(independentProjects.length + 1).padStart(2, "0")}
               </p>
               <h3 className="mt-2 font-[family-name:var(--font-display)] text-3xl text-[var(--color-paper)] md:text-4xl">
@@ -267,11 +329,11 @@ export default function Home() {
                 lab. Same toolkit, same session, no manual editing after the
                 fact, three assets, one hour, zero feedback rounds.
               </p>
-              <div className="mt-6 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]">
+              <div className="mt-6 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[0_40px_90px_-50px_color-mix(in_oklab,var(--color-amber)_70%,transparent)]">
                 <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-4 py-3">
-                  <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-border)]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-border)]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-border)]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#e57b6a]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-amber)]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-sage)]" />
                   <span className="ml-3 text-xs text-[var(--color-paper-mute)]">
                     dealigence-website.html
                   </span>
