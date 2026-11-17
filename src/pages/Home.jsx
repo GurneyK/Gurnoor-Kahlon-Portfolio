@@ -204,7 +204,7 @@ export default function Home() {
               Design Engineer &middot; Toronto
             </motion.p>
             <Headline
-              text="I design the interface between people and the AI products they're"
+              text="I design the interface between people and the products they're"
               highlight="asked to trust."
             />
             <motion.p
