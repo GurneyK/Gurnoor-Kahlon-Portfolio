@@ -256,3 +256,24 @@ body::after {
   0% { transform: translateY(-100%); }
   100% { transform: translateY(200%); }
 }
+
+/* Visitor's chat bubble: same gradient as the primary button, no hover motion */
+.bubble-user {
+  background: linear-gradient(120deg, var(--color-sage) 0%, var(--color-teal) 100%);
+  color: #0b0d0b;
+}
+:root[data-theme="light"] .bubble-user {
+  color: #fff;
+}
+.chat-panel {
+  background: color-mix(in oklab, var(--color-surface) 92%, var(--color-ink));
+}
+.bubble-bot {
+  background: var(--color-surface-raised);
+}
+:root[data-theme="light"] .chat-panel {
+  background: #fbfaf6;
+}
+:root[data-theme="light"] .bubble-bot {
+  background: #f1eee5;
+}

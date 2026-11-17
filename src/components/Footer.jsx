@@ -11,7 +11,7 @@ export default function Footer({ linkTo = "about" }) {
       <div className="relative mx-auto max-w-6xl">
         <Reveal>
           <h2 className="max-w-3xl font-[family-name:var(--font-display)] text-4xl leading-[1.1] text-[var(--color-paper)] md:text-6xl">
-            Building something people <span className="text-gradient">need to trust?</span>
+            Open to full-time roles in <span className="text-gradient">AI product design.</span>
           </h2>
         </Reveal>
         <div className="mt-16 grid gap-12 md:grid-cols-2">
