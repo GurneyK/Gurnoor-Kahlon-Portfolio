@@ -323,8 +323,8 @@ export default function Home() {
 
             <Reveal className="mt-14">
               <p className="text-base text-[var(--color-paper-mute)]">
-                Below: the mock website, pitch deck, and teaser I made with
-                this toolkit during my time at Horizon 3 Labs, for an
+                Below: the mock website, with its pitch deck and teaser, that I
+                made with this toolkit during my time at Horizon 3 Labs, for an
                 internal product called Dealigence. One session, no manual
                 editing after the fact.
               </p>
@@ -342,21 +342,6 @@ export default function Home() {
                   title="Dealigence mock website, with the pitch deck embedded"
                   className="h-[380px] w-full bg-white sm:h-[520px]"
                   loading="lazy"
-                />
-              </div>
-
-              <p className="mt-10 text-sm font-medium uppercase tracking-[0.16em] text-[var(--color-paper-mute)]">
-                Teaser
-              </p>
-              <div className="mt-3 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]">
-                <video
-                  src={`${BASE}dealigence/dealigence-final.mp4`}
-                  poster={`${BASE}dealigence/dealigence-poster.jpg`}
-                  controls
-                  playsInline
-                  preload="metadata"
-                  className="block h-auto w-full bg-black"
-                  aria-label="Dealigence teaser video"
                 />
               </div>
 
