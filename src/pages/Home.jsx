@@ -323,11 +323,32 @@ export default function Home() {
 
             <Reveal className="mt-14">
               <p className="text-base text-[var(--color-paper-mute)]">
-                Below: a short teaser I made with this toolkit during my time
-                at Horizon 3 Labs, for an internal product called Dealigence.
-                One prompt, one session, no editing after the fact.
+                Below: the mock website, pitch deck, and teaser I made with
+                this toolkit during my time at Horizon 3 Labs, for an
+                internal product called Dealigence. One session, no manual
+                editing after the fact.
               </p>
               <div className="mt-6 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[0_40px_90px_-50px_color-mix(in_oklab,var(--color-amber)_70%,transparent)]">
+                <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-4 py-3">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#e57b6a]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-amber)]" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-sage)]" />
+                  <span className="ml-3 text-xs text-[var(--color-paper-mute)]">
+                    dealigence-website.html
+                  </span>
+                </div>
+                <iframe
+                  src={`${BASE}dealigence/dealigence-website.html`}
+                  title="Dealigence mock website, with the pitch deck embedded"
+                  className="h-[380px] w-full bg-white sm:h-[520px]"
+                  loading="lazy"
+                />
+              </div>
+
+              <p className="mt-10 text-sm font-medium uppercase tracking-[0.16em] text-[var(--color-paper-mute)]">
+                Teaser
+              </p>
+              <div className="mt-3 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)]">
                 <video
                   src={`${BASE}dealigence/dealigence-final.mp4`}
                   poster={`${BASE}dealigence/dealigence-poster.jpg`}
@@ -337,6 +358,24 @@ export default function Home() {
                   className="block h-auto w-full bg-black"
                   aria-label="Dealigence teaser video"
                 />
+              </div>
+
+              <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-base">
+                {[
+                  ["Open the teaser full screen ↗", "dealigence-final.mp4"],
+                  ["Open the website ↗", "dealigence-website.html"],
+                  ["Open the pitch deck ↗", "dealigence-deck.html"],
+                ].map(([label, file]) => (
+                  <a
+                    key={file}
+                    href={`${BASE}dealigence/${file}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[var(--color-paper-dim)] underline decoration-[var(--color-border)] underline-offset-4 transition-colors hover:text-[var(--color-sage-bright)]"
+                  >
+                    {label}
+                  </a>
+                ))}
               </div>
             </Reveal>
           </div>
