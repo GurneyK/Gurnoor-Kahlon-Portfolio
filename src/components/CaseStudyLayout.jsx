@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Footer from "./Footer.jsx";
 import ScrollRail from "./ScrollRail.jsx";
 import { slugify } from "../lib/slugify.js";
+import { projects, independentProjects } from "../data/projects.js";
 
 const EASE = [0.22, 1, 0.36, 1];
 const fadeUp = {
@@ -94,6 +95,45 @@ function collectSections(children) {
   return sections;
 }
 
+/** End-of-page navigation: back to the right list, or straight on to the next project */
+function CaseStudyEndNav({ project }) {
+  const group = independentProjects.some((p) => p.slug === project.slug) ? independentProjects : projects;
+  const section = group === independentProjects ? "side-project" : "work";
+  const i = group.findIndex((p) => p.slug === project.slug);
+  const next = group[(i + 1) % group.length];
+
+  return (
+    <nav aria-label="More work" className="relative mx-auto mt-28 max-w-4xl px-6 md:px-10">
+      <div className="grid gap-4 border-t border-[var(--color-border-soft)] pt-10 sm:grid-cols-2">
+        <Link
+          to="/"
+          state={{ section }}
+          className="group flex flex-col justify-center rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-5 transition-colors hover:border-[var(--accent,var(--color-sage-bright))]"
+        >
+          <span className="text-xs font-medium uppercase tracking-[0.16em] text-[var(--color-paper-mute)]">Back to</span>
+          <span className="mt-1 text-lg text-[var(--color-paper)]">
+            <span aria-hidden="true" className="mr-2 inline-block transition-transform group-hover:-translate-x-1">←</span>
+            {section === "work" ? "All work" : "Independent work"}
+          </span>
+        </Link>
+        {next && next.slug !== project.slug && (
+          <Link
+            to={`/work/${next.slug}`}
+            style={{ "--accent": next.accent }}
+            className="group flex flex-col items-end justify-center rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-5 text-right transition-colors hover:border-[var(--accent,var(--color-sage-bright))]"
+          >
+            <span className="text-xs font-medium uppercase tracking-[0.16em] text-[var(--color-paper-mute)]">Next project</span>
+            <span className="mt-1 text-lg text-[var(--color-paper)]">
+              {next.name}
+              <span aria-hidden="true" className="ml-2 inline-block text-accent transition-transform group-hover:translate-x-1">→</span>
+            </span>
+          </Link>
+        )}
+      </div>
+    </nav>
+  );
+}
+
 export default function CaseStudyLayout({ project, children }) {
   const sections = collectSections(children);
 
@@ -106,7 +146,8 @@ export default function CaseStudyLayout({ project, children }) {
       </div>
       <div className="relative mx-auto max-w-4xl px-6 md:px-10">
         <Link
-          to={project.backTo || "/#work"}
+          to="/"
+          state={{ section: project.backSection || "work" }}
           className="text-sm text-[var(--color-paper-mute)] transition-colors hover:text-[var(--color-sage-bright)]"
         >
           {project.backLabel || "← Back to work"}
@@ -164,7 +205,9 @@ export default function CaseStudyLayout({ project, children }) {
 
       <div className="relative mx-auto mt-20 max-w-4xl px-6 md:px-10">{children}</div>
 
-      <div className="mt-32">
+      <CaseStudyEndNav project={project} />
+
+      <div className="mt-24">
         <Footer />
       </div>
     </main>

@@ -5,8 +5,8 @@ export const submissions = {
   open: [
     {
       id: "1",
-      name: "GreenShield Surfactant Platform",
-      company: "GreenShield Bio B.V.",
+      name: "Bio-based Surfactant Platform",
+      company: "Veltrano Bio B.V.",
       status: "In Admin Review",
       score: "8.9",
       tier: 1,
@@ -20,8 +20,8 @@ export const submissions = {
     },
     {
       id: "2",
-      name: "Fermento Base",
-      company: "Fermento Base GmbH",
+      name: "Fermented Protein Base",
+      company: "Orvello Foods GmbH",
       status: "On Hold",
       score: "7.8",
       tier: 2,
@@ -35,8 +35,8 @@ export const submissions = {
     },
     {
       id: "3",
-      name: "SkinAI Diagnostic Platform",
-      company: "SkinAI Labs Inc.",
+      name: "Skin Imaging Diagnostic Platform",
+      company: "Kestrova Labs Inc.",
       status: "On Hold",
       score: "5.3",
       tier: 3,
@@ -52,8 +52,8 @@ export const submissions = {
   closed: [
     {
       id: "4",
-      name: "NanoCarrier Drug Delivery System",
-      company: "NanoPharma Ltd.",
+      name: "Encapsulated Drug Delivery System",
+      company: "Calvrex Pharma Ltd.",
       status: "Closed (DQ)",
       score: "0.0",
       tier: 5,
@@ -69,10 +69,10 @@ export const submissions = {
 };
 
 export const recentActivity = [
-  { title: "NutriBoost Probiotic Blend", detail: "Shortlisted by Priya Nandan", time: "2h ago" },
-  { title: "GreenShield Surfactant Platform", detail: "Moved to Admin Review by Jordan Reyes", time: "5h ago" },
-  { title: "SkinAI Diagnostic Platform", detail: "Placed On Hold by Marcus Cole", time: "1d ago" },
-  { title: "SmartClean IoT Platform", detail: "Handed off by Elena Fischer", time: "2d ago" },
+  { title: "Probiotic Nutrition Blend", detail: "Shortlisted by Priya Nandan", time: "2h ago" },
+  { title: "Bio-based Surfactant Platform", detail: "Moved to Admin Review by Jordan Reyes", time: "5h ago" },
+  { title: "Skin Imaging Diagnostic Platform", detail: "Placed On Hold by Marcus Cole", time: "1d ago" },
+  { title: "Connected Cleaning Analytics", detail: "Handed off by Elena Fischer", time: "2d ago" },
 ];
 
 export const insightStats = [

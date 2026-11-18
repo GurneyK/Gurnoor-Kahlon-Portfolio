@@ -46,19 +46,12 @@ export default function Nav() {
   const goToSection = (id) => (e) => {
     e.preventDefault();
     setMenuOpen(false);
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+    if (location.pathname === "/") {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
       return;
     }
-    if (location.pathname !== "/") {
-      navigate("/");
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-        }, 60);
-      });
-    }
+    // From any other page: go home and land directly on the section
+    navigate("/", { state: { section: id } });
   };
 
   const renderLink = (link, className) =>

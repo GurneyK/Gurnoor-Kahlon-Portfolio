@@ -130,7 +130,7 @@ export const knowledgeBase = [
     id: "video",
     keywords: ["video prompting", "video toolkit", "prompting toolkit", "dealigence video", "html video", "side project"],
     answer:
-      "The Video Prompting Toolkit is a side project: a way to go from a written prompt to a shippable content asset (walkthroughs, teasers, pitch decks) without touching a traditional video editor. I used it to build the Dealigence walkthrough and teaser you can find linked from the site. It's open source at github.com/GurneyK/Video-prompting.",
+      "The Video Prompting Toolkit is a side project: a way to go from a written prompt to a shippable content asset (walkthroughs, teasers, pitch decks) without touching a traditional video editor. I used it to make the Dealigence teaser you can watch on the site. It's open source at github.com/GurneyK/Video-prompting.",
   },
   {
     id: "skills",

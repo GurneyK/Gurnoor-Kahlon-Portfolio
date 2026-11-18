@@ -323,54 +323,20 @@ export default function Home() {
 
             <Reveal className="mt-14">
               <p className="text-base text-[var(--color-paper-mute)]">
-                Below: the actual site, teaser, and deck for Dealigence, an
-                AI negotiation-practice platform I built with this toolkit
-                during my time at Horizon 3 Labs, Unilever's AI innovation
-                lab. Same toolkit, same session, no manual editing after the
-                fact, three assets, one hour, zero feedback rounds.
+                Below: a short teaser I made with this toolkit during my time
+                at Horizon 3 Labs, for an internal product called Dealigence.
+                One prompt, one session, no editing after the fact.
               </p>
               <div className="mt-6 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[0_40px_90px_-50px_color-mix(in_oklab,var(--color-amber)_70%,transparent)]">
-                <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-4 py-3">
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#e57b6a]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-amber)]" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-sage)]" />
-                  <span className="ml-3 text-xs text-[var(--color-paper-mute)]">
-                    dealigence-website.html
-                  </span>
-                </div>
-                <iframe
-                  src={`${BASE}dealigence/dealigence-website.html`}
-                  title="Dealigence website demo"
-                  className="h-[380px] w-full bg-white sm:h-[520px]"
-                  loading="lazy"
+                <video
+                  src={`${BASE}dealigence/dealigence-final.mp4`}
+                  poster={`${BASE}dealigence/dealigence-poster.jpg`}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="block h-auto w-full bg-black"
+                  aria-label="Dealigence teaser video"
                 />
-              </div>
-
-              <div className="mt-4 flex flex-wrap gap-4 text-base">
-                <a
-                  href={`${BASE}dealigence/dealigence-final.mp4`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-[var(--color-paper-dim)] underline decoration-[var(--color-border)] underline-offset-4 transition-colors hover:text-[var(--color-sage-bright)]"
-                >
-                  Open showcased teaser ↗
-                </a>
-                <a
-                  href={`${BASE}dealigence/dealigence-deck.html`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-[var(--color-paper-dim)] underline decoration-[var(--color-border)] underline-offset-4 transition-colors hover:text-[var(--color-sage-bright)]"
-                >
-                  Open pitch deck ↗
-                </a>
-                <a
-                  href={`${BASE}dealigence/dealigence-walkthrough.html`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-[var(--color-paper-dim)] underline decoration-[var(--color-border)] underline-offset-4 transition-colors hover:text-[var(--color-sage-bright)]"
-                >
-                  Watch the full team walkthrough ↗
-                </a>
               </div>
             </Reveal>
           </div>

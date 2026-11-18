@@ -14,12 +14,12 @@ import mobileCommand from "../assets/ccgs/mobile-command.png";
 const project = projects.find((p) => p.slug === "ccgs-copilot");
 
 const sources = [
-  "Euromonitor",
-  "NielsenIQ",
-  "Kantar",
-  "Meltwater",
-  "Mintel",
-  "WGSN",
+  "Category sizing data",
+  "Retail sales panel",
+  "Shopper panel",
+  "Social listening",
+  "Trend reports",
+  "Trend forecasts",
   "H&A studies",
   "Historical CCGS docs",
 ];
@@ -252,15 +252,16 @@ export default function CCGSCopilot() {
           estimate. That meant the interface needed a visual way to
           distinguish a number the agent is confident citing from a number
           still pending validation against that methodology, which is why
-          the sizing model on Command Center is explicitly labeled "HC
-          model to validate" rather than presented as final.
+          every sizing figure on Command Center carries its own review status
+          rather than being presented as final.
         </p>
       </Section>
 
       <Section eyebrow="Outcome" title="Where this landed">
         <p>
           Every screenshot and the live embed above show the real product,
-          running on fictional data. The real version reads Unilever's
+          running on fictional data: the data providers are shown as generic
+          source types and every figure is a mock value. The real version reads Unilever's
           licensed category data, which isn't something I can put on a
           public site. What's demonstrated here is the actual interaction
           model, information architecture, and governance structure

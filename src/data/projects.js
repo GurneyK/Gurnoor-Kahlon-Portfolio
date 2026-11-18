@@ -79,8 +79,8 @@ export const independentProjects = [
       "A subscription yoga app that turns a YouTube instructor's library into a calm, easy-to-navigate mobile product. I was the only designer, from research to launch, and it's still live.",
     liveUrl: "https://apps.apple.com/app/id6738764405",
     liveLabel: "View on the App Store ↗",
-    backTo: "/",
-    backLabel: "← Back to home",
+    backSection: "side-project",
+    backLabel: "← Back to independent work",
   },
   {
     slug: "tcc",
@@ -94,7 +94,7 @@ export const independentProjects = [
     liveUrl: "https://gurneyk.github.io/TCC/",
     liveLabel: "Try the live demo ↗",
     repoUrl: "https://github.com/GurneyK/TCC",
-    backTo: "/",
-    backLabel: "← Back to home",
+    backSection: "side-project",
+    backLabel: "← Back to independent work",
   },
 ];

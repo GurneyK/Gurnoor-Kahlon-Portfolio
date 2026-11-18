@@ -1,6 +1,7 @@
-import { useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, MotionConfig } from "framer-motion";
+import useScrollManager from "./lib/useScrollManager.js";
+import BackToTop from "./components/BackToTop.jsx";
 import Nav from "./components/Nav.jsx";
 import PageTransition from "./components/PageTransition.jsx";
 import Home from "./pages/Home.jsx";
@@ -17,9 +18,7 @@ import TCC from "./pages/TCC.jsx";
 function App() {
   const location = useLocation();
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
+  useScrollManager();
 
   return (
     <MotionConfig reducedMotion="user">
@@ -39,6 +38,7 @@ function App() {
           <Route path="/work/tcc" element={<PageTransition><TCC /></PageTransition>} />
         </Routes>
       </AnimatePresence>
+      <BackToTop />
     </div>
     </MotionConfig>
   );
