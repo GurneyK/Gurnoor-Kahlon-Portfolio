@@ -16,145 +16,83 @@ export default function CustomsCity() {
     <CaseStudyLayout project={project}>
       <Section eyebrow="Overview" title="The problem">
         <p>
-          CustomsCity handles customs clearance and compliance for
-          enterprise shipping teams. My focus was the Customs Status
-          Checker, a core flow that already existed in the product but had
-          accumulated enough confusion that we ran formal usability
-          research on it before I touched a single pixel. That's an
-          important distinction from a lot of portfolio work: this wasn't a
-          greenfield design, it was a research-led redesign of something
-          real users were already struggling with.
+          CustomsCity handles customs clearance for enterprise shipping
+          teams. The Customs Status Checker, a core flow, had become
+          confusing enough that we ran usability research before I changed
+          anything. This was a research-led redesign of something real users
+          were already struggling with, not a blank-page project.
         </p>
       </Section>
 
-      <Section eyebrow="Research & Ideation" title="Who this is actually for">
+      <Section eyebrow="Research" title="Who uses it, and where it broke">
         <p>
-          I built this persona from interviews with logistics coordinators
-          managing shipments across air, ocean, and ground transport for
-          enterprise freight clients. The core tension across every
-          conversation: these users are managing multiple carriers and
-          transport modes at once, on a tight schedule, and their tolerance
-          for ambiguity in a status screen is close to zero. If the app
-          can't tell them clearly what's happening with a shipment, they
-          escalate manually, which defeats the entire purpose of the tool.
+          The users are logistics coordinators juggling several carriers and
+          transport modes on tight deadlines. If a status screen is unclear,
+          they escalate by hand, which defeats the tool. Watching them use the
+          existing flow showed where it broke: transport modes that only made
+          sense if you knew customs terms, a tracking field that didn't say
+          which document it wanted, and status updates slow enough to erode
+          trust.
         </p>
       </Section>
 
-      <Figure
-        src={persona}
-        size="wide"
-        caption="Primary persona built from research: a logistics manager tracking shipments across multiple carriers and transport modes, whose main pain points were inconsistent tracking experiences and cluttered interfaces that buried the information they actually needed."
-      />
+      <FigureGrid>
+        <Figure src={persona} caption="Primary persona: a logistics manager tracking shipments across carriers and transport modes." />
+        <Figure src={userJourney} caption="Journey map: each stage's intended action and the friction users hit there, which became the redesign brief." />
+      </FigureGrid>
 
-      <Section eyebrow="Research & Ideation" title="Mapping where the flow actually broke">
+      <Section eyebrow="Key Decision" title="Name it for what users are trying to do">
         <p>
-          I walked the existing flow step by step and mapped where users
-          hesitated, backtracked, or gave up. Four friction points came out
-          clearly: the transport-mode selection felt arbitrary to anyone who
-          didn't already know customs terminology, tracking number entry
-          fields were unclear about which document type they expected, and
-          status updates were slow or silent enough to erode trust in the
-          tool entirely. None of this was guesswork. It came directly from
-          watching people use the existing screen and get stuck.
-        </p>
-      </Section>
-
-      <Figure
-        src={userJourney}
-        size="wide"
-        caption="User journey mapping from research. Each stage documents both the intended action and the specific friction users hit there, which became the brief for the redesign rather than a general 'make it better' direction."
-      />
-
-      <Section eyebrow="Key Decision" title="What the before and after actually changed">
-        <p>
-          The original screen was called Document Checker, a name that
-          described the underlying system rather than what the user was
-          trying to do. Usability sessions confirmed this mismatch directly:
-          people expected a shipment status tool, not a document tool, and
-          the name created a moment of doubt right at the entry point. I
-          renamed it Customs Status Checker to match user intent, not
-          internal architecture.
-        </p>
-        <p>
-          I also removed a company bio block that had been sitting on the
-          entry screen. It added visual weight without adding decision
-          value, and testing showed it delayed people from reaching the
-          actual task. The tracking number field, which had caused a
-          confusing line break in the original layout, was cleaned up into
-          a single clear input labeled by the document type it expected.
+          The screen was called Document Checker, after the system behind
+          it. People expected a shipment status tool, so the name caused
+          doubt right at the start. I renamed it Customs Status Checker,
+          removed a company bio block that slowed people down, and turned the
+          tracking field into one clear input labeled with the document it
+          expects.
         </p>
       </Section>
 
       <Figure
         src={usabilityTesting}
         size="wide"
-        caption="Annotated before and after from usability testing. Left: the original Document Checker screen with the issues flagged in orange. Right: the redesign, with each change tied directly to a specific finding rather than a general polish pass."
+        caption="Before and after from usability testing: issues flagged on the original (left), each tied to a change in the redesign (right)."
       />
 
-      <Section eyebrow="Key Decision" title="A two-step flow instead of a form">
+      <Section eyebrow="Key Decision" title="Two clear steps instead of one form">
         <p>
-          Choosing between ABI, Air, Ocean, and ISF felt arbitrary to users
-          who didn't already know the customs terminology behind each
-          option. Instead of hiding that complexity behind tooltips or
-          collapsing it into a dropdown, I kept all four modes visible but
-          sequenced the flow as a clearly numbered two-step process. A new
-          user always knows there is exactly one more thing to do before
-          they see a result, which directly addressed the hesitation
-          research had flagged around this step.
+          Rather than hiding the four transport modes in a dropdown, I kept
+          them visible and made the flow two numbered steps. A new user always
+          knows there's exactly one more thing to do before they see a result.
         </p>
       </Section>
 
       <FigureGrid>
-        <Figure
-          src={statusCheckerStart}
-          size="narrow"
-          caption="Step 1: mode of transport, presented as a numbered flow rather than an unstructured form."
-        />
-        <Figure
-          src={trackingEntry}
-          size="narrow"
-          caption="Step 2: tracking number entry, labeled by the exact document type each mode expects (MBOL, HMBOL) instead of a generic 'tracking number' field."
-        />
+        <Figure src={statusCheckerStart} size="narrow" caption="Step 1: choose the mode of transport." />
+        <Figure src={trackingEntry} size="narrow" caption="Step 2: enter the tracking number, labeled by the document type each mode expects." />
       </FigureGrid>
 
-      <Section eyebrow="Key Decision" title="Showing a distribution, not a single status">
+      <Section eyebrow="Key Decision" title="Show the breakdown, not one status">
         <p>
-          A shipment's status isn't one number, it's a distribution across
-          draft, sent, accepted, rejected, and cancelled filings, often
-          across two regulatory systems, AMS and ACAS, at once. A single
-          status label would have hidden the thing users actually needed to
-          know: which of their filings, specifically, was the problem, and
-          whether an issue was isolated to one system or affecting both. The
-          donut breakdown plus the side-by-side comparison table let a user
-          see that in one glance instead of clicking into each filing
-          individually.
+          A shipment has many filings, each draft, sent, accepted or rejected,
+          often across two customs systems at once. A single status label
+          would hide which filing is the problem. A breakdown chart and a
+          side-by-side table show that at a glance, and drilling into a hold
+          shows its code and description without leaving the screen.
         </p>
       </Section>
 
       <FigureGrid>
-        <Figure
-          src={shipmentStatusResult}
-          size="narrow"
-          caption="Shipment status result: distribution across filing states, broken out by regulatory system, with flight-level detail below."
-        />
-        <Figure
-          src={shipmentStatusDetail}
-          size="narrow"
-          caption="Drilling into a hold surfaces the code, timestamp, and description without leaving the status screen, a direct response to the 'slow or missing notifications' friction point from research."
-        />
+        <Figure src={shipmentStatusResult} size="narrow" caption="Status result: filings broken down by state and customs system." />
+        <Figure src={shipmentStatusDetail} size="narrow" caption="Hold detail: code, time and description, right on the status screen." />
       </FigureGrid>
 
       <Section eyebrow="Outcome" title="Where this landed">
         <p>
-          I designed this across web and mobile and worked directly with
-          developers to keep the interaction model aligned with what was
-          technically feasible on the existing platform. Because the
-          redesign traced back to specific research findings rather than
-          aesthetic preference, it was easier to get stakeholder buy-in
-          quickly, there wasn't a debate about whether a change was needed,
-          only about how to solve the documented problem. CustomsCity is
-          enterprise software sitting behind customer logins, so there's no
-          public link to include here.
+          I designed it for web and mobile and worked directly with
+          developers to keep it buildable on the existing platform. Because
+          every change traced back to a research finding, sign-off was
+          quick: the debate was about how to fix a documented problem, not
+          whether one existed.
         </p>
       </Section>
     </CaseStudyLayout>
