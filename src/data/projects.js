@@ -13,7 +13,7 @@ export const projects = [
       ],
     },
     accent: "#6f9cff",
-    name: "Full Design System",
+    name: "H3L Design System",
     role: "Senior Front-end UX/UI Designer, Horizon 3 Labs (Unilever)",
     dates: "December 2025 to Present",
     tags: ["Design System", "AI Agent Products", "Infrastructure"],

@@ -427,11 +427,11 @@ export default function TCC() {
       </Section>
       <Stats />
 
-      <Section eyebrow="Design System" title="Built on my Design System">
+      <Section eyebrow="Design System" title="Built on the H3L Design System">
         <p>
           Every screen is built from my{" "}
           <Link to="/work/h3l-design-system" className="text-[var(--color-sage-bright)] underline decoration-[var(--color-sage-dim)] underline-offset-4">
-            Design System
+            H3L Design System
           </Link>
           , with no new tokens and no raw colors. Many of its components were demos with hardcoded
           data, so I promoted 25 of them with typed props and kept the old data as defaults. Several

@@ -82,7 +82,7 @@ export const knowledgeBase = [
     id: "h3l",
     keywords: ["h3l", "horizon 3", "design system", "component librar", "unilever", "224"],
     answer:
-      "At Horizon 3 Labs, Unilever's AI innovation lab, I'm the sole designer building and governing the full design system every agent product runs on: 224 cataloged entries, each shipped with real React and Tailwind code, not just Figma components. I've been there since December 2025, owning UX and UI across multiple AI agent products end to end.",
+      "At Horizon 3 Labs, Unilever's AI innovation lab, I'm the sole designer building and governing the H3L Design System every agent product runs on: 224 cataloged entries, each shipped with real React and Tailwind code, not just Figma components. I've been there since December 2025, owning UX and UI across multiple AI agent products end to end.",
   },
   {
     id: "ccgs",
