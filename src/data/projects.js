@@ -52,7 +52,7 @@ export const projects = [
     glance: {
       problem: "Inbound partnership submissions were screened by hand, so the same company could get a different read depending on who triaged it.",
       did: "Designed and built a four-section tool that runs hard disqualifiers first, scores everything against one rubric, and shows reviewers why.",
-      outcome: "Every submission lands in a tier with a set next step and response time, and you can try an interactive rebuild of the tool.",
+      outcome: "Every submission lands in a tier with a set next step and response time, and you can click through the live tool yourself.",
       team: "Designed in Figma and built the front end in code, then handed off cleanly to back-end engineers to finish the first launch version (MVP).",
       stats: [
         { value: "8", label: "hard disqualifiers checked before scoring" },
@@ -67,6 +67,7 @@ export const projects = [
     tags: ["AI Agent", "Innovation Scouting", "Admin Tooling"],
     summary:
       "A scoring tool that screens external innovation submissions against Unilever's R&D fit criteria, and tells a reviewer why.",
+    liveUrl: "https://gurneyk.github.io/research-and-development-agent/",
     repoUrl: "https://github.com/GurneyK/research-and-development-agent",
     mockDataNote: true,
     rebuiltNote: true,
