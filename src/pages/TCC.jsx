@@ -142,7 +142,7 @@ function Showcase() {
             Agents flag the risk. People make every call that moves money.
           </p>
           <p className="mt-4 text-base leading-relaxed text-[#3d3760]">
-            A working treasury hub for a fictional global consumer goods group. Bank, ERP and FX data
+            A working treasury hub for a fictional global consumer goods group. Bank, accounting (ERP) and currency (FX) data
             update live, and every decision is audited.
           </p>
         </div>
@@ -361,7 +361,7 @@ export default function TCC() {
       <Section eyebrow="The problem" title="Treasury runs on trust">
         <p>
           A group treasury team runs cash for a dozen entities across five banks. Every morning they
-          rebuild the picture from bank portals, an ERP extract and a rates screen. I wanted to design
+          rebuild the picture from bank portals, an accounting system (ERP) export and a currency rates screen. I wanted to design
           the tool I'd want in that seat, and to prove agents can help there without ever touching
           the money.
         </p>

@@ -48,7 +48,7 @@ export default function RDAgent() {
           not a partial mockup. Framework stats, the six weighted
           components with their point allocation, all eight hard
           disqualifiers, and the tier outcomes table that maps a final score
-          to a concrete required action and SLA.
+          to a concrete required action and response time (SLA).
         </p>
       </Section>
 
@@ -105,7 +105,7 @@ export default function RDAgent() {
       <Figure
         src={insightsOverview}
         size="wide"
-        caption="Insights, the pipeline-level view. Six KPI cards (total submissions, active reviews, average score, shortlist rate, days to decision, closed/DQ) each with a delta against the prior period, a 12-month submission trend line against shortlist rate, a decision-pipeline donut by status, a score-distribution bar chart, a tier-breakdown bar list, and a recent-activity feed, all on one screen."
+        caption="Insights, the pipeline-level view. Six headline metric cards (total submissions, active reviews, average score, shortlist rate, days to decision, closed as disqualified) each with a delta against the prior period, a 12-month submission trend line against shortlist rate, a decision-pipeline donut by status, a score-distribution bar chart, a tier-breakdown bar list, and a recent-activity feed, all on one screen."
       />
 
       <Section eyebrow="Try it" title="Interactive rebuild, all four sections">

@@ -18,7 +18,7 @@ export const projects = [
     dates: "December 2025 to Present",
     tags: ["Design System", "AI Agent Products", "Infrastructure"],
     summary:
-      "The component library and design infrastructure behind every H3L agent product. 224 cataloged entries, built and governed by one person.",
+      "The component library and design infrastructure behind every AI product at Horizon 3 Labs (H3L), Unilever's AI lab. 224 cataloged entries, built and governed by one person.",
     liveUrl: "https://gurneyk.github.io/Design-library/",
     repoUrl: "https://github.com/GurneyK/Design-library",
     mockDataNote: true,
@@ -29,7 +29,7 @@ export const projects = [
       problem: "Analysts built category growth narratives by hand from eight or more data sources, and quality depended on who wrote it that cycle.",
       did: "Designed a seven-section agent workspace, from command center to deck builder, with evidence and sources next to every claim and approval gates before export.",
       outcome: "A live, clickable product, shown here on fictional data, covering three UK categories in the proof of concept.",
-      team: "Designed in Figma and built the front end in a repo, then handed off cleanly to back-end engineers for the final MVP push.",
+      team: "Designed in Figma and built the front end in code, then handed off cleanly to back-end engineers to finish the first launch version (MVP).",
       stats: [
         { value: "8", label: "data sources read per run" },
         { value: "~70%", label: "faster first draft of a category narrative", estimate: true },
@@ -42,7 +42,7 @@ export const projects = [
     dates: "December 2025 to Present",
     tags: ["AI Agent", "Category Strategy", "Dashboard"],
     summary:
-      "An agent that reads eight data sources and drafts the category growth narrative an analyst used to write by hand.",
+      "An AI agent for category growth strategy (CCGS) work. It reads eight data sources and drafts the growth story an analyst used to write by hand.",
     liveUrl: "https://gurneyk.github.io/CCGS-Dashboard/",
     repoUrl: "https://github.com/GurneyK/CCGS-Dashboard",
     mockDataNote: true,
@@ -52,12 +52,12 @@ export const projects = [
     glance: {
       problem: "Inbound partnership submissions were screened by hand, so the same company could get a different read depending on who triaged it.",
       did: "Designed and built a four-section tool that runs hard disqualifiers first, scores everything against one rubric, and shows reviewers why.",
-      outcome: "Every submission lands in a tier with a defined next step and service level. An interactive rebuild is on this page.",
-      team: "Designed in Figma and built the front end in a repo, then handed off cleanly to back-end engineers for the final MVP push.",
+      outcome: "Every submission lands in a tier with a set next step and response time, and you can try an interactive rebuild of the tool.",
+      team: "Designed in Figma and built the front end in code, then handed off cleanly to back-end engineers to finish the first launch version (MVP).",
       stats: [
         { value: "8", label: "hard disqualifiers checked before scoring" },
         { value: "~50%", label: "less time to triage a submission", estimate: true },
-        { value: "5", label: "tiers, each with a set next step and SLA" },
+        { value: "5", label: "tiers, each with a set next step and response time" },
       ],
     },
     accent: "#e0a458",
@@ -88,7 +88,7 @@ export const projects = [
     name: "Remitian",
     role: "Lead Product Designer",
     dates: "February 2025 to October 2025",
-    tags: ["Fintech", "Web + Mobile", "0 to 1"],
+    tags: ["Fintech", "Web + Mobile", "Built from scratch"],
     summary:
       "Tax remittance software for accounting firms. I owned web and mobile end to end, from research through shipped UI.",
   },
@@ -151,14 +151,14 @@ export const independentProjects = [
   {
     slug: "tcc",
     glance: {
-      problem: "Treasury teams rebuild their cash picture every morning from bank portals, ERP extracts and rate screens.",
+      problem: "Treasury teams rebuild their cash picture every morning by hand, from bank websites, accounting system (ERP) exports and currency rate screens.",
       did: "Designed and built a working hub where four agents flag and explain risks, people approve every payment, and every decision is audited.",
-      outcome: "A working concept, accessible to WCAG 2.2 AA, that you can use live on the page.",
+      outcome: "A working concept, built to the WCAG 2.2 AA accessibility standard, that you can try live.",
       team: "Solo concept: designed and built end to end.",
       stats: [
         { value: "4", label: "agents that explain every flag" },
         { value: "100%", label: "of payments approved by a person" },
-        { value: "AA", label: "WCAG 2.2 accessibility target" },
+        { value: "AA", label: "level of the WCAG 2.2 accessibility standard" },
       ],
     },
     accent: "#8b84f5",
@@ -167,7 +167,7 @@ export const independentProjects = [
     dates: "November 2026",
     tags: ["Fintech", "AI Agents", "Web App"],
     summary:
-      "A working treasury hub where four agents watch bank, ERP and FX data and explain every risk they flag. People approve every payment, and every decision is audited.",
+      "A working treasury hub where four agents watch bank, accounting and currency (FX) data and explain every risk they flag. People approve every payment, and every decision is audited.",
     liveUrl: "https://gurneyk.github.io/TCC/",
     liveLabel: "Try the live demo ↗",
     repoUrl: "https://github.com/GurneyK/TCC",

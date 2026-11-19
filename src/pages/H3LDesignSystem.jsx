@@ -130,7 +130,7 @@ export default function H3LDesignSystem() {
       <Figure
         src={buttonDetail}
         size="wide"
-        caption="The real Button entry, full page. Live preview rendered with actual Habibi tokens, every variant and size, a typed props table, the token list it consumes, use when and do not use when guidance, accessibility notes, a copyable code snippet, and a full developer handoff panel with install commands and copy scripts for both PowerShell and bash."
+        caption="The real Button entry, full page. Live preview rendered with the system's actual design tokens, every variant and size, a typed props table, the token list it consumes, use when and do not use when guidance, accessibility notes, a copyable code snippet, and a full developer handoff panel with install commands and copy scripts for both PowerShell and bash."
       />
 
       <Section eyebrow="Key Decision" title="A handoff format built for engineers who aren't me">

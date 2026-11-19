@@ -20,14 +20,14 @@ const sources = [
   "Social listening",
   "Trend reports",
   "Trend forecasts",
-  "H&A studies",
+  "Consumer habits & attitudes studies",
   "Historical CCGS docs",
 ];
 
 const outputParts = [
   ["Insight", "The opportunity, stated plainly"],
   ["Supporting data points", "The specific numbers behind it"],
-  ["Recommended CVD", "Which category value driver it maps to"],
+  ["Recommended value driver", "Which category value driver (CVD) it maps to"],
   ["Source attribution", "Where every claim came from"],
   ["Opportunity sizing", "Quantified, not just described"],
   ["Draft narrative", "Slide-ready framing for the analyst to edit"],
@@ -48,7 +48,9 @@ export default function CCGSCopilot() {
     <CaseStudyLayout project={project}>
       <Section eyebrow="Overview" title="The problem">
         <p>
-          Category Growth Strategy work means synthesizing eight or more
+          CCGS stands for Consumer Category Growth Strategy: the work of
+          deciding where a product category, like deodorants, can grow next.
+          It means synthesizing eight or more
           data sources, category sizing, shopper panels, social listening,
           trend forecasting, past strategy documents, into a growth
           narrative an analyst can hand to leadership. Doing that by hand
@@ -148,7 +150,7 @@ export default function CCGSCopilot() {
       <FigureGrid>
         <Figure
           src={notifications}
-          caption="Notifications, prioritized by who owns the next action: Finance, Creative, Legal, CMI, each with their own open item and timestamp."
+          caption="Notifications, prioritized by who owns the next action: Finance, Creative, Legal, Consumer Insights (CMI), each with their own open item and timestamp."
         />
         <Figure
           src={validationQueue}
