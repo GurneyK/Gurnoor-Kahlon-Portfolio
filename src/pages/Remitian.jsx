@@ -10,6 +10,35 @@ import taxPaymentsV2 from "../assets/remitian/tax-payments-v2.png";
 import newPaymentModal from "../assets/remitian/new-payment-modal.png";
 import addPaymentEntity from "../assets/remitian/add-payment-entity.png";
 import editingScreen from "../assets/remitian/editing-screen.png";
+import mobileHome from "../assets/remitian/mobile-home.png";
+import mobileReview from "../assets/remitian/mobile-review.png";
+import mobileBank from "../assets/remitian/mobile-bank-accounts.png";
+import mobileSignup from "../assets/remitian/mobile-signup.png";
+
+const mobileScreens = [
+  { src: mobileHome, label: "Home", note: "Alerts first, then each account's next payment and status." },
+  { src: mobileReview, label: "Review a payment", note: "Approve, skip or edit right on the card." },
+  { src: mobileBank, label: "Bank accounts", note: "Choose which account a payment comes from." },
+  { src: mobileSignup, label: "Sign up", note: "One short form to get started." },
+];
+
+function PhoneScreens({ screens }) {
+  return (
+    <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-8 md:grid-cols-4">
+      {screens.map((s) => (
+        <figure key={s.label}>
+          <div className="overflow-hidden rounded-[1.75rem] border-[6px] border-[var(--color-surface-raised)] bg-white shadow-[0_30px_70px_-40px_color-mix(in_oklab,var(--accent,var(--color-sage))_60%,transparent)]">
+            <img src={s.src} alt={"Remitian mobile app, " + s.label + " screen"} className="block aspect-[393/852] w-full object-cover object-top" loading="lazy" />
+          </div>
+          <figcaption className="mt-3 text-sm leading-snug">
+            <span className="block font-medium text-[var(--color-paper)]">{s.label}</span>
+            <span className="text-[var(--color-paper-mute)]">{s.note}</span>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
 
 const project = projects.find((p) => p.slug === "remitian");
 
@@ -189,6 +218,29 @@ export default function Remitian() {
         src={editingScreen}
         caption="Edit Tax Payments, tabbed by form type (1120, Form 940), with bulk selection for line items tied to the same uploaded file."
       />
+
+      <Section eyebrow="Mobile" title="A smaller app, just for clients">
+        <p>
+          The web platform is for accounting firms. The mobile app is for
+          their clients: a smaller, focused version for checking payments,
+          tax accounts and bank details at a glance. It leaves out
+          everything firms need, like file imports, bulk edits and the
+          firm-wide table.
+        </p>
+        <p>
+          To decide what made the cut, we asked people directly, with live
+          questions at trade show events and conversations with clients
+          already using the web app. The answer was consistent: clients
+          didn't want to manage anything on their phone, they wanted to know
+          quickly whether anything needed them. So the home screen leads
+          with alerts, like a bank account that needs updating, then shows
+          each account's next payment and status. It uses the same
+          components and status colors as the web app, so the two feel like
+          one product.
+        </p>
+      </Section>
+
+      <PhoneScreens screens={mobileScreens} />
 
       <Section eyebrow="Motion" title="Motion that confirms, not decorates">
         <p>

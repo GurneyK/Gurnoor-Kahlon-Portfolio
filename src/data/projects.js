@@ -81,7 +81,7 @@ export const projects = [
       stats: [
         { value: "30+", label: "client accounts per firm, in one view" },
         { value: "~40%", label: "faster to find what needs attention next", estimate: true },
-        { value: "2", label: "platforms, web and mobile" },
+        { value: "2", label: "apps: web for firms, mobile for their clients" },
       ],
     },
     accent: "#5ec2c9",
