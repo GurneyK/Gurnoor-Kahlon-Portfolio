@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { motion } from "framer-motion";
 
 export default function PageTransition({ children }) {
@@ -9,7 +10,7 @@ export default function PageTransition({ children }) {
       exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
     >
-      {children}
+      <Suspense fallback={<div className="min-h-screen" />}>{children}</Suspense>
     </motion.div>
   );
 }

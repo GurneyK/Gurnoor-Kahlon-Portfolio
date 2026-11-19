@@ -1,3 +1,4 @@
+import { lazy } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, MotionConfig } from "framer-motion";
 import useScrollManager from "./lib/useScrollManager.js";
@@ -7,13 +8,15 @@ import PageTransition from "./components/PageTransition.jsx";
 import Home from "./pages/Home.jsx";
 import About from "./pages/About.jsx";
 import Contact from "./pages/Contact.jsx";
-import Remitian from "./pages/Remitian.jsx";
-import CustomsCity from "./pages/CustomsCity.jsx";
-import H3LDesignSystem from "./pages/H3LDesignSystem.jsx";
-import CCGSCopilot from "./pages/CCGSCopilot.jsx";
-import RDAgent from "./pages/RDAgent.jsx";
-import PagodaYoga from "./pages/PagodaYoga.jsx";
-import TCC from "./pages/TCC.jsx";
+
+// Case studies load on demand, so the home page stays light
+const Remitian = lazy(() => import("./pages/Remitian.jsx"));
+const CustomsCity = lazy(() => import("./pages/CustomsCity.jsx"));
+const H3LDesignSystem = lazy(() => import("./pages/H3LDesignSystem.jsx"));
+const CCGSCopilot = lazy(() => import("./pages/CCGSCopilot.jsx"));
+const RDAgent = lazy(() => import("./pages/RDAgent.jsx"));
+const PagodaYoga = lazy(() => import("./pages/PagodaYoga.jsx"));
+const TCC = lazy(() => import("./pages/TCC.jsx"));
 
 function App() {
   const location = useLocation();

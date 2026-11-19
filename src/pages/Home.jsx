@@ -153,6 +153,12 @@ function ProjectRow({ project, index }) {
                 {project.name}
               </h3>
               <p className="mt-3 max-w-xl text-lg leading-relaxed text-[var(--color-paper-dim)]">{project.summary}</p>
+              {project.glance?.outcome && (
+                <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-[var(--color-paper-mute)]">
+                  <span className="font-medium text-accent">Outcome: </span>
+                  {project.glance.outcome}
+                </p>
+              )}
               <div className="mt-5 flex flex-wrap items-center gap-2">
                 {project.tags.map((tag) => (
                   <span

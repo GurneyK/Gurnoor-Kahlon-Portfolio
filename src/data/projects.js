@@ -1,6 +1,11 @@
 export const projects = [
   {
     slug: "h3l-design-system",
+    glance: {
+      problem: "As the sole designer across several AI agent products at once, every product was drifting into its own visual language.",
+      did: "Built and now govern a 224-entry component library, with an engineer-ready handoff format and rules for AI-generated interfaces.",
+      outcome: "Every H3L product team builds from it, so a new agent product reaches a consistent, on-brand interface in days instead of weeks.",
+    },
     accent: "#6f9cff",
     name: "Full Design System",
     role: "Senior Front-end UX/UI Designer, Horizon 3 Labs (Unilever)",
@@ -14,6 +19,11 @@ export const projects = [
   },
   {
     slug: "ccgs-copilot",
+    glance: {
+      problem: "Analysts built category growth narratives by hand from eight or more data sources, and quality depended on who wrote it that cycle.",
+      did: "Designed a seven-section agent workspace, from command center to deck builder, with evidence and sources next to every claim and approval gates before export.",
+      outcome: "A live, clickable product, shown here on fictional data, covering three UK categories in the proof of concept.",
+    },
     accent: "#4fb68a",
     name: "CCGS Copilot",
     role: "Senior Front-end UX/UI Designer, Horizon 3 Labs (Unilever)",
@@ -27,6 +37,11 @@ export const projects = [
   },
   {
     slug: "rd-agent",
+    glance: {
+      problem: "Inbound partnership submissions were screened by hand, so the same company could get a different read depending on who triaged it.",
+      did: "Designed and built a four-section tool that runs hard disqualifiers first, scores everything against one rubric, and shows reviewers why.",
+      outcome: "Every submission lands in a tier with a defined next step and service level. An interactive rebuild is on this page.",
+    },
     accent: "#e0a458",
     name: "R&D Fit Agent",
     role: "Senior Front-end UX/UI Designer, Horizon 3 Labs (Unilever)",
@@ -40,6 +55,11 @@ export const projects = [
   },
   {
     slug: "remitian",
+    glance: {
+      problem: "Accounting firms tracked tax payments for 30 or more clients across spreadsheets and email, where a missed date is a compliance risk.",
+      did: "Led web and mobile design for eight months, from research to shipped UI, in iterative releases alongside engineering.",
+      outcome: "Live with accounting firms today, built around a firm-wide view that answers \"where do I look next\" first.",
+    },
     accent: "#5ec2c9",
     name: "Remitian",
     role: "Lead Product Designer",
@@ -50,6 +70,11 @@ export const projects = [
   },
   {
     slug: "customscity",
+    glance: {
+      problem: "The Customs Status Checker, a core flow, had become confusing enough that it needed formal usability research.",
+      did: "Ran the research, mapped where the flow broke, and redesigned it as a two-step flow across web and mobile with the developers.",
+      outcome: "Because every change traced back to a research finding, stakeholders signed off quickly.",
+    },
     accent: "#e57b6a",
     name: "CustomsCity",
     role: "UX/UI Designer",
@@ -70,6 +95,11 @@ export const sideProject = {
 export const independentProjects = [
   {
     slug: "pagoda-yoga",
+    glance: {
+      problem: "Pagoda Yoga had a loyal YouTube audience and no product of its own.",
+      did: "Sole designer, from research, journey mapping and testing to the screens that shipped on iOS and Android.",
+      outcome: "Launched and still live, with members praising how easy it is to use.",
+    },
     accent: "#b48ee0",
     name: "Pagoda Yoga",
     role: "Sole Product Designer",
@@ -84,6 +114,11 @@ export const independentProjects = [
   },
   {
     slug: "tcc",
+    glance: {
+      problem: "Treasury teams rebuild their cash picture every morning from bank portals, ERP extracts and rate screens.",
+      did: "Designed and built a working hub where four agents flag and explain risks, people approve every payment, and every decision is audited.",
+      outcome: "A working concept, accessible to WCAG 2.2 AA, that you can use live on the page.",
+    },
     accent: "#8b84f5",
     name: "Treasury Command Center",
     role: "Designer and engineer, solo concept",

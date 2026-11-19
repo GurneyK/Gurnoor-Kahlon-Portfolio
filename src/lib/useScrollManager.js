@@ -52,6 +52,8 @@ export default function useScrollManager() {
         window.scrollTo({ top, behavior });
         return true;
       }
+      // A lazily loaded page may still be too short to reach the saved spot
+      if (saved && document.documentElement.scrollHeight < saved + window.innerHeight * 0.5) return false;
       window.scrollTo({ top: saved ?? 0, behavior });
       return true;
     };
