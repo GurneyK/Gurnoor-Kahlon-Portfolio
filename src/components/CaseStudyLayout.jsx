@@ -175,19 +175,51 @@ function AtAGlance({ glance }) {
     ["What I did", glance.did],
     ["Outcome", glance.outcome],
   ];
+  const stats = glance.stats || [];
+  const hasEstimate = stats.some((s) => s.estimate);
   return (
-    <div className="mt-10 grid overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-surface)_75%,transparent)] md:grid-cols-3">
-      {rows.map(([label, text], i) => (
-        <div
-          key={label}
-          className={`p-6 ${i > 0 ? "border-t border-[var(--color-border-soft)] md:border-l md:border-t-0" : ""}`}
-        >
-          <p className={`text-xs font-semibold uppercase tracking-[0.16em] ${label === "Outcome" ? "text-accent" : "text-[var(--color-paper-mute)]"}`}>
-            {label}
-          </p>
-          <p className="mt-2 text-[15px] leading-relaxed text-[var(--color-paper-dim)]">{text}</p>
+    <div className="mt-10 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-surface)_75%,transparent)]">
+      <div className="grid md:grid-cols-3">
+        {rows.map(([label, text], i) => (
+          <div
+            key={label}
+            className={`p-6 ${i > 0 ? "border-t border-[var(--color-border-soft)] md:border-l md:border-t-0" : ""}`}
+          >
+            <p className={`text-xs font-semibold uppercase tracking-[0.16em] ${label === "Outcome" ? "text-accent" : "text-[var(--color-paper-mute)]"}`}>
+              {label}
+            </p>
+            <p className="mt-2 text-[15px] leading-relaxed text-[var(--color-paper-dim)]">{text}</p>
+          </div>
+        ))}
+      </div>
+
+      {stats.length > 0 && (
+        <dl className="grid grid-cols-1 border-t border-[var(--color-border-soft)] sm:grid-cols-3">
+          {stats.map((s, i) => (
+            <div
+              key={s.label}
+              className={`flex items-baseline gap-3 px-6 py-5 sm:block ${i > 0 ? "border-t border-[var(--color-border-soft)] sm:border-l sm:border-t-0" : ""}`}
+            >
+              <dt className="sr-only">{s.label}</dt>
+              <dd className="shrink-0 font-[family-name:var(--font-display)] text-3xl text-accent md:text-4xl">{s.value}</dd>
+              <dd className="text-sm leading-snug text-[var(--color-paper-mute)] sm:mt-1.5">{s.label}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
+      {glance.team && (
+        <div className="border-t border-[var(--color-border-soft)] px-6 py-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-paper-mute)]">Team & handoff</p>
+          <p className="mt-2 text-[15px] leading-relaxed text-[var(--color-paper-dim)]">{glance.team}</p>
         </div>
-      ))}
+      )}
+
+      {hasEstimate && (
+        <p className="border-t border-[var(--color-border-soft)] px-6 py-3 text-xs text-[var(--color-paper-mute)]">
+          ~ Estimated impact, not a measured result.
+        </p>
+      )}
     </div>
   );
 }
